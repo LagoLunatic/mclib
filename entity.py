@@ -1,4 +1,26 @@
 
+class EntityList:
+  def __init__(self, entity_list_ptr, name, rom):
+    self.entity_list_ptr = entity_list_ptr
+    self.name = name
+    self.rom = rom
+    
+    self.read()
+  
+  def read(self):
+    self.entities = []
+    
+    entity_ptr = self.entity_list_ptr
+    while True:
+      possible_end_marker = self.rom.read_u8(entity_ptr)
+      if possible_end_marker == 0xFF:
+        break
+      
+      entity = Entity(entity_ptr, self, self.rom)
+      self.entities.append(entity)
+      
+      entity_ptr += 0x10
+
 class Entity:
   def __init__(self, entity_ptr, room, rom):
     self.entity_ptr = entity_ptr

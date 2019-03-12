@@ -5,6 +5,7 @@ import re
 from mclib.data_interface import RomInterface
 from mclib.area import Area
 from mclib.map import Dungeon
+from mclib.cutscene import Cutscene
 
 class Game:
   def __init__(self, input_rom_path):
@@ -65,7 +66,7 @@ class Game:
             output.append("Room %02X-%02X:   Chest at %08X gives item %02X (%02X) - %s" % (area.area_index, room.room_index, tile_entity.entity_ptr, tile_entity.item_id, tile_entity.unknown_2, item_name))
         
         for entity_list in room.entity_lists:
-          for entity in entity_list:
+          for entity in entity_list.entities:
             if entity.type == 7 or (entity.type == 6 and entity.subtype in [0x69]):
               if entity.params != 0:
                 cutscene = Cutscene(entity.params, self.rom)

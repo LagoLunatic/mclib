@@ -2,7 +2,7 @@
 import traceback
 from collections import OrderedDict
 
-from mclib.entity import Entity, TileEntity
+from mclib.entity import EntityList, Entity, TileEntity
 from mclib.exit import Exit
 from mclib.assets import AssetList
 
@@ -58,17 +58,17 @@ class Room:
     self.state_changing_func_ptr = self.rom.read_u32(self.property_list_ptr + 0x1C)
     
     if self.entity_list_ptr_1 != 0:
-      self.read_one_entity_list(self.entity_list_ptr_1)
+      self.read_one_entity_list(self.entity_list_ptr_1, "Entities 1")
     
     if self.entity_list_ptr_2 != 0:
-      self.read_one_entity_list(self.entity_list_ptr_2)
+      self.read_one_entity_list(self.entity_list_ptr_2, "Entities 2")
     
     if self.enemy_list_ptr != 0:
-      self.read_one_entity_list(self.enemy_list_ptr)
+      self.read_one_entity_list(self.enemy_list_ptr, "Enemies")
     
     self.extract_hardcoded_state_entity_list_pointers()
     for entity_list_ptr in self.hardcoded_state_entity_list_pointers:
-      self.read_one_entity_list(entity_list_ptr)
+      self.read_one_entity_list(entity_list_ptr, "Conditional entities")
     
     if self.tile_entity_list_ptr != 0:
       entity_ptr = self.tile_entity_list_ptr
@@ -82,20 +82,9 @@ class Room:
         
         entity_ptr += 8
   
-  def read_one_entity_list(self, entity_list_ptr):
-    entity_list = []
+  def read_one_entity_list(self, entity_list_ptr, name):
+    entity_list = EntityList(entity_list_ptr, name, self.rom)
     self.entity_lists.append(entity_list)
-    
-    entity_ptr = entity_list_ptr
-    while True:
-      possible_end_marker = self.rom.read_u8(entity_ptr)
-      if possible_end_marker == 0xFF:
-        break
-      
-      entity = Entity(entity_ptr, self, self.rom)
-      entity_list.append(entity)
-      
-      entity_ptr += 0x10
   
   def read_exits(self):
     if not self.rom.is_pointer(self.exit_list_ptr):
