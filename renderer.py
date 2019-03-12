@@ -4,6 +4,7 @@ import traceback
 import os
 
 from mclib.palette_group import PaletteGroup
+from mclib.sprite import Sprite
 
 class Renderer:
   def __init__(self, game):
@@ -293,99 +294,67 @@ class Renderer:
     
     return tile_image
   
-  OBJ_SIZES = {
-    0: {
-      0: (8, 8),
-      1: (16, 16),
-      2: (32, 32),
-      3: (64, 64),
-    },
-    1: {
-      0: (16, 8),
-      1: (32, 8),
-      2: (32, 16),
-      3: (64, 32),
-    },
-    2: {
-      0: (8, 16),
-      1: (8, 32),
-      2: (16, 32),
-      3: (32, 64),
-    },
-  }
-  
   def render_all_sprites(self):
     for i in range(0x149):
       try:
-        if not os.path.exists("../sprite_renders/%03d_%03X" % (i, i)):
-          os.makedirs("../sprite_renders/%03d_%03X" % (i, i))
-        self.render_sprite(i)
+        if not os.path.exists("../sprite_renders/%03d_0x%03X" % (i, i)):
+          os.makedirs("../sprite_renders/%03d_0x%03X" % (i, i))
+        
+        sprite = Sprite(i, self.rom)
+        
+        self.render_all_sprite_frames(sprite)
       except Exception as e:
         stack_trace = traceback.format_exc()
         error_message = "Error loading map:\n" + str(e) + "\n\n" + stack_trace
         print(error_message)
         return
   
-  def render_sprite(self, sprite_index):
-    palette = self.generate_palettes(0x085A3040, 1)[0]
-    gfx_pointer = self.rom.read_u32(0x080029B4 + sprite_index*0x10 + 8)
-    frame_list_ptr = self.rom.read_u32(0x080029B4 + sprite_index*0x10 + 4)
-    if frame_list_ptr == 0:
-      return
-    for frame_index in range(0x100):
-      self.render_sprite_frame(sprite_index, frame_index, palette, gfx_pointer, frame_list_ptr)
+  def render_all_sprite_frames(self, sprite):
+    palettes = self.generate_palettes_from_palette_group_by_index(0xB)
+    palettes[0x16] = self.generate_palettes(0x085A3040, 1)[0] # Link palette
+    for frame_index, frame in enumerate(sprite.frames):
+      frame_image = self.render_sprite_frame(sprite, frame, palettes, frame_index)
+      frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_sprite_frame(self, sprite_index, frame_index, palette, gfx_pointer, frame_list_ptr):
-    first_gfx_tile_index = self.rom.read_u16(frame_list_ptr + frame_index*4 + 2)
-    num_tiles = self.rom.read_u8(frame_list_ptr + frame_index*4)
-    gfx_data = self.rom.read_raw(gfx_pointer + first_gfx_tile_index*0x20, num_tiles*0x20)
-    tiles_image = self.render_gfx_raw(gfx_data, palette)
+  def render_sprite_frame(self, sprite, frame, palettes, frame_index):
+    gfx_data = self.rom.read_raw(sprite.gfx_pointer + frame.first_gfx_tile_index*0x20, frame.num_gfx_tiles*0x20)
+    
+    tiles_image_for_palette = {}
     
     # TODO: instead of hardcoding 64x64 canvas, detect the minimum and maximum x and y pos
-    final_image = Image.new("RGBA", (64, 64), (255, 255, 255, 0))
+    frame_image = Image.new("RGBA", (64, 64), (255, 255, 255, 0))
     
-    offset_1 = self.rom.read_u32(0x082F3D74 + sprite_index*4)
-    offset_2 = self.rom.read_u32(0x082F3D74 + frame_index*4 + offset_1)
-    oam_data_entry_ptr = 0x082F3D74 + offset_2
-    num_objs = self.rom.read_u8(oam_data_entry_ptr)
+    if frame.num_gfx_tiles == 0:
+      return frame_image
+    
     src_y = 0
-    obj_data_ptr = oam_data_entry_ptr+1
-    for obj_i in range(num_objs):
-      #print("frame %X, obj %X located at %08X" % (frame_index, obj_i, obj_data_ptr))
+    for obj in frame.objs:
+      # TODO: obj.palette_index isn't enough. need to find where each entity stores its palette.
       
-      x_off = self.rom.read_s8(obj_data_ptr + 0)
-      y_off = self.rom.read_s8(obj_data_ptr + 1)
-      bitfield = self.rom.read_u8(obj_data_ptr + 2)
-      first_gfx_tile_index = self.rom.read_u8(obj_data_ptr + 3)
+      if obj.palette_index in tiles_image_for_palette:
+        tiles_image = tiles_image_for_palette[obj.palette_index]
+      else:
+        tiles_image = self.render_gfx_raw(gfx_data, palettes[obj.palette_index+0x10])
+        tiles_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X_TILES%01X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index, obj.palette_index))
       
-      horizontal_flip = (bitfield & 0x04) != 0
-      vertical_flip = (bitfield & 0x08) != 0
-      obj_size = (bitfield & 0x30) >> 4
-      obj_shape = (bitfield & 0xC0) >> 6
-      if obj_shape == 3:
-        raise Exception("Invalid OBJ shape")
-      width, height = self.OBJ_SIZES[obj_shape][obj_size]
+      rows_needed_for_obj = obj.height//8
       
-      rows_needed_for_obj = height//8
-      
-      src_x = first_gfx_tile_index*8
-      dst_x = 32 + x_off
-      dst_y = 32 + y_off
+      src_x = obj.first_gfx_tile_offset*8
+      dst_x = 32 + obj.x_off
+      dst_y = 32 + obj.y_off
       for _ in range(rows_needed_for_obj):
-        obj_row_image = tiles_image.crop((src_x, src_y, src_x+width, src_y+height))
-        src_x += width
+        obj_row_image = tiles_image.crop((src_x, src_y, src_x+obj.width, src_y+obj.height))
+        src_x += obj.width
         
-        if horizontal_flip:
+        if obj.h_flip:
           obj_row_image = obj_row_image.transpose(Image.FLIP_LEFT_RIGHT)
-        if vertical_flip:
+        if obj.v_flip:
           obj_row_image = obj_row_image.transpose(Image.FLIP_TOP_BOTTOM)
         
-        final_image.paste(obj_row_image, (dst_x, dst_y), obj_row_image)
+        frame_image.paste(obj_row_image, (dst_x, dst_y), obj_row_image)
         dst_y += 8
-      
-      obj_data_ptr += 5
     
-    final_image.save("../sprite_renders/%03d_%03X/frame%03d_%02X.png" % (sprite_index, sprite_index, frame_index, frame_index))
+    return frame_image
   
   def generate_palettes_for_area_by_gfx_index(self, area, gfx_index):
     common_palettes = self.generate_palettes(0x085A2E80, 5)
