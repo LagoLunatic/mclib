@@ -1,0 +1,118 @@
+00 [Enables Pause screen]
+01 Smith's Sword
+02 White Sword
+03 White Sword (Two Elements)
+04 White Sword (Three Elements)
+05 ? looks like the lit Flame Lantern, but can be used as a sword?
+06 Four Sword
+07 Bombs
+08 Remote Bombs
+09 Bow
+0A Light Arrow
+0B Boomerang
+0C Magical Boomerang
+0D Small Shield
+0E Mirror Shield
+0F Flame Lantern
+10 Flame Lantern (Fire) (Owning this makes the pause screen crash the game)
+11 Gust Jar
+12 Cane of Pacci
+13 Mole Mitts
+14 Roc's Cape
+15 Pegasus boots
+16 Fire Rod (Unused)
+17 Ocarina of Wind
+18 
+19 
+1A 
+1B 
+1C Empty Bottle (1?)
+1D Empty Bottle (2?)
+1E Empty Bottle (3?)
+1F Empty Bottle (4?)
+20 Empty Bottle (5?)
+21 Butter
+22 Lon Lon Milk
+23 ?? (sprite looks like a bottled something? half full of milk?)
+24 Red Potion
+25 Blue Potion
+26 Water
+27 Mt. Crenal Mineral Water
+28 Bottled fairy
+29 Red Picolyte
+2A Orange Picolyte
+2B Yellow Picolyte
+2C Green Picolyte
+2D Blue Picolyte
+2E White Picolyte
+2F Nayru's Charm
+30 Farore's Charm
+31 Din's Charm
+32 
+33 
+34 Smith's Blade (Key Item)
+35 Broken Picori Sword
+36 Bottle of Dog Food
+37 Lon Lon Ranch Key
+38 Wake-Up Mushroom
+39 Library Book: A Hyrulean Bestiary
+3A Library Book: Legend of the Picori
+3B Library Book: A History of Masks
+3C Graveyard Key
+3D Tingle Trophy
+3E Carlov Medal
+3F Mysterious Shells
+40 Earth Element
+41 Fire Element
+42 Water Element
+43 Wind Element
+44 Grip Ring
+45 Power Bracelets
+46 Flippers
+47 Map of Hyrule
+48 Spin Attack
+49 Roll Attack
+4A Dash Attack
+4B Rock Breaker
+4C Sword Beam
+4D Great Spin Attack
+4E Down Thrust
+4F Peril Beam
+50 Dungeon Map
+51 Compass
+52 Big Key
+53 Small Key
+54 Green Rupee
+55 Blue Rupee
+56 Red Rupee
+57 Big Green Rupee (50 Rupees)
+58 Big Blue Rupee (100 Rupees)
+59 Big Red Rupee (200 Rupees)
+5A 
+5B Jabber Nut
+5C Kinstone Piece
+5D 5 Bombs
+5E 5 Arrows
+5F Heart
+60 Fairy
+61 Mysterious Shells (how does this differ from 3F?)
+62 Heart Container
+63 Heart Piece
+64 Big Wallet
+65 Big Bomb Bag
+66 Large Quiver
+67 Kinstone Bag
+68 Brioche
+69 Croissant
+6A Slice of Pie
+6B Slice of Cake
+6C 10 Bombs (Bought)
+6D 30 Bombs (Bought)
+6E 10 Arrows (Bought)
+6F 30 Arrows (Bought)
+70 Joy Butterfly, Shoot Arrows Faster
+71 Joy Butterfly, Dig Faster
+72 Joy Butterfly, Swim Faster
+73 Spin Attack Charge Time Decreased
+74 Split Gauge Charge Time Decreased
+75 Great Spin Attack Duration Increased

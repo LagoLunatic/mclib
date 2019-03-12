@@ -1,0 +1,144 @@
+00 Minish Woods
+01 Minish Village
+02 Hyrule Town
+03 Various Fields & Hills
+04 Castor Wilds
+05 Wind Ruins
+06 Mount Crenel
+07 Hyrule Castle Garden
+08 Cloud Tops
+09 Royal Valley
+0A Veil Falls
+0B Lake Hylia
+0C ??? some cave
+0D (cloud rooms?)
+0E [Invalid]
+0F ??? some cave in Hyrule Town
+10 Melari's Mine
+11 ??? Minish-Sized Passages
+12 Mount Crenel Minish-Sized Passages
+13 Prototype Hyrule Field Digging Area
+14 ??? some cave
+15 Hyrule Town (Prologue)
+16 ??? some cave
+17 ???
+18 extra Fortress of Winds rooms?
+19 Lake Hylia Cave
+1A Veil Falls (Top)
+1B [Invalid]
+1C [Invalid]
+1D [Invalid]
+1E [Invalid]
+1F [Invalid]
+20 Minish-Sized Interiors
+21 Hyrule Town Public Buildings
+22 Various Homes
+23 Hyrule Town Shops
+24 Witch's Hut & Tree Interiors
+25 ???
+26 Mount Crenel Caves
+27 ???
+28 ???
+29 Great Fairy Fountains
+2A Castor Wilds/Wind Ruins Caves
+2B ???
+2C ???
+2D Hyrule Town Minish-Sized Interiors
+2E ???
+2F ???
+30 ???
+31 ???
+32 ???
+33 ???
+34 Royal Valley Caves
+35 Minish-Sized Caves
+36 ???
+37 ???
+38 ???
+39 
+3A 
+3B 
+3C 
+3D 
+3E 
+3F 
+40 Unused Mini-Dungeon
+41 Hyrule Town Well Cave
+42 Hyrule Castle Garden Caves
+43 Hyrule Castle Garden Secret Passage
+44 ???
+45 ???
+46 ???
+47 ???
+48 Deepwood Shrine
+49 Deepwood Shrine Boss Room
+4A Deepwood Shrine Entrance
+4B 
+4C 
+4D Prototype Deepwood Shrine
+4E 
+4F 
+50 Cave of Flames
+51 Cave of Flames Boss Room
+52 
+53 
+54 
+55 
+56 
+57 Prototype Cave of Flames
+58 Fortress of Winds
+59 Top of Fortress of Winds
+5A Inside Mazaal
+5B 
+5C 
+5D 
+5E 
+5F Prototype Fortress of Winds
+60 Temple of Droplets
+61 
+62 Royal Hyrule Library Sewer
+63 
+64 
+65 
+66 
+67 Prototype Temple of Droplets
+68 Royal Crypt
+69 
+6A 
+6B 
+6C 
+6D 
+6E 
+6F Prototype Royal Crypt
+70 Palace of Winds
+71 Palace of Winds ??? Room
+72 
+73 
+74 
+75 
+76 
+77 Prototype Palace of Winds
+78 Elemental Sanctuary
+79 
+7A 
+7B 
+7C 
+7D 
+7E 
+7F Prototype Elemental Sanctuary
+80 Hyrule Castle
+81 (room leading up to where you forge the four sword)
+82 
+83 
+84 
+85 
+86 
+87 Prototype Hyrule Castle
+88 Dark Hyrule Castle
+89 Dark Hyrule Castle (Outside)
+8A ???
+8B Unused Vaati's Wrath Arena?
+8C Vaati's Wrath Arena
+8D Dark Hyrule Castle Bridge
+8E 
+8F Prototype Dark Hyrule Castle
