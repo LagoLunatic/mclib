@@ -2,7 +2,8 @@
 import traceback
 from collections import OrderedDict
 
-from mclib.entity import EntityList, Entity, TileEntity
+from mclib.entity import EntityList, Entity
+from mclib.tile_entity import TileEntity
 from mclib.exit import Exit
 from mclib.assets import AssetList
 
