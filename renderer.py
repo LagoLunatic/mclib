@@ -5,6 +5,7 @@ import os
 
 from mclib.palette_group import PaletteGroup
 from mclib.sprite import Sprite
+from mclib.sprite_loading import SpriteLoadingData
 
 class Renderer:
   def __init__(self, game):
@@ -313,10 +314,38 @@ class Renderer:
     palettes = self.generate_palettes_from_palette_group_by_index(0xB)
     palettes[0x16] = self.generate_palettes(0x085A3040, 1)[0] # Link palette
     for frame_index, frame in enumerate(sprite.frames):
-      frame_image = self.render_sprite_frame(sprite, frame, palettes, frame_index)
+      frame_image = self.render_sprite_frame(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_sprite_frame(self, sprite, frame, palettes, frame_index):
+  def render_entity_sprite(self, entity):
+    # TODO: if image is entirely blank, don't just return a blank image!
+    
+    loading_data = SpriteLoadingData(entity.type, entity.subtype, entity.unknown_3, self.rom)
+    
+    print(
+      "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
+        entity.type, entity.subtype, entity.unknown_3, loading_data.object_palette_id, loading_data.sprite_index
+      )
+    )
+    
+    sprite = Sprite(loading_data.sprite_index, self.rom)
+    #print("%08X" % sprite.frame_list_ptr)
+    
+    palettes = self.generate_object_palettes(loading_data.object_palette_id)
+    
+    #if not sprite.frames:
+    #  # TODO: why do some have no frames?
+    #  # example is entity type 06 subtype 2C in room 03-00
+    #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
+    
+    return self.render_sprite_frame(sprite, sprite.frames[0], palettes)
+  
+  def render_sprite_frame_by_indexes(self, sprite_index, frame_index):
+    sprite = Sprite(sprite_index, self.rom)
+    palettes = self.generate_palettes_from_palette_group_by_index(0xB)
+    return self.render_sprite_frame(sprite, sprite.frames[frame_index], palettes)
+  
+  def render_sprite_frame(self, sprite, frame, palettes):
     gfx_data = self.rom.read_raw(sprite.gfx_pointer + frame.first_gfx_tile_index*0x20, frame.num_gfx_tiles*0x20)
     
     tiles_image_for_palette = {}
@@ -329,13 +358,10 @@ class Renderer:
     
     src_y = 0
     for obj in frame.objs:
-      # TODO: obj.palette_index isn't enough. need to find where each entity stores its palette.
-      
       if obj.palette_index in tiles_image_for_palette:
         tiles_image = tiles_image_for_palette[obj.palette_index]
       else:
         tiles_image = self.render_gfx_raw(gfx_data, palettes[obj.palette_index+0x10])
-        tiles_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X_TILES%01X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index, obj.palette_index))
       
       rows_needed_for_obj = obj.height//8
       
@@ -403,6 +429,30 @@ class Renderer:
       palettes = self.generate_palettes(palette_set.first_palette_pointer, palette_set.num_palettes)
       
       final_palettes[palette_set.palette_load_offset:palette_set.palette_load_offset+palette_set.num_palettes] = palettes
+    
+    return final_palettes
+  
+  def generate_object_palettes(self, object_palette_id):
+    if object_palette_id >= 0 and object_palette_id <= 5:
+      return self.generate_palettes_from_palette_group_by_index(0xB)
+    
+    assert object_palette_id >= 0x16
+    object_palette_index = object_palette_id - 0x16
+    bitfield = self.rom.read_u32(0x08133368 + object_palette_index*4)
+    palette_ptr = 0x085A2E80 + (bitfield & 0x00FFFFFF)
+    num_palettes = (bitfield & 0xFF000000) >> 24
+    
+    final_palettes = []
+    
+    for i in range(0x10):
+      # Fill up with dummy background palettes.
+      final_palettes.append(None)
+    
+    final_palettes += self.generate_palettes(palette_ptr, num_palettes)
+    
+    dummy_palette = [(255, 0, 0, 255)]*16
+    for i in range(0x10-num_palettes):
+      final_palettes.append(dummy_palette)
     
     return final_palettes
   
