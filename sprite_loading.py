@@ -28,6 +28,7 @@ class SpriteLoadingData:
     
     if self.unknown_1 == 0xFFFF:
       sprite_loading_data_ptr = self.rom.read_u32(sprite_loading_data_ptr + 4) + self.entity_form*0x10
+      self.unknown_1 = self.rom.read_u16(sprite_loading_data_ptr + 0)
     else:
       sprite_loading_data_ptr = sprite_loading_data_ptr
     

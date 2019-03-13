@@ -314,7 +314,7 @@ class Renderer:
     palettes = self.generate_palettes_from_palette_group_by_index(0xB)
     palettes[0x16] = self.generate_palettes(0x085A3040, 1)[0] # Link palette
     for frame_index, frame in enumerate(sprite.frames):
-      frame_image = self.render_sprite_frame(sprite, frame, palettes)
+      frame_image = self.render_sprite_frame_swap_type_gfx(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
   def render_entity_sprite(self, entity):
@@ -328,36 +328,53 @@ class Renderer:
       )
     )
     
+    palettes = self.generate_object_palettes(loading_data.object_palette_id)
+    
     sprite = Sprite(loading_data.sprite_index, self.rom)
     #print("%08X" % sprite.frame_list_ptr)
-    
-    palettes = self.generate_object_palettes(loading_data.object_palette_id)
     
     #if not sprite.frames:
     #  # TODO: why do some have no frames?
     #  # example is entity type 06 subtype 2C in room 03-00
     #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
     
-    return self.render_sprite_frame(sprite, sprite.frames[0], palettes)
+    if entity.type in [6, 7]:
+      return self.render_sprite_frame_swap_type_gfx(sprite, 0, palettes)
+    else:
+      return self.render_sprite_frame_fixed_type_gfx(sprite, 0, loading_data, palettes)
   
-  def render_sprite_frame_by_indexes(self, sprite_index, frame_index):
-    sprite = Sprite(sprite_index, self.rom)
-    palettes = self.generate_palettes_from_palette_group_by_index(0xB)
-    return self.render_sprite_frame(sprite, sprite.frames[frame_index], palettes)
+  def render_sprite_frame_swap_type_gfx(self, sprite, frame_index, palettes):
+    frame_gfx_data = sprite.frame_gfx_datas[frame_index]
+    gfx_data_ptr = sprite.gfx_pointer + frame_gfx_data.first_gfx_tile_index*0x20
+    gfx_data_len = frame_gfx_data.num_gfx_tiles*0x20
+    if gfx_data_len == 0:
+      raise Exception("GFX data length is 0")
+    gfx_data = self.rom.read_raw(gfx_data_ptr, gfx_data_len)
+    
+    frame_obj_list = sprite.frame_obj_lists[frame_index]
+    
+    return self.render_sprite_frame(frame_obj_list, gfx_data, palettes)
   
-  def render_sprite_frame(self, sprite, frame, palettes):
-    gfx_data = self.rom.read_raw(sprite.gfx_pointer + frame.first_gfx_tile_index*0x20, frame.num_gfx_tiles*0x20)
+  def render_sprite_frame_fixed_type_gfx(self, sprite, frame_index, loading_data, palettes):
+    bitfield = self.rom.read_u32(0x08132B30 + loading_data.unknown_1*4)
+    gfx_data_ptr = 0x085A2E80 + (bitfield & 0x00FFFFFC)
+    gfx_data_len = ((bitfield & 0x7F000000)>>24) * 0x200
+    if gfx_data_len == 0:
+      raise Exception("GFX data length is 0")
+    gfx_data = self.rom.read_raw(gfx_data_ptr, gfx_data_len)
     
-    tiles_image_for_palette = {}
+    frame_obj_list = sprite.frame_obj_lists[frame_index]
     
+    return self.render_sprite_frame(frame_obj_list, gfx_data, palettes)
+  
+  def render_sprite_frame(self, frame_obj_list, gfx_data, palettes):
     # TODO: instead of hardcoding 64x64 canvas, detect the minimum and maximum x and y pos
     frame_image = Image.new("RGBA", (64, 64), (255, 255, 255, 0))
     
-    if frame.num_gfx_tiles == 0:
-      return frame_image
+    tiles_image_for_palette = {}
     
     src_y = 0
-    for obj in frame.objs:
+    for obj in frame_obj_list.objs:
       if obj.palette_index in tiles_image_for_palette:
         tiles_image = tiles_image_for_palette[obj.palette_index]
       else:
@@ -369,7 +386,7 @@ class Renderer:
       dst_x = 32 + obj.x_off
       dst_y = 32 + obj.y_off
       for _ in range(rows_needed_for_obj):
-        obj_row_image = tiles_image.crop((src_x, src_y, src_x+obj.width, src_y+obj.height))
+        obj_row_image = tiles_image.crop((src_x, src_y, src_x+obj.width, src_y+8))
         src_x += obj.width
         
         if obj.h_flip:

@@ -11,50 +11,60 @@ class Sprite:
     self.frame_list_ptr = self.rom.read_u32(self.sprite_ptr + 4)
     self.gfx_pointer = self.rom.read_u32(self.sprite_ptr + 8)
     
-    self.frames = []
+    self.frame_gfx_datas = []
+    self.frame_obj_lists = []
     
-    if self.frame_list_ptr == 0:
-      # Invalid sprite
-      return
-    
-    # Guess how many frames there are by looking at the next sprite's frame list pointer.
-    # TODO: Try to find a proper way of detecting the number of frames.
-    all_frame_list_ptrs = []
-    for i in range(0x149):
-      ptr = 0x080029B4 + i*0x10
-      frame_list_ptr = self.rom.read_u32(ptr + 4)
-      if frame_list_ptr > 0:
-        all_frame_list_ptrs.append(frame_list_ptr)
-    if self.sprite_index == 0x148:
-      num_frames = 0x13
-    elif self.sprite_index == 0x17:
-      num_frames = 0xB4
-    else:
-      next_frame_list_ptr = min([x for x in all_frame_list_ptrs if x > self.frame_list_ptr])
-      num_frames = (next_frame_list_ptr - self.frame_list_ptr) // 4
+    num_frames = 0x10 # ????? TODO: how to figure out the number of frames?
     
     offset_1 = self.rom.read_u32(0x082F3D74 + self.sprite_index*4)
     for frame_index in range(num_frames):
       offset_2 = self.rom.read_u32(0x082F3D74 + offset_1 + frame_index*4)
       frame_obj_data_ptr = 0x082F3D74 + offset_2
       
-      frame_data_ptr = self.frame_list_ptr + frame_index*4
+      frame_obj_list = FrameObjList(frame_obj_data_ptr, self.rom)
+      self.frame_obj_lists.append(frame_obj_list)
+    
+    if self.frame_list_ptr != 0:
+      # Guess how many frames there are by looking at the next sprite's frame list pointer.
+      # TODO: Try to find a proper way of detecting the number of frames.
+      all_frame_list_ptrs = []
+      for i in range(0x149):
+        ptr = 0x080029B4 + i*0x10
+        frame_list_ptr = self.rom.read_u32(ptr + 4)
+        if frame_list_ptr > 0:
+          all_frame_list_ptrs.append(frame_list_ptr)
+      if self.sprite_index == 0x148:
+        num_frames = 0x13
+      elif self.sprite_index == 0x17:
+        num_frames = 0xB4
+      else:
+        next_frame_list_ptr = min([x for x in all_frame_list_ptrs if x > self.frame_list_ptr])
+        num_frames = (next_frame_list_ptr - self.frame_list_ptr) // 4
       
-      frame = Frame(frame_data_ptr, frame_obj_data_ptr, self.rom)
-      self.frames.append(frame)
+      for frame_index in range(num_frames):
+        frame_data_ptr = self.frame_list_ptr + frame_index*4
+        frame_gfx_data = FrameGfxData(frame_data_ptr, self.rom)
+        self.frame_gfx_datas.append(frame_gfx_data)
 
-class Frame:
-  def __init__(self, frame_data_ptr, frame_obj_data_ptr, rom):
-    self.frame_data_ptr = frame_data_ptr
+class FrameGfxData:
+  def __init__(self, frame_gfx_data_ptr, rom):
+    self.frame_gfx_data_ptr = frame_gfx_data_ptr
+    self.rom = rom
+    
+    self.read()
+  
+  def read(self):
+    self.num_gfx_tiles = self.rom.read_u8(self.frame_gfx_data_ptr)
+    self.first_gfx_tile_index = self.rom.read_u16(self.frame_gfx_data_ptr + 2)
+
+class FrameObjList:
+  def __init__(self, frame_obj_data_ptr, rom):
     self.frame_obj_data_ptr = frame_obj_data_ptr
     self.rom = rom
     
     self.read()
   
   def read(self):
-    self.num_gfx_tiles = self.rom.read_u8(self.frame_data_ptr)
-    self.first_gfx_tile_index = self.rom.read_u16(self.frame_data_ptr + 2)
-    
     self.num_objs = self.rom.read_u8(self.frame_obj_data_ptr)
     
     obj_ptr = self.frame_obj_data_ptr + 1
