@@ -368,8 +368,26 @@ class Renderer:
     return self.render_sprite_frame(frame_obj_list, gfx_data, palettes)
   
   def render_sprite_frame(self, frame_obj_list, gfx_data, palettes):
-    # TODO: instead of hardcoding 64x64 canvas, detect the minimum and maximum x and y pos
-    frame_image = Image.new("RGBA", (64, 64), (255, 255, 255, 0))
+    if not frame_obj_list.objs:
+      raise Exception("Frame has no objs")
+    
+    min_x = 9999
+    min_y = 9999
+    max_x = -9999
+    max_y = -9999
+    for obj in frame_obj_list.objs:
+      if obj.x_off < min_x:
+        min_x = obj.x_off
+      if obj.y_off < min_y:
+        min_y = obj.y_off
+      if obj.x_off + obj.width > max_x:
+        max_x = obj.x_off + obj.width
+      if obj.y_off + obj.height > max_y:
+        max_y = obj.y_off + obj.height
+    
+    image_width = max_x - min_x
+    image_height = max_y - min_y
+    frame_image = Image.new("RGBA", (image_width, image_height), (255, 255, 255, 0))
     
     tiles_image_for_palette = {}
     
@@ -383,8 +401,8 @@ class Renderer:
       rows_needed_for_obj = obj.height//8
       
       src_x = obj.first_gfx_tile_offset*8
-      dst_x = 32 + obj.x_off
-      dst_y = 32 + obj.y_off
+      dst_x = obj.x_off - min_x
+      dst_y = obj.y_off - min_y
       for _ in range(rows_needed_for_obj):
         obj_row_image = tiles_image.crop((src_x, src_y, src_x+obj.width, src_y+8))
         src_x += obj.width
