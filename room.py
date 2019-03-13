@@ -84,7 +84,7 @@ class Room:
         entity_ptr += 8
   
   def read_one_entity_list(self, entity_list_ptr, name):
-    entity_list = EntityList(entity_list_ptr, name, self.rom)
+    entity_list = EntityList(entity_list_ptr, name, self, self.rom)
     self.entity_lists.append(entity_list)
   
   def read_exits(self):

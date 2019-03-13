@@ -1,8 +1,9 @@
 
 class EntityList:
-  def __init__(self, entity_list_ptr, name, rom):
+  def __init__(self, entity_list_ptr, name, room, rom):
     self.entity_list_ptr = entity_list_ptr
     self.name = name
+    self.room = room
     self.rom = rom
     
     self.read()
@@ -16,7 +17,7 @@ class EntityList:
       if possible_end_marker == 0xFF:
         break
       
-      entity = Entity(entity_ptr, self, self.rom)
+      entity = Entity(entity_ptr, self.room, self.rom)
       self.entities.append(entity)
       
       entity_ptr += 0x10
