@@ -317,7 +317,7 @@ class Renderer:
       frame_image = self.render_sprite_frame_swap_type_gfx(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_entity_sprite(self, entity):
+  def render_entity_sprite(self, entity, frame_index):
     # TODO: if image is entirely blank, don't just return a blank image!
     
     loading_data = SpriteLoadingData(entity.type, entity.subtype, entity.unknown_3, self.rom)
@@ -339,9 +339,9 @@ class Renderer:
     #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
     
     if entity.type in [6, 7]:
-      return self.render_sprite_frame_swap_type_gfx(sprite, 0, palettes)
+      return self.render_sprite_frame_swap_type_gfx(sprite, frame_index, palettes)
     else:
-      return self.render_sprite_frame_fixed_type_gfx(sprite, 0, loading_data, palettes)
+      return self.render_sprite_frame_fixed_type_gfx(sprite, frame_index, loading_data, palettes)
   
   def render_sprite_frame_swap_type_gfx(self, sprite, frame_index, palettes):
     frame_gfx_data = sprite.frame_gfx_datas[frame_index]
