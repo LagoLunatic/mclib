@@ -1,0 +1,10 @@
+
+03:
+  name: Enemies
+  subtypes:
+    00:
+      name: Octorok
+    01:
+      name: Chuchu
+    03:
+      name: Peahat
