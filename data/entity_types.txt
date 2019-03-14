@@ -13,13 +13,18 @@
       2 Points right
       3 Points left
   08 Keese
+  0A Rock Chuchu
   0B Spiny Chuchu
   10 Sluggula
     Forms:
-      0 Falls from the ceiling.
-      1 Normal.
+      0 Falls from ceiling
+      1 Normal
   11 Pesto
   12 Puffstool
+  15 Spear Moblin
+    Forms:
+      0 Normal
+      1 Corrupted
   16 Business Scrub
     Forms:
       3 Grip ring scrub
@@ -28,21 +33,41 @@
       This is an index in list 080CC954.
     params & FFFF0000 - Flag for having reflected a Deku Nut back at it.
       This is argument r0 to CheckVariableTypeBits.
+  1A Wall Master?
+  1B Bomb Peahat
   20 Helmasaur
+  23 Wall Master?
   26 Tektite
     Forms:
       0 Red
       1 Blue
+  28 Fire Wizzrobe
+  2A Armos
   2B Eyegore Statue
   2C Rope
   2D 
-  32 Red Mulldozer
+  30 Keaton
+    Forms:
+      0 Normal
+      1 Corrupted
+  32 Mulldozer
     Forms:
       0 Red
       1 Blue
   35 Spiny Beetle
     Forms:
       1 under a rock?
+  41 Cucco
+  43 Flying Skull
+    Forms:
+      0 ?
+      1 ?
+  46 Bow Moblin
+    Forms:
+      0 Normal
+      1 Corrupted
+  4D Ball & Chain Soldier
+  4E Ghini
   65 tree? in minish woods
 04 Obstacle?
   14 hole in the ground you can fall in when tiny?
@@ -50,6 +75,7 @@
     params & FFFF0000 is something, maybe a flag
   15 spider web blocking a door
     params & FFFF0000 - maybe flag for having been destroyed
+  1E 
 06 Object
   00 Item on the ground
     Form: The item ID.
@@ -117,7 +143,9 @@
   62 
   69 Cutscene?
     params - pointer to a cutscene script
-  6A Jabber Nut? (in room 20-09)
+  6A ???
+    Forms:
+      7 Jabber Nut? (in room 20-09)
   6B Crenal bean sprout
     Forms:
       0 Hole that you can manually put the green sprout in
@@ -142,6 +170,7 @@
   02 Festari
   03 Forest Minish
   04 Postman
+  0F Minish Ezlo
   13 Sitting man
     Forms:
       2 
@@ -156,6 +185,7 @@
   22 Smith
   24 King Daltus
   25 Minister Potho
+  27 Vaati
   28 Zelda
   2C Cat
     Forms:
@@ -163,18 +193,22 @@
   2D Melari's apprentices
     unknown4 - which apprentice (0-6)
   2F Melari
+  32 Goron
   38 Town Minish
     Forms:
       0 Blue
       2 Orange
+      3 Red
       4 Purple
       5 Green
   39 Librari
   42 King Gustaf
+  44 Simon
   48 Teachers
     Forms:
       0 Tina
       1 Dina
+  4D Cap Ezlo
   params - Pointer to the first cutscene script command.
     Can be 0.
   unknown4 & 000000FF - For subtype 03 (Minish), this is the index in list 08109D18 of the script to run.
