@@ -24,13 +24,20 @@ class SpriteLoadingData:
   
   def read_format_a(self, sprite_loading_datas_list):
     sprite_loading_data_ptr = sprite_loading_datas_list + self.entity_subtype*0x10
-    self.unknown_1 = self.rom.read_u16(sprite_loading_data_ptr + 0)
+    unknown_1 = self.rom.read_u16(sprite_loading_data_ptr + 0)
     
-    if self.unknown_1 == 0xFFFF:
+    if unknown_1 == 0xFFFF:
       sprite_loading_data_ptr = self.rom.read_u32(sprite_loading_data_ptr + 4) + self.entity_form*0x10
-      self.unknown_1 = self.rom.read_u16(sprite_loading_data_ptr + 0)
+      unknown_1 = self.rom.read_u16(sprite_loading_data_ptr + 0)
     else:
       sprite_loading_data_ptr = sprite_loading_data_ptr
+    
+    if unknown_1 & 0x8000 != 0:
+      pass # TODO
+    elif unknown_1 & 0x4000 != 0:
+      pass # TODO
+    else:
+      self.fixed_gfx_index = unknown_1
     
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 2)
     self.sprite_index = self.rom.read_u16(sprite_loading_data_ptr + 8)

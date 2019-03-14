@@ -338,7 +338,7 @@ class Renderer:
     #  # example is entity type 06 subtype 2C in room 03-00
     #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
     
-    if entity.type in [6, 7]:
+    if sprite.frame_list_ptr != 0:
       return self.render_sprite_frame_swap_type_gfx(sprite, frame_index, palettes)
     else:
       return self.render_sprite_frame_fixed_type_gfx(sprite, frame_index, loading_data, palettes)
@@ -356,7 +356,7 @@ class Renderer:
     return self.render_sprite_frame(frame_obj_list, gfx_data, palettes)
   
   def render_sprite_frame_fixed_type_gfx(self, sprite, frame_index, loading_data, palettes):
-    bitfield = self.rom.read_u32(0x08132B30 + loading_data.unknown_1*4)
+    bitfield = self.rom.read_u32(0x08132B30 + loading_data.fixed_gfx_index*4)
     gfx_data_ptr = 0x085A2E80 + (bitfield & 0x00FFFFFC)
     gfx_data_len = ((bitfield & 0x7F000000)>>24) * 0x200
     if gfx_data_len == 0:
