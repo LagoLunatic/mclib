@@ -320,11 +320,11 @@ class Renderer:
   def render_entity_sprite_frame(self, entity, frame_index):
     # TODO: if image is entirely blank, don't just return a blank image!
     
-    loading_data = SpriteLoadingData(entity.type, entity.subtype, entity.unknown_3, self.rom)
+    loading_data = SpriteLoadingData(entity.type, entity.subtype, entity.form, self.rom)
     
     #print(
     #  "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
-    #    entity.type, entity.subtype, entity.unknown_3, loading_data.object_palette_id, loading_data.sprite_index
+    #    entity.type, entity.subtype, entity.form, loading_data.object_palette_id, loading_data.sprite_index
     #  )
     #)
     

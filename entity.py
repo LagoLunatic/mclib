@@ -36,7 +36,7 @@ class Entity:
     self.unknown_1 = (type_and_unknowns & 0xF0) >> 4
     self.unknown_2 = self.rom.read_u8(self.entity_ptr + 1)
     self.subtype = self.rom.read_u8(self.entity_ptr + 2)
-    self.unknown_3 = self.rom.read_u8(self.entity_ptr + 3)
+    self.form = self.rom.read_u8(self.entity_ptr + 3)
     
     self.unknown_4 = self.rom.read_u32(self.entity_ptr + 4)
     
