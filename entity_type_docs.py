@@ -4,6 +4,8 @@ from collections import OrderedDict
 import os
 import re
 
+from mclib.entity import Entity
+
 DATA_PATH = "./mclib/data" # TODO
 
 with open(os.path.join(DATA_PATH, "entity_types.txt")) as f:
@@ -86,20 +88,21 @@ class EntityTypeDocs:
     format_string = "%0" + str(num_hex_digits) + "X"
     pretty_value = format_string % value
     
-    if prop.attribute_name == "type" and value in ENTITY_TYPE_DOCS:
-      type_data = ENTITY_TYPE_DOCS[value]
-      pretty_value += ": " + type_data["name"]
-    elif prop.attribute_name == "subtype" and entity.type in ENTITY_TYPE_DOCS:
-      type_data = ENTITY_TYPE_DOCS[entity.type]
-      if value in type_data["subtypes"]:
-        subtype_data = type_data["subtypes"][value]
-        pretty_value += ": " + subtype_data["name"]
-    elif prop.attribute_name == "form" and entity.type in ENTITY_TYPE_DOCS:
-      type_data = ENTITY_TYPE_DOCS[entity.type]
-      if entity.subtype in type_data["subtypes"]:
-        subtype_data = type_data["subtypes"][entity.subtype]
-        if value in subtype_data["forms"]:
-          pretty_value += ": " + subtype_data["forms"][value]["name"]
+    if entity.__class__ == Entity:
+      if prop.attribute_name == "type" and value in ENTITY_TYPE_DOCS:
+        type_data = ENTITY_TYPE_DOCS[value]
+        pretty_value += ": " + type_data["name"]
+      elif prop.attribute_name == "subtype" and entity.type in ENTITY_TYPE_DOCS:
+        type_data = ENTITY_TYPE_DOCS[entity.type]
+        if value in type_data["subtypes"]:
+          subtype_data = type_data["subtypes"][value]
+          pretty_value += ": " + subtype_data["name"]
+      elif prop.attribute_name == "form" and entity.type in ENTITY_TYPE_DOCS:
+        type_data = ENTITY_TYPE_DOCS[entity.type]
+        if entity.subtype in type_data["subtypes"]:
+          subtype_data = type_data["subtypes"][entity.subtype]
+          if value in subtype_data["forms"]:
+            pretty_value += ": " + subtype_data["forms"][value]["name"]
     
     return pretty_value
   
