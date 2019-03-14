@@ -1,11 +1,209 @@
 
-03:
-  name: Enemies
-  subtypes:
-    00:
-      name: Octorok
-    01:
-      name: Chuchu
-      best_frame: 0xA
-    03:
-      name: Peahat
+03 Enemy
+  00 Octorok
+  01 Chuchu
+    Forms:
+      0 Green
+      1 Red
+  03 Peahat
+  06 nut thing hanging around in minish village?
+    Forms:
+      0 Points up
+      1 Points down
+      2 Points right
+      3 Points left
+  08 Keese
+  0B Spiny Chuchu
+  10 Sluggula
+    Forms:
+      0 Falls from the ceiling.
+      1 Normal.
+  11 Pesto
+  12 Puffstool
+  16 Business Scrub
+    Forms:
+      3 Grip ring scrub
+      5 Empty bottle scrub
+      6 The one at the bottom of Mount Crenal that tells you about the empty bottle one
+      This is an index in list 080CC954.
+    params & FFFF0000 - Flag for having reflected a Deku Nut back at it.
+      This is argument r0 to CheckVariableTypeBits.
+  20 Helmasaur
+  26 Tektite
+    Forms:
+      0 Red
+      1 Blue
+  2B Eyegore Statue
+  2C Rope
+  2D 
+  32 Red Mulldozer
+    Forms:
+      0 Red
+      1 Blue
+  35 Spiny Beetle
+    Forms:
+      1 under a rock?
+  65 tree? in minish woods
+04 Obstacle?
+  14 hole in the ground you can fall in when tiny?
+    or spiky dust that covers something up
+    params & FFFF0000 is something, maybe a flag
+  15 spider web blocking a door
+    params & FFFF0000 - maybe flag for having been destroyed
+06 Object
+  00 Item on the ground
+    Form: The item ID.
+  03 Button
+    params & FFFF0000 - Flag to set when pressed
+    unknown2 - might affect what flag to set as well...? for the switches that burn the vines to the rotating barrel, this is 01 instead of 00. and the flag to set is just 00.
+  05 Pot
+  08 Locked door
+    params & FFFF0000 - Flag for this door being unlocked.
+    Forms:
+      2 Auto door
+      8 Small key door
+      9 Small key door
+    For forms 8 and 9, the doors sets the flag when the player unlocks it.
+    For form 2, something else needs to set the flag before the door will open.
+  0C Chest spawner?
+    unknown2 - type of chest
+      01 for small chest
+      04 for big chest that is there from the start?
+      02 for big chest that appears with sparkles when a flag is set?
+    unknown4 & 000000FF - for big chests, this is used to find the tile entity. the big chest's unknown1 must be set to this same value.
+    the item ID is stored in the matching tile entity chest.
+      if this is a small chest, it looks for the tile entity on the same tile as this entity.
+      if this is a big chest, the position doesn't matter, instead it looks for the tile entity with a matching unknown1 to this unknown4&000000FF
+  14 Lily pad (large)
+  1B Great Fairy?
+    Forms:
+      00 big bomb bag one on mount crenal
+      0B 
+      16 
+  21 special fence posts in royal valley?
+  23 eye
+  25 Big rotating barrel
+  26 something inside the big barrel room? (48-20)
+  27 Pushable statue
+  29 might be a warp up/down in palace of winds?
+    unknown 1 - 08 means warp up, 80 means warp down
+  2D smoke from smith's chimney?
+  2E something at peak of mount crenal, room 06-00
+  2F lever
+  32 Pullable mushroom
+  34 Warp point
+    Forms:
+      0 Blue
+      1 Red
+      2 Green
+    unknown4 & 000000FF - Dest area index.
+    unknown4 & 0000FF00 - Dest room index.
+    params & 0000003F - Dest X pos. (In 16x16 tiles.)
+    params & 00000FC0 - Dest Y pos. (In 16x16 tiles.)
+    params & FFFF0000 - Spawn flag.
+  38 big jar?
+  39 Boss door
+  40 Fairy flying around?
+    Form: The item ID?
+  41 Ladder up?
+  47 heart container that drops after beating a boss?
+  4C pushable crates (e.g. in 20-09)
+  54 Pullable lever
+    params & 00FF0000 - something. possibly flag to set?
+  55 Minecart
+  57 in middle of hyrule field? maybe pitfall?
+  58 Curtains in Gentari's room
+  5E Whirlwind
+  62 
+  69 Cutscene?
+    params - pointer to a cutscene script
+  6A Jabber Nut? (in room 20-09)
+  6B Crenal bean sprout
+    Forms:
+      0 Hole that you can manually put the green sprout in
+      2 Blue sprout
+  71 grave
+  73 Lily pad (small)
+  77 Bell in Hyrule Town
+  7A Steam coming up off the top of the cave of flames
+  7F glowing flower thing (e.g. in room 20-09)
+    Forms:
+      00 White
+      02 Green
+      03 Red
+  82 hurricane?
+  89 in mazaal boss room of fortress of winds
+  9C tree you can bonk into maybe?
+  9D Bombable switch
+  B7 well?
+  BB Wind Crest
+07 Cutscene? or NPC?
+  01 Gentari
+  02 Festari
+  03 Forest Minish
+  04 Postman
+  13 Sitting man
+    Forms:
+      2 
+      4 
+  15 Guard
+  16 Maid
+  17 Din
+  18 Nayru
+  19 Farore
+  1B Tingle Siblings
+  1E Malon
+  22 Smith
+  24 King Daltus
+  25 Minister Potho
+  28 Zelda
+  2C Cat
+    Forms:
+      4 Scratcher
+  2D Melari's apprentices
+    unknown4 - which apprentice (0-6)
+  2F Melari
+  38 Town Minish
+    Forms:
+      0 Blue
+      2 Orange
+      4 Purple
+      5 Green
+  39 Librari
+  42 King Gustaf
+  48 Teachers
+    Forms:
+      0 Tina
+      1 Dina
+  params - Pointer to the first cutscene script command.
+    Can be 0.
+  unknown4 & 000000FF - For subtype 03 (Minish), this is the index in list 08109D18 of the script to run.
+  unknown4 & 0000FF00 - default direction to face?
+    00 Up
+    01 Right
+    02 Down
+    03 Left
+  unknown1 - seen 0 and 1 here
+09 ?
+  03 Minish Portal
+    Forms:
+      0 Tree Trunk
+      1 Rock
+  06 Minish region entrance handler.
+    Form - Index in this room's property list of a pointer to a list of Minish entrance regions.
+      Entry length 8.
+      00,2: Center X pos
+        FFFF here marks the end of the list.
+      02,2: Center Y pos
+      04,1: Width (on either side of the center)
+      05,1: Height (above or below the center)
+      06,1: Index in this room's property list of a pointer to the exit
+      07,1: Bitfield.
+        & 03 - ?
+  17 item that falls from the sky?
+    unknown2 - item ID?
+    params & 00FF0000 - item ID?
+  20 Pushable pot? (e.g. in room 48-03)
+    or a pushable stone (room 26-01)
+  23 Torch
+    params & 00FF0000 - The torch will light up once this flag is set.
