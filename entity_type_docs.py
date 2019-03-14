@@ -41,3 +41,14 @@ class EntityTypeDocs:
         pretty_value += ": " + subtype_data["name"]
     
     return pretty_value
+  
+  @staticmethod
+  def get_best_sprite_frame(entity):
+    if entity.type in ENTITY_TYPE_DOCS:
+      type_data = ENTITY_TYPE_DOCS[entity.type]
+      if entity.subtype in type_data["subtypes"]:
+        subtype_data = type_data["subtypes"][entity.subtype]
+        if "best_frame" in subtype_data:
+          return subtype_data["best_frame"]
+    
+    return 0

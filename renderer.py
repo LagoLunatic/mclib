@@ -317,16 +317,16 @@ class Renderer:
       frame_image = self.render_sprite_frame_swap_type_gfx(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_entity_sprite(self, entity, frame_index):
+  def render_entity_sprite_frame(self, entity, frame_index):
     # TODO: if image is entirely blank, don't just return a blank image!
     
     loading_data = SpriteLoadingData(entity.type, entity.subtype, entity.unknown_3, self.rom)
     
-    print(
-      "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
-        entity.type, entity.subtype, entity.unknown_3, loading_data.object_palette_id, loading_data.sprite_index
-      )
-    )
+    #print(
+    #  "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
+    #    entity.type, entity.subtype, entity.unknown_3, loading_data.object_palette_id, loading_data.sprite_index
+    #  )
+    #)
     
     palettes = self.generate_object_palettes(loading_data.object_palette_id)
     

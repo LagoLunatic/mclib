@@ -6,5 +6,6 @@
       name: Octorok
     01:
       name: Chuchu
+      best_frame: 0xA
     03:
       name: Peahat
