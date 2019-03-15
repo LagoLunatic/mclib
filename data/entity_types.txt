@@ -1,9 +1,9 @@
 
-00 Invalid?
+00 Invalid, nothing
 
 01 ???
 
-02 Invalid?
+02 Invalid, nothing
 
 03 Enemy
   00 Octorok
@@ -123,10 +123,12 @@
   1D Winder
   1E 
 
-05 Invalid?
+05 Invalid, nothing
 
 06 Object
   00 Item on the ground
+    Form: The item ID.
+  02 Item for sale
     Form: The item ID.
   03 Button
     params & FFFF0000 - Flag to set when pressed
@@ -167,13 +169,19 @@
       2 - Default horizontal.
     params & FFFF0000 - Flag to check.
   14 Lily pad (large)
+  16 Floating platform
+    Forms:
+      0 2x1
+      1 1x2
+      2 2x2
+      3 3x3
   1B Great Fairy?
     Forms:
       00 big bomb bag one on mount crenal
       0B 
       16 
   21 special fence posts in royal valley?
-  23 eye
+  23 Eye switch
   25 Big rotating barrel
   26 something inside the big barrel room? (48-20)
   27 Pushable statue
@@ -198,11 +206,24 @@
   38 big jar?
   39 Boss door
     params & FFFF0000 - Flag for opening it?
+  3E Minish Village (Small)
   40 Fairy flying around?
     Form: The item ID?
   41 Ladder up?
-  47 heart container that drops after beating a boss?
+  47 Heart container
+    params & 0000FFFF - Picked up flag
   4C pushable crates (e.g. in 20-09)
+  4D Furniture
+    Forms:
+      00 Bookshelf
+      01 Crate
+      0A Shelf
+      1A Baker's rack
+      1E Rem's workbench
+      3A Wheaton's table
+      3B Dr. Left's table
+  4E Minish sized entrance?
+  4F Arch over a doorway?
   54 Pullable lever
     params & FFFF0000 - Flag to set.
   55 Minecart
@@ -249,8 +270,24 @@
       03 Red
   82 hurricane?
   89 in mazaal boss room of fortress of winds
+  92 Baker's oven
+  95 Bird
+    Forms:
+      0 Zeffa (drops Ocarina)
+      1 Ocarina (noninteractive)
+      2 Ocarina (item)
+      3 Red
+      4 Blue
+      5 Green
+      6 White
+      7 Yellow
+      8 Zeffa (picks up Link)
+      9 Zeffa (drops off Link)
+      A Link (being carried by Zeffa)
   9C tree you can bonk into maybe?
   9D Bombable switch
+  AE Floating block
+  B1 Jail bars
   B7 well?
   BB Wind Crest
 
@@ -268,6 +305,8 @@
   03 Forest Minish
     unknown4 & 000000FF - index in list 08109D18 of the script to run.
   04 Postman
+  0D Wheaton
+  0E Pita
   0F Minish Ezlo
   13 Sitting man
     Forms:
@@ -284,6 +323,7 @@
       1 
       2 Knuckle
       3 David Jr.
+  1C Stockwell
   1E Malon
   21 Spekter
   22 Smith
@@ -298,6 +338,7 @@
     unknown4? - which apprentice (0-6)
   2F Melari
   32 Goron
+  37 Rem
   38 Town Minish
     Forms:
       0 Blue
@@ -307,6 +348,7 @@
       5 Green
   39 Librari
   40 Dampe
+  41 Dr. Left
   42 King Gustaf
   43 Gina
   44 Simon

@@ -115,9 +115,10 @@ class EntityTypeDocs:
         # Small key door
         frame_index |= 4
       return frame_index
-    
-    if entity.type == 6 and entity.subtype == 0x2D:
+    elif entity.type == 6 and entity.subtype == 0x2D:
       return 0x1A
+    elif entity.type == 6 and entity.subtype == 0x16:
+      return entity.form
     
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
