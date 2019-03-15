@@ -488,7 +488,7 @@ class Renderer:
     entity_palette_index = 6
     
     if 0 <= object_palette_id <= 5:
-      entity_palette_index = 0
+      entity_palette_index = object_palette_id
     elif 6 <= object_palette_id <= 0xA:
       background_palette_index = object_palette_id - 6
       background_palette = room_bg_palettes[background_palette_index]
