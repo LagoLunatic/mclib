@@ -81,7 +81,7 @@ for line_index, line in enumerate(type_doc_str.split("\n")):
 
 # TODO: implement best sprite frame into new doc format
 
-class EntityTypeDocs:
+class Docs:
   @staticmethod
   def prettify_prop_value(prop, value, entity):
     num_hex_digits = (prop.num_bits+3)//4
