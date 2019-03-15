@@ -20,11 +20,24 @@ class Sprite:
       self.frame_obj_lists.append(frame_obj_list)
     
     if self.sprite_index >= 0x149:
+      self.animation_list_ptr = 0
       self.frame_gfx_data_list_ptr = 0
+      self.gfx_pointer = 0
     else:
       self.sprite_ptr = 0x080029B4 + self.sprite_index*0x10
+      self.animation_list_ptr = self.rom.read_u32(self.sprite_ptr + 0)
       self.frame_gfx_data_list_ptr = self.rom.read_u32(self.sprite_ptr + 4)
       self.gfx_pointer = self.rom.read_u32(self.sprite_ptr + 8)
+      
+      self.animations = []
+      num_anims = 0x20 # TODO
+      if self.animation_list_ptr != 0:
+        for anim_index in range(num_anims):
+          animation_ptr = self.rom.read_u32(self.animation_list_ptr + anim_index*4)
+          if animation_ptr == 0:
+            break
+          animation = Animation(animation_ptr, self.rom)
+          self.animations.append(animation)
       
       self.frame_gfx_datas = []
       if self.frame_gfx_data_list_ptr != 0:
@@ -48,6 +61,41 @@ class Sprite:
           frame_gfx_data_ptr = self.frame_gfx_data_list_ptr + frame_index*4
           frame_gfx_data = FrameGfxData(frame_gfx_data_ptr, self.rom)
           self.frame_gfx_datas.append(frame_gfx_data)
+
+class Animation:
+  def __init__(self, animation_ptr,rom):
+    self.animation_ptr = animation_ptr
+    self.rom = rom
+    
+    self.read()
+  
+  def read(self):
+    self.keyframes = []
+    keyframe_ptr = self.animation_ptr
+    while True:
+      keyframe = Keyframe(keyframe_ptr, self.rom)
+      self.keyframes.append(keyframe)
+      
+      if keyframe.end_of_animation:
+        break
+      
+      keyframe_ptr += 5
+
+class Keyframe:
+  def __init__(self, keyframe_ptr, rom):
+    self.keyframe_ptr = keyframe_ptr
+    self.rom = rom
+    
+    self.read()
+  
+  def read(self):
+    self.frame_index = self.rom.read_u8(self.keyframe_ptr+0)
+    self.keyframe_duration = self.rom.read_u8(self.keyframe_ptr+1)
+    bitfield = self.rom.read_u8(self.keyframe_ptr+2)
+    self.h_flip = (bitfield & 0x40) != 0
+    self.v_flip = (bitfield & 0x80) != 0
+    unknown = self.rom.read_u8(self.keyframe_ptr+3)
+    self.end_of_animation = (unknown & 0x80) != 0
 
 class FrameGfxData:
   def __init__(self, frame_gfx_data_ptr, rom):

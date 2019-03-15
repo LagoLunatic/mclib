@@ -345,6 +345,10 @@ class Renderer:
     #  # example is entity type 06 subtype 2C in room 03-00
     #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
     
+    if sprite.animation_list_ptr != 0:
+      frame_index = sprite.animations[0].keyframes[0].frame_index
+      print("Has animation, first keyframe's frame index: %02X" % frame_index)
+    
     if loading_data.gfx_type == 0:
       gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
     elif loading_data.gfx_type == 2:
