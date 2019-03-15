@@ -346,8 +346,8 @@ class Renderer:
     #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
     
     if sprite.animation_list_ptr != 0:
-      frame_index = sprite.animations[0].keyframes[0].frame_index
-      print("Has animation, first keyframe's frame index: %02X" % frame_index)
+      frame_index = sprite.get_animation(entity.form).keyframes[0].frame_index
+      print("Has animations, first keyframe's frame index: %02X" % frame_index)
     
     if loading_data.gfx_type == 0:
       gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
@@ -358,12 +358,12 @@ class Renderer:
     else:
       raise Exception("Don't know how to render this sprite (GFX type %X)" % loading_data.gfx_type)
     
-    frame_obj_list = sprite.frame_obj_lists[frame_index]
+    frame_obj_list = sprite.get_frame_obj_list(frame_index)
     
     return self.render_sprite_frame(frame_obj_list, gfx_data, palettes, entity_palette_index)
   
   def get_sprite_swap_type_gfx_data_for_frame(self, sprite, frame_index):
-    frame_gfx_data = sprite.frame_gfx_datas[frame_index]
+    frame_gfx_data = sprite.get_frame_gfx_data(frame_index)
     gfx_data_ptr = sprite.gfx_pointer + frame_gfx_data.first_gfx_tile_index*0x20
     gfx_data_len = frame_gfx_data.num_gfx_tiles*0x20
     if gfx_data_len == 0:
