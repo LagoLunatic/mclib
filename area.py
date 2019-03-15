@@ -22,6 +22,11 @@ class Area:
     if self.is_dungeon:
       self.dungeon_index = self.area_id - 0x17
     
+    if self.area_index in [0x20, 0x2D]:
+      self.uses_256_color_bg1s = True
+    else:
+      self.uses_256_color_bg1s = False
+    
     self.room_gfx_metadatas_list = self.rom.read_u32(0x0811E214 + self.area_index*4)
     self.room_property_lists_pointer = self.rom.read_u32(0x080D50FC + self.area_index*4)
     self.room_exit_lists_pointer = self.rom.read_u32(0x0813A7F0 + self.area_index*4)

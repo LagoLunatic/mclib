@@ -79,18 +79,17 @@ class Renderer:
     
     return room_image
   
-  def render_layer(self, room, palettes, layer_index):
-    if room.area.area_index in [0x20, 0x2D]:
+  def render_layer(self, room, tileset_image, palettes, layer_index):
+    if room.area.uses_256_color_bg1s:
       if layer_index == 1:
-        # Areas 20 and 2D use 256 color on BG2.
         return self.render_layer_256_color(room, palettes, layer_index)
       else:
-        # Their BG1s may be unused? They seem to error out when trying to render them. TODO figure them out
+        # Their BG2s may be unused? They seem to error out when trying to render them. TODO figure them out
         return Image.new("RGBA", (room.width, room.height), (255, 255, 255, 0))
     else:
-      return self.render_layer_16_color(room, palettes, layer_index)
+      return self.render_layer_16_color(room, tileset_image, layer_index)
   
-  def render_layer_16_color(self, room, palettes, layer_index):
+  def render_layer_16_color(self, room, tileset_image, layer_index):
     rom = self.rom
     area = room.area
     
@@ -104,8 +103,6 @@ class Renderer:
       print("room.layers_asset_list.gfx_data: ", room.layers_asset_list.gfx_data)
     if room.layers_asset_list.palette_metadata_index is not None:
       print("room.layers_asset_list.palette_metadata_index: ", room.layers_asset_list.palette_metadata_index)
-    
-    tileset_image = self.render_tileset(area, room.gfx_index, palettes, layer_index)
     
     tile_mapping_16x16_data = room.layers_asset_list.tile_mappings[layer_index]
     if tile_mapping_16x16_data is None:
