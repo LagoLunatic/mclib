@@ -317,18 +317,18 @@ class Renderer:
       frame_image = self.render_sprite_frame_swap_type_gfx(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_entity_sprite_frame(self, entity, frame_index):
+  def render_entity_sprite_frame(self, entity, room_bg_palettes, frame_index):
     # TODO: if image is entirely blank, don't just return a blank image!
     
-    loading_data = SpriteLoadingData(entity.type, entity.subtype, entity.form, self.rom)
+    loading_data = SpriteLoadingData(entity, self.rom)
     
-    #print(
-    #  "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
-    #    entity.type, entity.subtype, entity.form, loading_data.object_palette_id, loading_data.sprite_index
-    #  )
-    #)
+    print(
+      "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
+        entity.type, entity.subtype, entity.form, loading_data.object_palette_id, loading_data.sprite_index
+      )
+    )
     
-    palettes = self.generate_object_palettes(loading_data.object_palette_id)
+    palettes, entity_palette_index = self.generate_object_palettes(loading_data.object_palette_id, room_bg_palettes)
     
     sprite = Sprite(loading_data.sprite_index, self.rom)
     #print("%08X" % sprite.frame_list_ptr)
@@ -339,11 +339,15 @@ class Renderer:
     #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
     
     if sprite.frame_list_ptr != 0:
-      return self.render_sprite_frame_swap_type_gfx(sprite, frame_index, palettes)
+      gfx_data = self.get_sprite_swap_type_gfx_data_for_frame(sprite, frame_index)
     else:
-      return self.render_sprite_frame_fixed_type_gfx(sprite, frame_index, loading_data, palettes)
+      gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
+    
+    frame_obj_list = sprite.frame_obj_lists[frame_index]
+    
+    return self.render_sprite_frame(frame_obj_list, gfx_data, palettes, entity_palette_index)
   
-  def render_sprite_frame_swap_type_gfx(self, sprite, frame_index, palettes):
+  def get_sprite_swap_type_gfx_data_for_frame(self, sprite, frame_index):
     frame_gfx_data = sprite.frame_gfx_datas[frame_index]
     gfx_data_ptr = sprite.gfx_pointer + frame_gfx_data.first_gfx_tile_index*0x20
     gfx_data_len = frame_gfx_data.num_gfx_tiles*0x20
@@ -351,23 +355,22 @@ class Renderer:
       raise Exception("GFX data length is 0")
     gfx_data = self.rom.read_raw(gfx_data_ptr, gfx_data_len)
     
-    frame_obj_list = sprite.frame_obj_lists[frame_index]
-    
-    return self.render_sprite_frame(frame_obj_list, gfx_data, palettes)
+    return gfx_data
   
-  def render_sprite_frame_fixed_type_gfx(self, sprite, frame_index, loading_data, palettes):
+  def get_sprite_fixed_type_gfx_data(self, loading_data):
     bitfield = self.rom.read_u32(0x08132B30 + loading_data.fixed_gfx_index*4)
     gfx_data_ptr = 0x085A2E80 + (bitfield & 0x00FFFFFC)
-    gfx_data_len = ((bitfield & 0x7F000000)>>24) * 0x200
-    if gfx_data_len == 0:
-      raise Exception("GFX data length is 0")
-    gfx_data = self.rom.read_raw(gfx_data_ptr, gfx_data_len)
+    if bitfield & 0x00000001 == 1:
+      raise Exception("Compressed entity GFX not yet implemented")
+    else:
+      gfx_data_len = ((bitfield & 0x7F000000)>>24) * 0x200
+      if gfx_data_len == 0:
+        raise Exception("GFX data length is 0")
+      gfx_data = self.rom.read_raw(gfx_data_ptr, gfx_data_len)
     
-    frame_obj_list = sprite.frame_obj_lists[frame_index]
-    
-    return self.render_sprite_frame(frame_obj_list, gfx_data, palettes)
+    return gfx_data
   
-  def render_sprite_frame(self, frame_obj_list, gfx_data, palettes):
+  def render_sprite_frame(self, frame_obj_list, gfx_data, palettes, entity_palette_index):
     if not frame_obj_list.objs:
       raise Exception("Frame has no objs")
     
@@ -392,11 +395,17 @@ class Renderer:
     tiles_image_for_palette = {}
     
     src_y = 0
-    for obj in frame_obj_list.objs:
-      if obj.palette_index in tiles_image_for_palette:
-        tiles_image = tiles_image_for_palette[obj.palette_index]
+    for obj in reversed(frame_obj_list.objs):
+      if obj.override_entity_palette_index:
+        palette_index = obj.palette_index + 0x10
       else:
-        tiles_image = self.render_gfx_raw(gfx_data, palettes[obj.palette_index+0x10])
+        palette_index = obj.palette_index + 0x10 + entity_palette_index
+      
+      if palette_index in tiles_image_for_palette:
+        tiles_image = tiles_image_for_palette[palette_index]
+      else:
+        tiles_image = self.render_gfx_raw(gfx_data, palettes[palette_index])
+        tiles_image_for_palette[palette_index] = tiles_image
       
       rows_needed_for_obj = obj.height//8
       
@@ -467,29 +476,30 @@ class Renderer:
     
     return final_palettes
   
-  def generate_object_palettes(self, object_palette_id):
-    if object_palette_id >= 0 and object_palette_id <= 5:
-      return self.generate_palettes_from_palette_group_by_index(0xB)
+  def generate_object_palettes(self, object_palette_id, room_bg_palettes):
+    final_palettes = self.generate_palettes_from_palette_group_by_index(0xB)
+    entity_palette_index = 6
     
-    assert object_palette_id >= 0x16
-    object_palette_index = object_palette_id - 0x16
-    bitfield = self.rom.read_u32(0x08133368 + object_palette_index*4)
-    palette_ptr = 0x085A2E80 + (bitfield & 0x00FFFFFF)
-    num_palettes = (bitfield & 0xFF000000) >> 24
+    if 0 <= object_palette_id <= 5:
+      entity_palette_index = 0
+    elif 6 <= object_palette_id <= 0xA:
+      background_palette_index = object_palette_id - 6
+      background_palette = room_bg_palettes[background_palette_index]
+      final_palettes[0x16] = background_palette
+    elif 0xB <= object_palette_id <= 0x14:
+      raise Exception("Unimplemented object palette ID: %02X" % object_palette_id)
+    elif object_palette_id == 0x15:
+      raise Exception("Unimplemented object palette ID: %02X" % object_palette_id)
+    else:
+      object_palette_index = object_palette_id - 0x16
+      bitfield = self.rom.read_u32(0x08133368 + object_palette_index*4)
+      palette_ptr = 0x085A2E80 + (bitfield & 0x00FFFFFF)
+      num_palettes = (bitfield & 0x0F000000) >> 24
+      
+      palettes = self.generate_palettes(palette_ptr, num_palettes)
+      final_palettes[0x16:0x16+num_palettes] = palettes
     
-    final_palettes = []
-    
-    for i in range(0x10):
-      # Fill up with dummy background palettes.
-      final_palettes.append(None)
-    
-    final_palettes += self.generate_palettes(palette_ptr, num_palettes)
-    
-    dummy_palette = [(255, 0, 0, 255)]*16
-    for i in range(0x10-num_palettes):
-      final_palettes.append(dummy_palette)
-    
-    return final_palettes
+    return (final_palettes, entity_palette_index)
   
   def generate_palettes(self, palette_pointer, num_palettes):
     palettes = []

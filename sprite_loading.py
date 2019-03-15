@@ -1,9 +1,10 @@
 
 class SpriteLoadingData:
-  def __init__(self, entity_type, entity_subtype, entity_form, rom):
-    self.entity_type = entity_type
-    self.entity_subtype = entity_subtype
-    self.entity_form = entity_form
+  def __init__(self, entity, rom):
+    self.entity_type = entity.type
+    self.entity_subtype = entity.subtype
+    self.entity_form = entity.form
+    self.area = entity.room.area
     self.rom = rom
     
     self.read()
@@ -57,3 +58,7 @@ class SpriteLoadingData:
     
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 4) & 0x03FF
     self.sprite_index = self.rom.read_u16(sprite_loading_data_ptr + 6) & 0x03FF
+    
+    if self.entity_type == 6 and self.entity_subtype == 8:
+      # Door
+      self.fixed_gfx_index = self.rom.read_u16(0x0811F690 + (self.area.area_index-0x40)*2)

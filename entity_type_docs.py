@@ -108,6 +108,14 @@ class EntityTypeDocs:
   
   @staticmethod
   def get_best_sprite_frame(entity):
+    if entity.type == 6 and entity.subtype == 8:
+      # Door
+      frame_index = entity.form & 0x03
+      if ((entity.form & 0x0C) >> 2) == 2:
+        # Small key door
+        frame_index |= 4
+      return frame_index
+    
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
       if entity.subtype in type_data["subtypes"]:
