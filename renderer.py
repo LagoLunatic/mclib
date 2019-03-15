@@ -118,9 +118,7 @@ class Renderer:
       if tile_index_16x16 in cached_tile_images_by_16x16_index:
         tile_image = cached_tile_images_by_16x16_index[tile_index_16x16]
       else:
-        x_on_tileset = tile_index_16x16 % 16
-        y_on_tileset = tile_index_16x16 // 16
-        tile_image = tileset_image.crop((x_on_tileset*16, y_on_tileset*16, x_on_tileset*16+16, y_on_tileset*16+16))
+        tile_image = self.get_16x16_tile_by_index(tileset_image, tile_index_16x16)
         cached_tile_images_by_16x16_index[tile_index_16x16] = tile_image
       
       x_in_room = i % room_width_in_16x16_tiles
@@ -169,6 +167,12 @@ class Renderer:
       dst_y += 256
     
     return layer_image
+  
+  def get_16x16_tile_by_index(self, tileset_image, tile_index_16x16):
+    x_on_tileset = tile_index_16x16 % 16
+    y_on_tileset = tile_index_16x16 // 16
+    tile_image = tileset_image.crop((x_on_tileset*16, y_on_tileset*16, x_on_tileset*16+16, y_on_tileset*16+16))
+    return tile_image
   
   def render_gfx_mapped(self, gfx_data, tile_mapping_8x8_data, palettes, color_mode=16):
     #with open("gfx.bin", "wb") as f:
@@ -321,7 +325,12 @@ class Renderer:
       frame_image = self.render_sprite_frame_swap_type_gfx(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_entity_sprite_frame(self, entity, room_bg_palettes):
+  def render_entity_sprite_frame(self, entity, room_bg_palettes, room_tileset_images):
+    if entity.type == 6 and entity.subtype == 0xC and entity.form == 1:
+      # Small chest spawner
+      chest_tile_image = self.get_16x16_tile_by_index(room_tileset_images[0], 0x10)
+      return chest_tile_image
+    
     loading_data = SpriteLoadingData(entity, self.rom)
     
     if loading_data.has_no_sprite:
