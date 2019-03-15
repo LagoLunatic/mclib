@@ -48,8 +48,6 @@ class Room:
   
   def read_entities(self):
     self.entity_lists = []
-    self.tile_entities = []
-    self.exits = []
     
     if self.property_list_ptr == 0:
       return
@@ -57,7 +55,6 @@ class Room:
     self.entity_list_ptr_1 = self.rom.read_u32(self.property_list_ptr + 0)
     self.entity_list_ptr_2 = self.rom.read_u32(self.property_list_ptr + 4)
     self.enemy_list_ptr = self.rom.read_u32(self.property_list_ptr + 8)
-    self.tile_entity_list_ptr = self.rom.read_u32(self.property_list_ptr + 0xC)
     self.state_changing_func_ptr = self.rom.read_u32(self.property_list_ptr + 0x1C)
     
     if self.entity_list_ptr_1 != 0:
@@ -85,6 +82,13 @@ class Room:
     self.entity_lists.append(entity_list)
   
   def read_tile_entities(self):
+    self.tile_entities = []
+    
+    if self.property_list_ptr == 0:
+      return
+    
+    self.tile_entity_list_ptr = self.rom.read_u32(self.property_list_ptr + 0xC)
+    
     if self.tile_entity_list_ptr != 0:
       entity_ptr = self.tile_entity_list_ptr
       while True:
@@ -98,6 +102,8 @@ class Room:
         entity_ptr += 8
   
   def read_exits(self):
+    self.exits = []
+    
     if not self.rom.is_pointer(self.exit_list_ptr):
       # Invalid exit list pointer (e.g. for room 8A-02)
       return
