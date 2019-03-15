@@ -76,4 +76,22 @@ class SpriteLoadingData:
     
     if self.entity_type == 6 and self.entity_subtype == 8:
       # Door
-      self.fixed_gfx_index = self.rom.read_u16(0x0811F690 + (self.area.area_index-0x40)*2)
+      if self.area.area_index == 0x25:
+        self.fixed_gfx_index = 0x1E7
+      elif self.area.area_index == 0x35:
+        self.fixed_gfx_index = 0x1C3
+      elif self.area.area_index >= 0x40:
+        self.fixed_gfx_index = self.rom.read_u16(0x0811F690 + (self.area.area_index-0x40)*2)
+      else:
+        self.fixed_gfx_index = 0xA
+      
+      if self.area.area_index == 0x68:
+        self.object_palette_id = 0
+      elif self.area.area_index == 0x88:
+        self.object_palette_id = 1
+    elif self.entity_type == 6 and self.entity_subtype == 0x27:
+      # Pushable statue
+      if self.area.area_index >= 0x40:
+        self.fixed_gfx_index = self.rom.read_u16(0x08120CCC + (self.area.area_index-0x40)*2)
+      else:
+        self.fixed_gfx_index = 0xE9
