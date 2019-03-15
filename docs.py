@@ -128,3 +128,15 @@ class Docs:
           return subtype_data["best_frame"]
     
     return 0
+  
+  def get_best_sprite_animation(entity):
+    if entity.type == 6 and entity.subtype in [0, 2]:
+      return entity.form
+    elif entity.type == 6 and entity.subtype == 0x47:
+      return 0x62
+    elif entity.type == 4 and entity.subtype == 0x15:
+      return entity.form
+    elif entity.type == 6 and entity.subtype == 0x25:
+      return None
+    
+    return 0

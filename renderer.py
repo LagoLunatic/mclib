@@ -6,6 +6,7 @@ import os
 from mclib.palette_group import PaletteGroup
 from mclib.sprite import Sprite
 from mclib.sprite_loading import SpriteLoadingData
+from mclib.docs import Docs
 
 class Renderer:
   MAX_8x8_TILES_PER_ROW = 32
@@ -323,7 +324,7 @@ class Renderer:
       frame_image = self.render_sprite_frame_swap_type_gfx(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_entity_sprite_frame(self, entity, room_bg_palettes, frame_index):
+  def render_entity_sprite_frame(self, entity, room_bg_palettes):
     loading_data = SpriteLoadingData(entity, self.rom)
     
     if loading_data.has_no_sprite:
@@ -345,9 +346,17 @@ class Renderer:
     #  # example is entity type 06 subtype 2C in room 03-00
     #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
     
+    best_anim_index = None
+    keyframe = None
     if sprite.animation_list_ptr != 0:
-      frame_index = sprite.get_animation(entity.form).keyframes[0].frame_index
+      best_anim_index = Docs.get_best_sprite_animation(entity)
+    
+    if best_anim_index:
+      keyframe = sprite.get_animation(best_anim_index).keyframes[0]
+      frame_index = keyframe.frame_index
       print("Has animations, first keyframe's frame index: %02X" % frame_index)
+    else:
+      frame_index = Docs.get_best_sprite_frame(entity)
     
     if loading_data.gfx_type == 0:
       gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
@@ -360,7 +369,15 @@ class Renderer:
     
     frame_obj_list = sprite.get_frame_obj_list(frame_index)
     
-    return self.render_sprite_frame(frame_obj_list, gfx_data, palettes, entity_palette_index)
+    frame_image = self.render_sprite_frame(frame_obj_list, gfx_data, palettes, entity_palette_index)
+  
+    if keyframe:
+      if keyframe.h_flip:
+        frame_image = frame_image.transpose(Image.FLIP_LEFT_RIGHT)
+      if keyframe.v_flip:
+        frame_image = frame_image.transpose(Image.FLIP_TOP_BOTTOM)
+    
+    return frame_image
   
   def get_sprite_swap_type_gfx_data_for_frame(self, sprite, frame_index):
     frame_gfx_data = sprite.get_frame_gfx_data(frame_index)
