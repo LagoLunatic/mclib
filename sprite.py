@@ -9,7 +9,7 @@ class Sprite:
   def read(self):
     self.frame_obj_lists = []
     
-    num_frames = 0x10 # ????? TODO: how to figure out the number of frames?
+    num_frames = 0x20 # ????? TODO: how to figure out the number of frames?
     
     offset_1 = self.rom.read_u32(0x082F3D74 + self.sprite_index*4)
     for frame_index in range(num_frames):

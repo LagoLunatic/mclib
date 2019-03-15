@@ -11,6 +11,8 @@ class Renderer:
   def __init__(self, game):
     self.game = game
     self.rom = self.game.rom
+    
+    self.common_palettes = self.generate_palettes_from_palette_group_by_index(0xB)
   
   def render_tileset(self, area, gfx_index, palettes, layer_index):
     rom = self.rom
@@ -341,10 +343,12 @@ class Renderer:
     
     if loading_data.gfx_type == 0:
       gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
+    elif loading_data.gfx_type == 2:
+      gfx_data = self.get_sprite_common_type_gfx_data(loading_data)
     elif sprite.frame_gfx_data_list_ptr != 0:
       gfx_data = self.get_sprite_swap_type_gfx_data_for_frame(sprite, frame_index)
     else:
-      raise Exception("Don't know how to render this sprite")
+      raise Exception("Don't know how to render this sprite (GFX type %X)" % loading_data.gfx_type)
     
     frame_obj_list = sprite.frame_obj_lists[frame_index]
     
@@ -371,6 +375,15 @@ class Renderer:
         raise Exception("GFX data length is 0")
       gfx_data = self.rom.read_raw(gfx_data_ptr, gfx_data_len)
     
+    return gfx_data
+  
+  def get_sprite_common_type_gfx_data(self, loading_data):
+    # TODO: implement this properly as a separate class.
+    # asset with index 0x17 in list 0x08100AA8
+    
+    gfx_data_ptr = 0x085A2E80 + 0x01D7E0
+    tile_offset = loading_data.common_gfx_tile_index*0x20
+    gfx_data = self.rom.read_raw(gfx_data_ptr+tile_offset, 0x2000-tile_offset)
     return gfx_data
   
   def render_sprite_frame(self, frame_obj_list, gfx_data, palettes, entity_palette_index):
@@ -406,6 +419,8 @@ class Renderer:
       else:
         palette_index = obj.palette_index + 0x10 + entity_palette_index
       
+      #print("%08X %02X %02X %02X" % (obj.obj_ptr, obj.palette_index, entity_palette_index, palette_index))
+      
       if palette_index in tiles_image_for_palette:
         tiles_image = tiles_image_for_palette[palette_index]
       else:
@@ -434,19 +449,14 @@ class Renderer:
     return frame_image
   
   def generate_palettes_for_area_by_gfx_index(self, area, gfx_index):
-    common_palettes = self.generate_palettes(0x085A2E80, 5)
-    
     palette_group = area.get_palette_group(gfx_index)
-    final_palettes = []
+    final_palettes = self.common_palettes.copy()
     
     # First fill all the palettes with bright red.
     # This is so that any palettes not loaded in will be obviously wrong visually making it easier to notice problems.
     dummy_palette = [(255, 0, 0, 255)]*16
     for i in range(0x20):
       final_palettes.append(dummy_palette)
-    
-    # Load in the common palettes shared by all areas.
-    final_palettes[0:len(common_palettes)] = common_palettes
     
     for palette_set in palette_group.palette_sets:
       if palette_set.palette_load_offset < 0 or palette_set.palette_load_offset >= 0x20:
@@ -484,7 +494,8 @@ class Renderer:
     return final_palettes
   
   def generate_object_palettes(self, object_palette_id, room_bg_palettes):
-    final_palettes = self.generate_palettes_from_palette_group_by_index(0xB)
+    final_palettes = self.common_palettes.copy()
+    final_palettes[0x15] = room_bg_palettes[3]
     entity_palette_index = 6
     
     if 0 <= object_palette_id <= 5:

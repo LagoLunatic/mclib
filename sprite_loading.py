@@ -44,7 +44,7 @@ class SpriteLoadingData:
       elif self.gfx_type == 1:
         pass # TODO
       elif self.gfx_type == 2:
-        pass # TODO
+        self.common_gfx_tile_index = bitfield & 0x03FF
     
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 2)
     self.sprite_index = self.rom.read_u16(sprite_loading_data_ptr + 8)
@@ -70,7 +70,7 @@ class SpriteLoadingData:
     elif self.gfx_type == 1:
       pass # TODO
     elif self.gfx_type == 2:
-      pass # TODO
+      self.common_gfx_tile_index = bitfield & 0x03FF
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 4) & 0x03FF
     self.sprite_index = self.rom.read_u16(sprite_loading_data_ptr + 6) & 0x03FF
     

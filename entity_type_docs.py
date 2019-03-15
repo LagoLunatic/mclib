@@ -116,6 +116,9 @@ class EntityTypeDocs:
         frame_index |= 4
       return frame_index
     
+    if entity.type == 6 and entity.subtype == 0x2D:
+      return 0x1A
+    
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
       if entity.subtype in type_data["subtypes"]:
