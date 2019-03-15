@@ -1,4 +1,10 @@
 
+00 Invalid?
+
+01 ???
+
+02 Invalid?
+
 03 Enemy
   00 Octorok
   01 Chuchu
@@ -6,6 +12,12 @@
       0 Green
       1 Red
   03 Peahat
+  04 Rollobite
+  05 Dark Nut
+    Forms:
+      1 Normal
+      2 Red
+      3 Black Knight
   06 nut thing hanging around in minish village?
     Forms:
       0 Points up
@@ -15,12 +27,19 @@
   08 Keese
   0A Rock Chuchu
   0B Spiny Chuchu
+  0C Cucco Chick
+  0D Moldorm
   10 Sluggula
     Forms:
       0 Falls from ceiling
       1 Normal
   11 Pesto
+    Forms:
+      0 Red
+      1 Blue (with dirt ball)
   12 Puffstool
+  13 Big Green Chuchu
+    Form: ?
   15 Spear Moblin
     Forms:
       0 Normal
@@ -33,73 +52,120 @@
       This is an index in list 080CC954.
     params & FFFF0000 - Flag for having reflected a Deku Nut back at it.
       This is argument r0 to CheckVariableTypeBits.
+  17 Rupee Like
+    Forms:
+      0 Green Rupee
+  18 Madderpillar
   1A Wall Master?
   1B Bomb Peahat
+  1C Spark
+  1D Chaser
+  1E Spiked Beetle
+  1F Blade Trap 1?
   20 Helmasaur
+  22 Bob-omb
   23 Wall Master?
+  24 Gleerok
   26 Tektite
     Forms:
       0 Red
       1 Blue
+  27 Green Wizzrobe
   28 Fire Wizzrobe
+  29 Ice Wizzrobe
   2A Armos
   2B Eyegore Statue
   2C Rope
   2D 
+  2E Acro-Bandits
+  2F Blade Trap 2?
   30 Keaton
     Forms:
       0 Normal
       1 Corrupted
+  31 Takkuri 1?
   32 Mulldozer
     Forms:
       0 Red
       1 Blue
+  33 Bombarossa
+  34 Wisp
+    Forms:
+      1 Red
   35 Spiny Beetle
     Forms:
       1 under a rock?
+  39 Big Octorok
+  3B Gibdo
+  40 Scissors Beetle
   41 Cucco
+  42 Stalfos
   43 Flying Skull
     Forms:
       0 ?
       1 ?
+  45 Takkuri 2?
   46 Bow Moblin
     Forms:
       0 Normal
       1 Corrupted
-  4D Ball & Chain Soldier
+  4C Ball & Chain Soldier 1?
+  4D Ball & Chain Soldier 2?
   4E Ghini
   65 tree? in minish woods
+
 04 Obstacle?
   14 hole in the ground you can fall in when tiny?
     or spiky dust that covers something up
     params & FFFF0000 is something, maybe a flag
-  15 spider web blocking a door
+  15 Spider web
     params & FFFF0000 - maybe flag for having been destroyed
+  1D Winder
   1E 
+
+05 Invalid?
+
 06 Object
   00 Item on the ground
     Form: The item ID.
   03 Button
     params & FFFF0000 - Flag to set when pressed
-    unknown2 - might affect what flag to set as well...? for the switches that burn the vines to the rotating barrel, this is 01 instead of 00. and the flag to set is just 00.
+    Form: usually 0. for the buttons that burn the vines to the rotating barrel in deepwood, this is 1 instead. and the flag to set is just 00.
   05 Pot
+    Form: The item ID. Or 0 for random.
   08 Locked door
     params & FFFF0000 - Flag for this door being unlocked.
+    Form: Bitfield.
+      & 03 - Frame index.
+        0 - Down facing
+        1 - Left facing
+        2 - Up facing
+        3 - Right facing
+      & 0C - Affects how it unlocks?
+        0 - No keyhole
+          Something else must set a flag, and this door will then unlock.
+        1 - 
+        2 - Has small keyhole
+          Sets flag when you unlock it.
+        3 - Invalid?
+      & 10 - ?
     Forms:
-      2 Auto door
-      8 Small key door
-      9 Small key door
-    For forms 8 and 9, the doors sets the flag when the player unlocks it.
-    For form 2, something else needs to set the flag before the door will open.
-  0C Chest spawner?
-    unknown2 - type of chest
-      01 for small chest
-      04 for big chest that is there from the start?
-      02 for big chest that appears with sparkles when a flag is set?
+      83 
+  0C Chest spawner
+    Forms:
+      01 Small chest?
+      02 Big chest (appears)
+      04 Big chest
+    params & FFFF0000 - flag?
     unknown4 & 000000FF - for big chests, this is used to find the tile entity. the big chest's unknown1 must be set to this same value.
     the item ID is stored in the matching tile entity chest.
       if this is a small chest, it looks for the tile entity on the same tile as this entity.
       if this is a big chest, the position doesn't matter, instead it looks for the tile entity with a matching unknown1 to this unknown4&000000FF
+  13 Rotatable railtrack
+    unknown4 & 000000FF - Affects the default direction the track is in.
+      0 - Default vertical.
+      2 - Default horizontal.
+    params & FFFF0000 - Flag to check.
   14 Lily pad (large)
   1B Great Fairy?
     Forms:
@@ -115,8 +181,10 @@
     unknown 1 - 08 means warp up, 80 means warp down
   2D smoke from smith's chimney?
   2E something at peak of mount crenal, room 06-00
-  2F lever
+  2F Hittable lever
+    params & FFFF0000 - Flag to set/unset when flipped.
   32 Pullable mushroom
+  33 Tall bar blocking the way
   34 Warp point
     Forms:
       0 Blue
@@ -129,16 +197,21 @@
     params & FFFF0000 - Spawn flag.
   38 big jar?
   39 Boss door
+    params & FFFF0000 - Flag for opening it?
   40 Fairy flying around?
     Form: The item ID?
   41 Ladder up?
   47 heart container that drops after beating a boss?
   4C pushable crates (e.g. in 20-09)
   54 Pullable lever
-    params & 00FF0000 - something. possibly flag to set?
+    params & FFFF0000 - Flag to set.
   55 Minecart
+    form - ?
+    unknown4 & 000000FF - 0 for normal, 1 for flipped over?
+    unknown4 & 0000FF00 - 
   57 in middle of hyrule field? maybe pitfall?
   58 Curtains in Gentari's room
+  59 Platform on lava
   5E Whirlwind
   62 
   69 Cutscene?
@@ -146,12 +219,27 @@
   6A ???
     Forms:
       7 Jabber Nut? (in room 20-09)
+      8 sword from Melari?
+      9 sword from Melari?
   6B Crenal bean sprout
     Forms:
       0 Hole that you can manually put the green sprout in
       2 Blue sprout
+  6D Object on a pillar
+    params & 0000FFFF - flag
+    params & FFFF0000 - flag
+    Small chest:
+      form = 1
+      unknown4 = 20482088
+      params = 00250026
+    Lever:
+      form = 2
+      unknown4 = 104811D8
+      params = 002F002E
   71 grave
   73 Lily pad (small)
+  74 might set a flag when enemies die?
+    params & FFFF0000 - flag
   77 Bell in Hyrule Town
   7A Steam coming up off the top of the cave of flames
   7F glowing flower thing (e.g. in room 20-09)
@@ -165,23 +253,39 @@
   9D Bombable switch
   B7 well?
   BB Wind Crest
+
 07 Cutscene? or NPC?
+  params - Pointer to the first cutscene script command.
+    Can be 0.
+  unknown1 - seen 0 and 1 here
+  unknown4 & 0000FF00 - default direction to face?
+    00 Up
+    01 Right
+    02 Down
+    03 Left
   01 Gentari
   02 Festari
   03 Forest Minish
+    unknown4 & 000000FF - index in list 08109D18 of the script to run.
   04 Postman
   0F Minish Ezlo
   13 Sitting man
     Forms:
-      2 
-      4 
+      2 ?
+      4 ?
   15 Guard
   16 Maid
   17 Din
   18 Nayru
   19 Farore
   1B Tingle Siblings
+    Forms:
+      0 Tingle
+      1 
+      2 Knuckle
+      3 David Jr.
   1E Malon
+  21 Spekter
   22 Smith
   24 King Daltus
   25 Minister Potho
@@ -190,8 +294,8 @@
   2C Cat
     Forms:
       4 Scratcher
-  2D Melari's apprentices
-    unknown4 - which apprentice (0-6)
+  2D Mountain Minish
+    unknown4? - which apprentice (0-6)
   2F Melari
   32 Goron
   38 Town Minish
@@ -202,22 +306,20 @@
       4 Purple
       5 Green
   39 Librari
+  40 Dampe
   42 King Gustaf
+  43 Gina
   44 Simon
   48 Teachers
     Forms:
       0 Tina
       1 Dina
+  4B Mayor Hagen
   4D Cap Ezlo
-  params - Pointer to the first cutscene script command.
-    Can be 0.
-  unknown4 & 000000FF - For subtype 03 (Minish), this is the index in list 08109D18 of the script to run.
-  unknown4 & 0000FF00 - default direction to face?
-    00 Up
-    01 Right
-    02 Down
-    03 Left
-  unknown1 - seen 0 and 1 here
+  53 Hurdy-Gurdy Man
+
+08 ???
+
 09 ?
   03 Minish Portal
     Forms:
@@ -234,10 +336,26 @@
       06,1: Index in this room's property list of a pointer to the exit
       07,1: Bitfield.
         & 03 - ?
+  0B Enemy spawner
+    For form 0:
+      unknown4 & 000000FF - Index in this room's property list of a pointer to an entity list to load.
+      unknown4 & 0000FF00 - substate? (stored to 0E,1 of the entity in RAM)
+      params & 0000FFFF - 
+      params & FFFF0000 - Flag.
+        If not set, the entities in this list are loaded.
+        Once set, they no longer get loaded.
+  0E Sets boss death flag?
+    params & FFFF0000 - Flag to set.
   17 item that falls from the sky?
     unknown2 - item ID?
     params & 00FF0000 - item ID?
+  18 kinstone fusion reward related?
+  1F changes a tile in the room depending on a flag?
+      params & FFFF0000 - Flag.
+      form - 
+      unknown4 - 
   20 Pushable pot? (e.g. in room 48-03)
     or a pushable stone (room 26-01)
   23 Torch
     params & 00FF0000 - The torch will light up once this flag is set.
+  28 kinstone fusion reward related?
