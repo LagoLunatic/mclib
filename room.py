@@ -36,6 +36,8 @@ class Room:
     
     self.read_entities()
     
+    self.read_tile_entities()
+    
     self.read_exits()
   
   @property
@@ -71,6 +73,18 @@ class Room:
     for entity_list_ptr in self.hardcoded_state_entity_list_pointers:
       self.read_one_entity_list(entity_list_ptr, "Conditional entities")
     
+    for entity_list in self.entity_lists:
+      for entity in entity_list.entities:
+        if entity.type == 9 and entity.subtype == 0xB and entity.form == 0:
+          prop_index = entity.unknown_4 & 0x000000FF
+          prop_ptr = self.rom.read_u32(self.property_list_ptr + prop_index*4)
+          self.read_one_entity_list(prop_ptr, "Conditional enemies")
+    
+  def read_one_entity_list(self, entity_list_ptr, name):
+    entity_list = EntityList(entity_list_ptr, name, self, self.rom)
+    self.entity_lists.append(entity_list)
+  
+  def read_tile_entities(self):
     if self.tile_entity_list_ptr != 0:
       entity_ptr = self.tile_entity_list_ptr
       while True:
@@ -82,10 +96,6 @@ class Room:
         self.tile_entities.append(entity)
         
         entity_ptr += 8
-  
-  def read_one_entity_list(self, entity_list_ptr, name):
-    entity_list = EntityList(entity_list_ptr, name, self, self.rom)
-    self.entity_lists.append(entity_list)
   
   def read_exits(self):
     if not self.rom.is_pointer(self.exit_list_ptr):
