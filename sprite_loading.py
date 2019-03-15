@@ -56,6 +56,10 @@ class SpriteLoadingData:
     else:
       raise Exception("Unknown sprite loading data type")
     
+    bitfield = self.rom.read_u16(sprite_loading_data_ptr + 2)
+    self.gfx_type = (bitfield & 0x0C00) >> 10
+    if self.gfx_type == 0:
+      self.fixed_gfx_index = bitfield & 0x03FF
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 4) & 0x03FF
     self.sprite_index = self.rom.read_u16(sprite_loading_data_ptr + 6) & 0x03FF
     
