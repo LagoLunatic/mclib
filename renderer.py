@@ -396,6 +396,8 @@ class Renderer:
     
     src_y = 0
     for obj in reversed(frame_obj_list.objs):
+      obj_image = Image.new("RGBA", (obj.width, obj.height), (255, 255, 255, 0))
+      
       if obj.override_entity_palette_index:
         palette_index = obj.palette_index + 0x10
       else:
@@ -410,19 +412,21 @@ class Renderer:
       rows_needed_for_obj = obj.height//8
       
       src_x = obj.first_gfx_tile_offset*8
-      dst_x = obj.x_off - min_x
-      dst_y = obj.y_off - min_y
-      for _ in range(rows_needed_for_obj):
+      dst_x = 0
+      dst_y = 0
+      for obj_i in range(rows_needed_for_obj):
         obj_row_image = tiles_image.crop((src_x, src_y, src_x+obj.width, src_y+8))
         src_x += obj.width
         
-        if obj.h_flip:
-          obj_row_image = obj_row_image.transpose(Image.FLIP_LEFT_RIGHT)
-        if obj.v_flip:
-          obj_row_image = obj_row_image.transpose(Image.FLIP_TOP_BOTTOM)
-        
-        frame_image.paste(obj_row_image, (dst_x, dst_y), obj_row_image)
+        obj_image.paste(obj_row_image, (dst_x, dst_y), obj_row_image)
         dst_y += 8
+      
+      if obj.h_flip:
+        obj_image = obj_image.transpose(Image.FLIP_LEFT_RIGHT)
+      if obj.v_flip:
+        obj_image = obj_image.transpose(Image.FLIP_TOP_BOTTOM)
+      
+      frame_image.paste(obj_image, (obj.x_off - min_x, obj.y_off - min_y), obj_image)
     
     return frame_image
   
