@@ -8,6 +8,8 @@ from mclib.sprite import Sprite
 from mclib.sprite_loading import SpriteLoadingData
 
 class Renderer:
+  MAX_8x8_TILES_PER_ROW = 32
+  
   def __init__(self, game):
     self.game = game
     self.rom = self.game.rom
@@ -174,18 +176,18 @@ class Renderer:
     #  f.write(tile_mapping_8x8_data)
     #self.export_palettes(palettes)
     
-    image_width_in_8x8_tiles = 32
+    self.MAX_8x8_TILES_PER_ROW = 32
     
     image_height = (len(tile_mapping_8x8_data)+7)//8
-    image = Image.new("RGBA", (image_width_in_8x8_tiles*8, image_height), (255, 255, 255, 0))
+    image = Image.new("RGBA", (self.MAX_8x8_TILES_PER_ROW*8, image_height), (255, 255, 255, 0))
     
     for tile_i in range(len(tile_mapping_8x8_data)//2):
       tile_attrs = tile_mapping_8x8_data.read_u16(tile_i*2)
       
       tile_image = self.render_tile_by_tile_attrs(tile_attrs, gfx_data, palettes, color_mode=color_mode)
       
-      tile_x = tile_i % image_width_in_8x8_tiles
-      tile_y = tile_i // image_width_in_8x8_tiles
+      tile_x = tile_i % self.MAX_8x8_TILES_PER_ROW
+      tile_y = tile_i // self.MAX_8x8_TILES_PER_ROW
       x = tile_x*8
       y = tile_y*8
       
@@ -223,8 +225,7 @@ class Renderer:
     else:
       bytes_per_8x8_tile = 0x40
     
-    max_image_width_in_8x8_tiles = 32
-    num_bytes_per_row = (bytes_per_8x8_tile*max_image_width_in_8x8_tiles)
+    num_bytes_per_row = (bytes_per_8x8_tile*self.MAX_8x8_TILES_PER_ROW)
     image_height_in_8x8_tiles = (len(gfx_data)+num_bytes_per_row-1)//num_bytes_per_row
     image_width_in_8x8_tiles = min(len(gfx_data), num_bytes_per_row)//bytes_per_8x8_tile
     image = Image.new("RGBA", (image_width_in_8x8_tiles*8, image_height_in_8x8_tiles*8), (255, 255, 255, 0))
@@ -235,8 +236,8 @@ class Renderer:
       else:
         tile_image = self.render_tile_256_colors(gfx_data, tile_i, palette)
       
-      tile_x = tile_i % max_image_width_in_8x8_tiles
-      tile_y = tile_i // max_image_width_in_8x8_tiles
+      tile_x = tile_i % self.MAX_8x8_TILES_PER_ROW
+      tile_y = tile_i // self.MAX_8x8_TILES_PER_ROW
       x = tile_x*8
       y = tile_y*8
       
@@ -410,7 +411,7 @@ class Renderer:
     
     tiles_image_for_palette = {}
     
-    src_y = 0
+    obj_i = len(frame_obj_list.objs)-1
     for obj in reversed(frame_obj_list.objs):
       obj_image = Image.new("RGBA", (obj.width, obj.height), (255, 255, 255, 0))
       
@@ -425,26 +426,39 @@ class Renderer:
         tiles_image = tiles_image_for_palette[palette_index]
       else:
         tiles_image = self.render_gfx_raw(gfx_data, palettes[palette_index])
+        #tiles_image.save("./wip/tiles %08X.png" % obj.obj_ptr)
         tiles_image_for_palette[palette_index] = tiles_image
       
       rows_needed_for_obj = obj.height//8
       
-      src_x = obj.first_gfx_tile_offset*8
+      src_x = (obj.first_gfx_tile_offset % self.MAX_8x8_TILES_PER_ROW)*8
+      src_y = (obj.first_gfx_tile_offset // self.MAX_8x8_TILES_PER_ROW)*8
       dst_x = 0
       dst_y = 0
-      for obj_i in range(rows_needed_for_obj):
+      for row_i in range(rows_needed_for_obj):
         obj_row_image = tiles_image.crop((src_x, src_y, src_x+obj.width, src_y+8))
-        src_x += obj.width
+        
+        #obj_row_image.save("./wip/row %08X-%X.png" % (obj.obj_ptr, row_i))
+        #print(("row %08X-%X" % (obj.obj_ptr, row_i)) + ("%02X,%02X,%02X,%02X" % (src_x, src_y, src_x+obj.width, src_y+8)))
         
         obj_image.paste(obj_row_image, (dst_x, dst_y), obj_row_image)
+        
         dst_y += 8
+        src_x += obj.width
+        if src_x >= self.MAX_8x8_TILES_PER_ROW*8:
+          src_x = 0
+          src_y += 8
       
       if obj.h_flip:
         obj_image = obj_image.transpose(Image.FLIP_LEFT_RIGHT)
       if obj.v_flip:
         obj_image = obj_image.transpose(Image.FLIP_TOP_BOTTOM)
       
+      #obj_image.save("./wip/%08X.png" % obj.obj_ptr)
+      
       frame_image.paste(obj_image, (obj.x_off - min_x, obj.y_off - min_y), obj_image)
+      
+      obj_i -= 1
     
     return frame_image
   
