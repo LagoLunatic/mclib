@@ -93,6 +93,11 @@ class Renderer:
     rom = self.rom
     area = room.area
     
+    layer_image = Image.new("RGBA", (room.width, room.height), (255, 255, 255, 0))
+    
+    if room.layers_asset_list is None:
+      return layer_image
+    
     # TODO: figure out what these are
     if len(room.layers_asset_list.gfx_data) != 0:
       print("room.layers_asset_list.gfx_data: ", room.layers_asset_list.gfx_data)
@@ -100,8 +105,6 @@ class Renderer:
       print("room.layers_asset_list.palette_metadata_index: ", room.layers_asset_list.palette_metadata_index)
     
     tileset_image = self.render_tileset(area, room.gfx_index, palettes, layer_index)
-    
-    layer_image = Image.new("RGBA", (room.width, room.height), (255, 255, 255, 0))
     
     tile_mapping_16x16_data = room.layers_asset_list.tile_mappings[layer_index]
     if tile_mapping_16x16_data is None:

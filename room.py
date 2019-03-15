@@ -43,7 +43,10 @@ class Room:
   @property
   def layers_asset_list(self):
     if not self._layers_asset_list:
-      self._layers_asset_list = AssetList(self.layer_list_ptr, self.rom)
+      if self.layer_list_ptr == 0:
+        self._layers_asset_list = None
+      else:
+        self._layers_asset_list = AssetList(self.layer_list_ptr, self.rom)
     return self._layers_asset_list
   
   def read_entities(self):
