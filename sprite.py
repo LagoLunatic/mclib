@@ -19,34 +19,34 @@ class Sprite:
       frame_obj_list = FrameObjList(frame_obj_data_ptr, self.rom)
       self.frame_obj_lists.append(frame_obj_list)
     
-    if self.sprite_index > 0x149:
-      self.frame_list_ptr = 0
+    if self.sprite_index >= 0x149:
+      self.frame_gfx_data_list_ptr = 0
     else:
       self.sprite_ptr = 0x080029B4 + self.sprite_index*0x10
-      self.frame_list_ptr = self.rom.read_u32(self.sprite_ptr + 4)
+      self.frame_gfx_data_list_ptr = self.rom.read_u32(self.sprite_ptr + 4)
       self.gfx_pointer = self.rom.read_u32(self.sprite_ptr + 8)
       
       self.frame_gfx_datas = []
-      if self.frame_list_ptr != 0:
+      if self.frame_gfx_data_list_ptr != 0:
         # Guess how many frames there are by looking at the next sprite's frame list pointer.
         # TODO: Try to find a proper way of detecting the number of frames.
         all_frame_list_ptrs = []
         for i in range(0x149):
           ptr = 0x080029B4 + i*0x10
-          frame_list_ptr = self.rom.read_u32(ptr + 4)
-          if frame_list_ptr > 0:
-            all_frame_list_ptrs.append(frame_list_ptr)
+          frame_gfx_data_list_ptr = self.rom.read_u32(ptr + 4)
+          if frame_gfx_data_list_ptr > 0:
+            all_frame_list_ptrs.append(frame_gfx_data_list_ptr)
         if self.sprite_index == 0x148:
           num_frames = 0x13
         elif self.sprite_index == 0x17:
           num_frames = 0xB4
         else:
-          next_frame_list_ptr = min([x for x in all_frame_list_ptrs if x > self.frame_list_ptr])
-          num_frames = (next_frame_list_ptr - self.frame_list_ptr) // 4
+          next_frame_list_ptr = min([x for x in all_frame_list_ptrs if x > self.frame_gfx_data_list_ptr])
+          num_frames = (next_frame_list_ptr - self.frame_gfx_data_list_ptr) // 4
         
         for frame_index in range(num_frames):
-          frame_data_ptr = self.frame_list_ptr + frame_index*4
-          frame_gfx_data = FrameGfxData(frame_data_ptr, self.rom)
+          frame_gfx_data_ptr = self.frame_gfx_data_list_ptr + frame_index*4
+          frame_gfx_data = FrameGfxData(frame_gfx_data_ptr, self.rom)
           self.frame_gfx_datas.append(frame_gfx_data)
 
 class FrameGfxData:

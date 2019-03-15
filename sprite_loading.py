@@ -10,6 +10,8 @@ class SpriteLoadingData:
     self.read()
   
   def read(self):
+    self.has_no_sprite = False
+    
     if self.entity_type == 3:
       sprite_loading_datas_list = 0x080D2C58
       self.read_format_a(sprite_loading_datas_list)
@@ -25,20 +27,24 @@ class SpriteLoadingData:
   
   def read_format_a(self, sprite_loading_datas_list):
     sprite_loading_data_ptr = sprite_loading_datas_list + self.entity_subtype*0x10
-    unknown_1 = self.rom.read_u16(sprite_loading_data_ptr + 0)
+    bitfield = self.rom.read_u16(sprite_loading_data_ptr + 0)
     
-    if unknown_1 == 0xFFFF:
+    if bitfield == 0xFFFF:
       sprite_loading_data_ptr = self.rom.read_u32(sprite_loading_data_ptr + 4) + self.entity_form*0x10
-      unknown_1 = self.rom.read_u16(sprite_loading_data_ptr + 0)
+      bitfield = self.rom.read_u16(sprite_loading_data_ptr + 0)
     else:
       sprite_loading_data_ptr = sprite_loading_data_ptr
     
-    if unknown_1 & 0x8000 != 0:
-      pass # TODO
-    elif unknown_1 & 0x4000 != 0:
-      pass # TODO
+    if bitfield == 0:
+      self.has_no_sprite = True
     else:
-      self.fixed_gfx_index = unknown_1
+      self.gfx_type = (bitfield & 0x4000) >> 14
+      if self.gfx_type == 0:
+        self.fixed_gfx_index = bitfield
+      elif self.gfx_type == 1:
+        pass # TODO
+      elif self.gfx_type == 2:
+        pass # TODO
     
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 2)
     self.sprite_index = self.rom.read_u16(sprite_loading_data_ptr + 8)
@@ -48,6 +54,7 @@ class SpriteLoadingData:
     self.sprite_data_type = self.rom.read_u8(sprite_loading_data_ptr + 0) & 0x03
     
     if self.sprite_data_type == 0:
+      self.has_no_sprite = True
       return
     elif self.sprite_data_type == 1:
       sprite_loading_data_ptr = sprite_loading_data_ptr
@@ -60,6 +67,10 @@ class SpriteLoadingData:
     self.gfx_type = (bitfield & 0x0C00) >> 10
     if self.gfx_type == 0:
       self.fixed_gfx_index = bitfield & 0x03FF
+    elif self.gfx_type == 1:
+      pass # TODO
+    elif self.gfx_type == 2:
+      pass # TODO
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 4) & 0x03FF
     self.sprite_index = self.rom.read_u16(sprite_loading_data_ptr + 6) & 0x03FF
     

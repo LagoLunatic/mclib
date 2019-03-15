@@ -318,9 +318,10 @@ class Renderer:
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
   def render_entity_sprite_frame(self, entity, room_bg_palettes, frame_index):
-    # TODO: if image is entirely blank, don't just return a blank image!
-    
     loading_data = SpriteLoadingData(entity, self.rom)
+    
+    if loading_data.has_no_sprite:
+      return None
     
     print(
       "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
@@ -331,17 +332,19 @@ class Renderer:
     palettes, entity_palette_index = self.generate_object_palettes(loading_data.object_palette_id, room_bg_palettes)
     
     sprite = Sprite(loading_data.sprite_index, self.rom)
-    #print("%08X" % sprite.frame_list_ptr)
+    #print("%08X" % sprite.frame_gfx_data_list_ptr)
     
     #if not sprite.frames:
     #  # TODO: why do some have no frames?
     #  # example is entity type 06 subtype 2C in room 03-00
     #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
     
-    if sprite.frame_list_ptr != 0:
+    if loading_data.gfx_type == 0:
+      gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
+    elif sprite.frame_gfx_data_list_ptr != 0:
       gfx_data = self.get_sprite_swap_type_gfx_data_for_frame(sprite, frame_index)
     else:
-      gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
+      raise Exception("Don't know how to render this sprite")
     
     frame_obj_list = sprite.frame_obj_lists[frame_index]
     
