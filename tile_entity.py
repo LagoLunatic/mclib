@@ -13,8 +13,9 @@ class TileEntity:
     self.item_id = self.rom.read_u8(self.entity_ptr + 2)
     self.unknown_2 = self.rom.read_u8(self.entity_ptr + 3)
     
-    pos = self.rom.read_u16(self.entity_ptr + 4)
-    self.x_pos = pos & 0x003F
-    self.y_pos = (pos & 0x0FC0) >> 6
+    bitfield = self.rom.read_u16(self.entity_ptr + 4)
+    self.x_pos = bitfield & 0x003F
+    self.y_pos = (bitfield & 0x0FC0) >> 6
+    self.unknown_3 = (bitfield & 0xF000) >> 12 # Might be unused?
     
     self.message_id = self.rom.read_u16(self.entity_ptr + 6)
