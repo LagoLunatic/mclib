@@ -326,7 +326,7 @@ class Renderer:
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
   def render_entity_sprite_frame(self, entity, room_bg_palettes, room_tileset_images):
-    if entity.type == 6 and entity.subtype == 0xC and entity.form == 1:
+    if entity.type == 6 and entity.subtype == 0xC and entity.form in [0, 1]:
       # Small chest spawner
       chest_tile_image = self.get_16x16_tile_by_index(room_tileset_images[0], 0x10)
       return chest_tile_image

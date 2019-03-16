@@ -119,7 +119,7 @@
     or spiky dust that covers something up
     params & FFFF0000 is something, maybe a flag
   15 Spider web
-    params & FFFF0000 - maybe flag for having been destroyed
+    params & FFFF0000 - Flag for this web being destroyed.
   1D Winder
   1E 
 
@@ -151,14 +151,14 @@
           Sets flag when you unlock it.
         3 - Invalid?
       & 10 - ?
-    Forms:
-      83 
+      & 80 - ??
   0C Chest spawner
     Forms:
-      01 Small chest?
-      02 Big chest (appears)
-      04 Big chest
-    params & FFFF0000 - flag?
+      0 Small chest 1?
+      1 Small chest 2?
+      2 Big chest (appears)
+      4 Big chest
+    params & FFFF0000 - Flag for the chest appearing.
     unknown4 & 000000FF - for big chests, this is used to find the tile entity. the big chest's unknown1 must be set to this same value.
     the item ID is stored in the matching tile entity chest.
       if this is a small chest, it looks for the tile entity on the same tile as this entity.
@@ -220,6 +220,7 @@
       0A Shelf
       1A Baker's rack
       1E Rem's workbench
+      1F Ladder on Rem's workbench
       3A Wheaton's table
       3B Dr. Left's table
   4E Minish sized entrance?
@@ -257,12 +258,17 @@
       form = 2
       unknown4 = 104811D8
       params = 002F002E
+  6F Arch over a doorway 2?
   71 grave
   73 Lily pad (small)
   74 might set a flag when enemies die?
     params & FFFF0000 - flag
   77 Bell in Hyrule Town
   7A Steam coming up off the top of the cave of flames
+  7C Huge shoes
+    Forms:
+      0 Two red shoes
+      1 One brown shoe
   7F glowing flower thing (e.g. in room 20-09)
     Forms:
       00 White
@@ -286,6 +292,7 @@
       A Link (being carried by Zeffa)
   9C tree you can bonk into maybe?
   9D Bombable switch
+  A4 Town Minish's lamp?
   AE Floating block
   B1 Jail bars
   B7 well?
@@ -393,9 +400,9 @@
     params & 00FF0000 - item ID?
   18 kinstone fusion reward related?
   1F changes a tile in the room depending on a flag?
-      params & FFFF0000 - Flag.
-      form - 
-      unknown4 - 
+    params & FFFF0000 - Flag.
+    form - 
+    unknown4 - 
   20 Pushable pot? (e.g. in room 48-03)
     or a pushable stone (room 26-01)
   23 Torch
