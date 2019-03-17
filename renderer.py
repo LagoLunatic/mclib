@@ -33,6 +33,12 @@ class Renderer:
     if area.tilesets_asset_list.palette_metadata_index is not None:
       print("area.tilesets_asset_list.palette_metadata_index: ", area.tilesets_asset_list.palette_metadata_index)
     
+    tileset_image = self.render_tileset_by_assets(gfx_data, palettes, tile_mappings_8x8, layer_index)
+    
+    #tileset_image.save("../tileset_renders/area%02X-layer%02X-gfxindex%02X-tileset.png" % (area.area_index, layer_index, gfx_index))
+    return tileset_image
+  
+  def render_tileset_by_assets(self, gfx_data, palettes, tile_mappings_8x8, layer_index):
     if layer_index >= 1:
       gfx_data = gfx_data.read_raw(0x4000, len(gfx_data)-0x4000)
     
@@ -62,7 +68,6 @@ class Renderer:
         
         tileset_image.paste(tile_image, (x, y))
     
-    #tileset_image.save("../tileset_renders/area%02X-layer%02X-gfxindex%02X-tileset.png" % (area.area_index, layer_index, gfx_index))
     return tileset_image
   
   def render_room(self, room, palettes):
