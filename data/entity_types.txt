@@ -121,7 +121,7 @@
   15 Spider web
     params & FFFF0000 - Flag for this web being destroyed.
   1D Winder
-  1E 
+  1E roller trap?
 
 05 Invalid, nothing
 
@@ -175,6 +175,10 @@
       1 1x2
       2 2x2
       3 3x3
+  19 House door
+    Forms:
+      0 ?
+      8 ?
   1B Great Fairy?
     Forms:
       00 big bomb bag one on mount crenal
@@ -187,8 +191,9 @@
   27 Pushable statue
   29 might be a warp up/down in palace of winds?
     unknown 1 - 08 means warp up, 80 means warp down
+  2C Bean stalk
   2D smoke from smith's chimney?
-  2E something at peak of mount crenal, room 06-00
+  2E Pushable rock
   2F Hittable lever
     params & FFFF0000 - Flag to set/unset when flipped.
   32 Pullable mushroom
@@ -207,6 +212,7 @@
   39 Boss door
     params & FFFF0000 - Flag for opening it?
   3E Minish Village (Small)
+  3F Giant leaf
   40 Fairy flying around?
     Form: The item ID?
   41 Ladder up?
@@ -224,7 +230,7 @@
       3A Wheaton's table
       3B Dr. Left's table
   4E Minish sized entrance?
-  4F Arch over a doorway?
+  4F Arch over a doorway
   54 Pullable lever
     params & FFFF0000 - Flag to set.
   55 Minecart
@@ -264,6 +270,12 @@
   74 might set a flag when enemies die?
     params & FFFF0000 - flag
   77 Bell in Hyrule Town
+  78 Giant foreground decorations
+    Forms:
+      0 ?
+      1 Flower
+      2 Giant fence post
+      3 Water sausage
   7A Steam coming up off the top of the cave of flames
   7C Huge shoes
     Forms:
@@ -274,9 +286,13 @@
       00 White
       02 Green
       03 Red
-  82 hurricane?
+  82 Big vortex
   89 in mazaal boss room of fortress of winds
   92 Baker's oven
+  94 Flag in front of Wind Tribe home
+    Forms:
+      0 Left
+      1 Right
   95 Bird
     Forms:
       0 Zeffa (drops Ocarina)
@@ -290,6 +306,7 @@
       8 Zeffa (picks up Link)
       9 Zeffa (drops off Link)
       A Link (being carried by Zeffa)
+  9A Giant acorn
   9C tree you can bonk into maybe?
   9D Bombable switch
   A4 Town Minish's lamp?

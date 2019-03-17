@@ -46,8 +46,8 @@
 2D Hyrule Town Minish-Sized Interiors
 2E ???
 2F Goron Cave
-30 ???
-31 ???
+30 Wind Tribe Home Interior
+31 Wind Tribe Home Top Floor
 32 Various Hyrule Caves
 33 ???
 34 Royal Valley Caves
