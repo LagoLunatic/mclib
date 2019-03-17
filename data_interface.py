@@ -12,6 +12,11 @@ class DataInterface:
     data_length = self.data.seek(0, 2)
     return data_length
   
+  def copy(self):
+    self.data.seek(0)
+    copy_data = self.data.read()
+    return DataInterface(copy_data)
+  
   def read(self, offset, length, format_string):
     self.data.seek(offset)
     requested_data = self.data.read(length)

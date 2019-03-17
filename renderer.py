@@ -458,7 +458,7 @@ class Renderer:
         tiles_image = tiles_image_for_palette[palette_index]
       else:
         tiles_image = self.render_gfx_raw(gfx_data, palettes[palette_index])
-        #tiles_image.save("./wip/tiles %08X.png" % obj.obj_ptr)
+        #tiles_image.save("./logs/tiles %08X.png" % obj.obj_ptr)
         tiles_image_for_palette[palette_index] = tiles_image
       
       rows_needed_for_obj = obj.height//8
@@ -470,7 +470,7 @@ class Renderer:
       for row_i in range(rows_needed_for_obj):
         obj_row_image = tiles_image.crop((src_x, src_y, src_x+obj.width, src_y+8))
         
-        #obj_row_image.save("./wip/row %08X-%X.png" % (obj.obj_ptr, row_i))
+        #obj_row_image.save("./logs/row %08X-%X.png" % (obj.obj_ptr, row_i))
         #print(("row %08X-%X" % (obj.obj_ptr, row_i)) + ("%02X,%02X,%02X,%02X" % (src_x, src_y, src_x+obj.width, src_y+8)))
         
         obj_image.paste(obj_row_image, (dst_x, dst_y), obj_row_image)
@@ -486,7 +486,7 @@ class Renderer:
       if obj.v_flip:
         obj_image = obj_image.transpose(Image.FLIP_TOP_BOTTOM)
       
-      #obj_image.save("./wip/%08X.png" % obj.obj_ptr)
+      #obj_image.save("./logs/%08X.png" % obj.obj_ptr)
       
       frame_image.paste(obj_image, (obj.x_off - min_x, obj.y_off - min_y), obj_image)
       
