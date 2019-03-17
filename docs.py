@@ -38,6 +38,7 @@ ENTITY_TYPE_DOCS = OrderedDict()
 last_seen_type_doc = None
 last_seen_subtype_doc = None
 found_forms_header_for_subtype = False
+found_form_is_item_id_for_subtype = False
 for line_index, line in enumerate(type_doc_str.split("\n")):
   if len(line) == 0:
     continue
@@ -48,6 +49,7 @@ for line_index, line in enumerate(type_doc_str.split("\n")):
   subtype_match = re.search(r"^  ([0-9A-F]{2}) (.+)$", line, re.IGNORECASE)
   forms_header_match = re.search(r"^    Forms:$", line, re.IGNORECASE)
   form_match = re.search(r"^      ([0-9A-F]+) (.+)$", line, re.IGNORECASE)
+  form_is_item_id_match = re.search(r"^    Form: The item ID.$", line, re.IGNORECASE)
   if type_match:
     type = int(type_match.group(1), 16)
     type_name = type_match.group(2)
@@ -63,6 +65,7 @@ for line_index, line in enumerate(type_doc_str.split("\n")):
     last_seen_type_doc = type_doc
     last_seen_subtype_doc = None
     found_forms_header_for_subtype = False
+    found_form_is_item_id_for_subtype = False
   elif subtype_match:
     subtype = int(subtype_match.group(1), 16)
     subtype_name = subtype_match.group(2)
@@ -79,9 +82,12 @@ for line_index, line in enumerate(type_doc_str.split("\n")):
     
     last_seen_subtype_doc = subtype_doc
     found_forms_header_for_subtype = False
+    found_form_is_item_id_for_subtype = False
   elif forms_header_match:
     if last_seen_subtype_doc is None:
       raise Exception("Found forms list doc not under a subtype on line %d" % (line_index+1))
+    if found_form_is_item_id_for_subtype:
+      raise Exception("Cannot list forms and also have form be the item ID")
     
     found_forms_header_for_subtype = True
   elif form_match:
@@ -98,6 +104,13 @@ for line_index, line in enumerate(type_doc_str.split("\n")):
     form_doc = OrderedDict()
     last_seen_subtype_doc["forms"][form] = form_doc
     form_doc["name"] = form_name
+  elif form_is_item_id_match:
+    if last_seen_subtype_doc is None:
+      raise Exception("Found form is item ID not under a subtype on line %d" % (line_index+1))
+    if found_forms_header_for_subtype:
+      raise Exception("Cannot list forms and also have form be the item ID")
+    
+    last_seen_subtype_doc["form_is_item_id"] = True
   else:
     continue
 
@@ -125,6 +138,8 @@ class Docs:
           subtype_data = type_data["subtypes"][entity.subtype]
           if value in subtype_data["forms"]:
             pretty_value += ": " + subtype_data["forms"][value]["name"]
+          elif subtype_data.get("form_is_item_id", False) and value in ITEM_ID_TO_NAME:
+            pretty_value += ": " + ITEM_ID_TO_NAME[value]
     
     return pretty_value
   
