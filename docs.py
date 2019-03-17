@@ -8,6 +8,28 @@ from mclib.entity import Entity
 
 DATA_PATH = "./mclib/data" # TODO
 
+
+AREA_INDEX_TO_NAME = {}
+with open(os.path.join(DATA_PATH, "area_names.txt"), "r") as f:
+  matches = re.findall(r"^([0-9a-f]{2}) (.*)$", f.read(), re.IGNORECASE | re.MULTILINE)
+for area_index, area_name in matches:
+  area_index = int(area_index, 16)
+  AREA_INDEX_TO_NAME[area_index] = area_name
+
+
+ITEM_ID_TO_NAME = {}
+ITEM_NAME_TO_ID = {}
+with open(os.path.join(DATA_PATH, "item_names.txt"), "r") as f:
+  matches = re.findall(r"^([0-9a-f]{2}) (.+)$", f.read(), re.IGNORECASE | re.MULTILINE)
+for item_id, item_name in matches:
+  if item_name:
+    item_id = int(item_id, 16)
+    ITEM_ID_TO_NAME[item_id] = item_name
+    if item_name in ITEM_NAME_TO_ID:
+      raise Exception("Duplicate item name: " + item_name)
+    ITEM_NAME_TO_ID[item_name] = item_id
+
+
 with open(os.path.join(DATA_PATH, "entity_types.txt")) as f:
   type_doc_str = f.read()
 
