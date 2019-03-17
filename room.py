@@ -6,6 +6,7 @@ from mclib.entity import EntityList, Entity
 from mclib.tile_entity import TileEntity
 from mclib.exit import Exit
 from mclib.assets import AssetList
+from mclib.exit_region import ExitRegion
 
 class Room:
   def __init__(self, room_index, area, rom):
@@ -35,6 +36,15 @@ class Room:
     self._layers_asset_list = None # Lazy load
     
     self.read_entities()
+    
+    self.exit_region_lists = []
+    if self.property_list_ptr != 0:
+      for entity_list in self.entity_lists:
+        for entity in entity_list.entities:
+          if entity.type == 9 and entity.subtype == 6:
+            region_list_ptr = self.rom.read_u32(self.property_list_ptr + entity.form*4)
+            regions = ExitRegion.read_list_of_entrances(region_list_ptr, self)
+            self.exit_region_lists.append(regions)
     
     self.read_tile_entities()
     
