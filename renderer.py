@@ -338,9 +338,9 @@ class Renderer:
     
     print(
       "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
-        entity.type, entity.subtype, entity.form, loading_data.object_palette_id, loading_data.sprite_index
-      )
-    )
+        entity.type, entity.subtype, entity.form,
+        loading_data.object_palette_id, loading_data.sprite_index
+      ))
     
     palettes, entity_palette_index = self.generate_object_palettes(loading_data.object_palette_id, room_bg_palettes)
     
@@ -357,14 +357,16 @@ class Renderer:
     if sprite.animation_list_ptr != 0:
       best_anim_index = Docs.get_best_sprite_animation(entity)
     
-    if best_anim_index:
+    if best_anim_index is not None:
       keyframe = sprite.get_animation(best_anim_index).keyframes[0]
       frame_index = keyframe.frame_index
-      print("Has animations, first keyframe's frame index: %02X" % frame_index)
+      print("Has animations, using anim %02X, which has frame %02X for its first keyframe" % (best_anim_index, frame_index))
     else:
       frame_index = Docs.get_best_sprite_frame(entity)
     
     if loading_data.gfx_type == 0:
+      if loading_data.fixed_gfx_index == 0:
+        return None
       gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
     elif loading_data.gfx_type == 2:
       gfx_data = self.get_sprite_common_type_gfx_data(loading_data)
@@ -544,14 +546,13 @@ class Renderer:
     
     if 0 <= object_palette_id <= 5:
       entity_palette_index = object_palette_id
-    elif 6 <= object_palette_id <= 0xA:
+    elif 6 <= object_palette_id <= 0x14:
       background_palette_index = object_palette_id - 6
       background_palette = room_bg_palettes[background_palette_index]
       final_palettes[0x16] = background_palette
-    elif 0xB <= object_palette_id <= 0x14:
-      raise Exception("Unimplemented object palette ID: %02X" % object_palette_id)
     elif object_palette_id == 0x15:
-      raise Exception("Unimplemented object palette ID: %02X" % object_palette_id)
+      color = room_bg_palettes[3][0xC]
+      final_palettes[0x16] = [color]*0x10
     else:
       object_palette_index = object_palette_id - 0x16
       bitfield = self.rom.read_u32(0x08133368 + object_palette_index*4)
