@@ -189,5 +189,9 @@ class Docs:
       return entity.form
     elif entity.type == 6 and entity.subtype == 0x25:
       return None
+    elif entity.type == 6 and entity.subtype == 5:
+      return 5
+    elif entity.type == 6 and entity.subtype == 0x6B and entity.form == 3:
+      return 0xC
     
     return 0

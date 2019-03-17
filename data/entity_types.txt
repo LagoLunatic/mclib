@@ -7,6 +7,9 @@
 
 03 Enemy
   00 Octorok
+    Forms:
+      0 Red
+      1 Blue
   01 Chuchu
     Forms:
       0 Green
@@ -18,7 +21,7 @@
       1 Normal
       2 Red
       3 Black Knight
-  06 nut thing hanging around in minish village?
+  06 Destructible hanging seed
     Forms:
       0 Points up
       1 Points down
@@ -224,6 +227,7 @@
       00 Bookshelf
       01 Crate
       0A Shelf
+      18 Minish wheelbarrow
       1A Baker's rack
       1E Rem's workbench
       1F Ladder on Rem's workbench
@@ -251,8 +255,9 @@
       9 sword from Melari?
   6B Crenal bean sprout
     Forms:
-      0 Hole that you can manually put the green sprout in
+      0 Hole to put the green sprout in
       2 Blue sprout
+      3 Green sprout (huge)
   6D Object on a pillar
     params & 0000FFFF - flag
     params & FFFF0000 - flag
@@ -381,6 +386,11 @@
       0 Tina
       1 Dina
   4B Mayor Hagen
+  4C Biggoron
+    Forms:
+      1 ?
+      5 ?
+      A ?
   4D Cap Ezlo
   53 Hurdy-Gurdy Man
 
@@ -391,17 +401,8 @@
     Forms:
       0 Tree Trunk
       1 Rock
-  06 Minish region entrance handler.
-    Form - Index in this room's property list of a pointer to a list of Minish entrance regions.
-      Entry length 8.
-      00,2: Center X pos
-        FFFF here marks the end of the list.
-      02,2: Center Y pos
-      04,1: Width (on either side of the center)
-      05,1: Height (above or below the center)
-      06,1: Index in this room's property list of a pointer to the exit
-      07,1: Bitfield.
-        & 03 - ?
+  06 Minish exit region handler.
+    Form - Index in this room's property list of a pointer to a list of Minish exit regions.
   0B Enemy spawner
     For form 0:
       unknown4 & 000000FF - Index in this room's property list of a pointer to an entity list to load.
