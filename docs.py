@@ -107,6 +107,20 @@ class Docs:
     return pretty_value
   
   @staticmethod
+  def get_name_for_entity(entity):
+    name = ""
+    
+    if entity.type in ENTITY_TYPE_DOCS:
+      type_data = ENTITY_TYPE_DOCS[entity.type]
+      if entity.subtype in type_data["subtypes"]:
+        subtype_data = type_data["subtypes"][entity.subtype]
+        name += subtype_data["name"]
+        if entity.form in subtype_data["forms"]:
+          name += " " + subtype_data["forms"][entity.form]["name"]
+    
+    return name
+  
+  @staticmethod
   def get_best_sprite_frame(entity):
     if entity.type == 6 and entity.subtype == 8:
       # Door
