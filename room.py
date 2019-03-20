@@ -7,6 +7,7 @@ from mclib.tile_entity import TileEntity
 from mclib.exit import Exit
 from mclib.assets import AssetList
 from mclib.exit_region import ExitRegion
+from mclib.visual_zone import VisualZone, VisualZoneData
 
 class Room:
   def __init__(self, room_index, area, rom):
@@ -49,6 +50,8 @@ class Room:
     self.read_tile_entities()
     
     self.read_exits()
+    
+    self.read_visual_zones()
   
   @property
   def layers_asset_list(self):
@@ -131,6 +134,29 @@ class Room:
       self.exits.append(ext)
       
       exit_ptr += 0x14
+  
+  def read_visual_zones(self):
+    tileset_swapper_entity = None
+    for entity_list in self.entity_lists:
+      for entity in entity_list.entities:
+        if entity.type == 9 and entity.subtype in [7, 0x12]:
+          tileset_swapper_entity = entity
+          break
+    
+    if tileset_swapper_entity is None:
+      self.zone_lists = []
+      self.visual_zone_datas = {}
+    else:
+      self.zone_lists = VisualZone.get_zone_lists_for_area(
+        tileset_swapper_entity.subtype, self.area.area_index, self.rom
+      )
+      self.visual_zone_datas = {}
+      for zone_list in self.zone_lists:
+        for zone in zone_list:
+          if zone.zone_id not in self.visual_zone_datas:
+            self.visual_zone_datas[zone.zone_id] = VisualZoneData(
+              tileset_swapper_entity.subtype, self.area.area_index, zone.zone_id, self.rom
+            )
   
   def extract_hardcoded_state_entity_list_pointers(self):
     # Rooms can have a function that hardcodes various conditional checks and then loads different entity lists.
