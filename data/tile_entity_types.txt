@@ -1,8 +1,9 @@
 
 01 
 02 Small chest
-  unknown1 - Flag for this chest being opened.
+  unknown1 - Regional flag for this chest being opened.
 03 Big chest
+  unknown1 - Regional flag for this chest being opened.
 04 ? place where you can jump down a ledge?
 05 Sign
 06 

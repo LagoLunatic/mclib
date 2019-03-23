@@ -97,7 +97,16 @@ class Room:
         if entity.type == 9 and entity.subtype == 0xB and entity.form == 0:
           prop_index = entity.unknown_4
           prop_ptr = self.read_prop_ptr(prop_index)
-          self.read_one_entity_list(prop_ptr, "Conditional enemies")
+          self.read_one_entity_list(prop_ptr, "Disappearing enemies")
+        elif entity.type == 9 and entity.subtype == 0xE:
+          prop_index = entity.form
+          prop_ptr = self.read_prop_ptr(prop_index)
+          self.read_one_entity_list(prop_ptr, "Appearing entities")
+        elif entity.type == 9 and entity.subtype == 0xD:
+          prop_index = entity.form
+          if prop_index != 0:
+            prop_ptr = self.read_prop_ptr(prop_index)
+            self.read_one_entity_list(prop_ptr, "Tile appearing entities")
         elif entity.type == 9 and entity.subtype == 0x16:
           prop_index = entity.form
           prop_ptr = self.read_prop_ptr(prop_index)

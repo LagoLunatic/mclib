@@ -150,6 +150,13 @@
       00 Random
     unknown4 - If set to 1, this pot stays permanently destroyed.
     params & FFFF0000 - Flag for this pot being permanently destroyed.
+  07 Block being pushed
+    Forms:
+      0 1x1
+      1 2x2
+      2 3x3
+      3 4x4
+    Don't place this manually. The game engine creates it automatically when you push a block tile.
   08 Locked door
     params & FFFF0000 - Flag for this door being unlocked.
     Form: Bitfield.
@@ -174,10 +181,10 @@
       2 Big chest (appears)
       4 Big chest
     params & FFFF0000 - Flag for the chest appearing.
-    unknown4 - for big chests, this is used to find the tile entity. the big chest's unknown1 must be set to this same value.
-    the item ID is stored in the matching tile entity chest.
-      if this is a small chest, it looks for the tile entity on the same tile as this entity.
-      if this is a big chest, the position doesn't matter, instead it looks for the tile entity with a matching unknown1 to this (unknown4)
+    unknown4 - Regional flag for this chest being opened.
+    The item ID is stored in the matching tile entity chest.
+      If this is a small chest, it looks for the tile entity on the same tile as this entity.
+      If this is a big chest, the position doesn't matter, instead it looks for the tile entity with a matching unknown1 to this entity's unknown4.
   13 Rotatable railtrack
     unknown4 - Affects the default direction the track is in.
       0 - Default vertical.
@@ -276,7 +283,7 @@
       3B Dr. Left's table
   4E Minish sized entrance
     unknown5: A room property index.
-      The property is a pointer to a the exit data.
+      The property is a pointer to the exit data.
   4F Arch over a doorway
   54 Pullable lever
     params & FFFF0000 - Flag to set.
@@ -547,16 +554,35 @@
     Form: A room property index.
       The property is a pointer to a list of Minish exit regions.
   07 Minish Village tileset swapper
-  0B Enemy spawner
+  0B Enemy (de)spawner
     For form 0:
-      unknown4 - Index in this room's property list of a pointer to an entity list to load.
+      params & FFFF0000 - Flag to check.
+        If not set, the entities in this list are loaded when the player enters the room.
+        Once set, they no longer get loaded in the future.
+      unknown4: A room property index.
+        The property is a pointer to the list of entities to load.
       unknown5 - substate? (stored to 0E,1 of the entity in RAM)
       params & 0000FFFF - 
-      params & FFFF0000 - Flag.
-        If not set, the entities in this list are loaded.
-        Once set, they no longer get loaded.
-  0E Sets boss death flag?
-    params & FFFF0000 - Flag to set.
+  0D Tile change monitor
+    "Y pos" - Layer of the tile to monitor.
+      1 - BG2
+      2 - BG1
+    "X pos" - Position bitfield of the tile to monitor.
+      0x003F - X pos in 16x16 tiles.
+      0x0FC0 - Y pos in 16x16 tiles.
+    params & FFFF0000 - Flag to set 15 frames after the monitored tile changes to some other tile.
+    Form: A room property index.
+      The property is a pointer to the list of entities to load 15 frames after the monitored tile changes.
+      If this index is 0 it does not load any entities.
+  0E Entity spawner
+    params & FFFF0000 - Flag to check.
+      If not set, the entities in this list are not loaded.
+      Once set, they will be loaded immediately, without the player needing to exit and re-enter the room.
+    Form: A room property index.
+        The property is a pointer to the list of entities to load.
+    unknown4 - Number of frames to wait after the flag is set before spawning the entities.
+  0F ?
+    unknown4 - Bit index in 02034364 bitfield?
   12 Hyrule Town tileset swapper
   16 Delayed entity loader?
     Form: A room property index.
@@ -569,6 +595,15 @@
     unknown2 - item ID?
     params & 00FF0000 - item ID?
   18 kinstone fusion reward related?
+  1E ? some kind of trigger region?
+    Note that X and Y pos are of the upper left of the region.
+    (unknown5 << 8) | unknown4: Width.
+    (unknown7 << 8) | unknown6: Height.
+    params & FFFF0000: Flag(s) to set when the player is in the region, or to clear when they are not.
+      This is the arg to CheckVariableTypeBits.
+      if set, delete this entity.
+    Form: If zero, this is a one-off trigger region.
+      If nonzero, the player can leave it to unset the flag and re-enter it to set the flag again.
   1F changes a tile in the room depending on a flag?
     params & FFFF0000 - Flag.
     form - 

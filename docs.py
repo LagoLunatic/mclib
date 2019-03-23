@@ -183,6 +183,8 @@ class Docs:
       if prop.attribute_name == "type" and value in TILE_ENTITY_TYPE_DOCS:
         type_data = TILE_ENTITY_TYPE_DOCS[value]
         pretty_value += ": " + type_data["name"]
+      elif prop.attribute_name == "item_id" and value in ITEM_ID_TO_NAME:
+        pretty_value += ": " + ITEM_ID_TO_NAME[value]
     
     return pretty_value
   
