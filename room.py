@@ -100,6 +100,10 @@ class Room:
           self.read_one_entity_list(prop_ptr, "Conditional enemies")
     
   def read_one_entity_list(self, entity_list_ptr, name):
+    if any(el.entity_list_ptr == entity_list_ptr for el in self.entity_lists):
+      # Already read this list
+      return
+    
     entity_list = EntityList(entity_list_ptr, name, self, self.rom)
     self.entity_lists.append(entity_list)
   
