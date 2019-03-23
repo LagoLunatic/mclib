@@ -16,6 +16,34 @@ class Renderer:
     self.rom = self.game.rom
     
     self.common_palettes = self.generate_palettes_from_palette_group_by_index(0xB)
+    
+    self.curr_room_bg_palettes = None
+    self.curr_room_tileset_images = [None]*2
+  
+  def update_curr_room_palettes_and_tilesets(self, room):
+    if room is None:
+      self.curr_room_bg_palettes = None
+      self.curr_room_tileset_images = [None]*2
+    
+    area = room.area
+    
+    if room.layers_asset_list is None:
+      gfx_index = 0
+    else:
+      gfx_index = room.gfx_index
+    self.curr_room_bg_palettes = self.generate_palettes_for_area_by_gfx_index(area, gfx_index)
+    
+    self.curr_room_tileset_images = [None]*2
+    if area.uses_256_color_bg1s:
+      return
+    for layer_index in range(2):
+      try:
+        tileset_image = self.render_tileset(area, room.gfx_index, self.curr_room_bg_palettes, layer_index)
+        self.curr_room_tileset_images[layer_index] = tileset_image
+      except Exception as e:
+        stack_trace = traceback.format_exc()
+        error_message = "Error rendering tileset:\n" + str(e) + "\n\n" + stack_trace
+        print(error_message)
   
   def render_tileset(self, area, gfx_index, palettes, layer_index):
     rom = self.rom
@@ -330,10 +358,10 @@ class Renderer:
       frame_image = self.render_sprite_frame_swap_type_gfx(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_entity_sprite_frame(self, entity, room_bg_palettes, room_tileset_images):
+  def render_entity_sprite_frame(self, entity):
     if entity.type == 6 and entity.subtype == 0xC and entity.form in [0, 1]:
       # Small chest spawner
-      chest_tile_image = self.get_16x16_tile_by_index(room_tileset_images[0], 0x10)
+      chest_tile_image = self.get_16x16_tile_by_index(self.curr_room_tileset_images[0], 0x10)
       return chest_tile_image
     
     loading_data = SpriteLoadingData(entity, self.rom)
@@ -347,7 +375,7 @@ class Renderer:
         loading_data.object_palette_id, loading_data.sprite_index
       ))
     
-    palettes, entity_palette_index = self.generate_object_palettes(loading_data.object_palette_id, room_bg_palettes)
+    palettes, entity_palette_index = self.generate_object_palettes(loading_data.object_palette_id)
     
     sprite = Sprite(loading_data.sprite_index, self.rom)
     #print("%08X" % sprite.frame_gfx_data_list_ptr)
@@ -544,19 +572,19 @@ class Renderer:
     
     return final_palettes
   
-  def generate_object_palettes(self, object_palette_id, room_bg_palettes):
+  def generate_object_palettes(self, object_palette_id):
     final_palettes = self.common_palettes.copy()
-    final_palettes[0x15] = room_bg_palettes[3]
+    final_palettes[0x15] = self.curr_room_bg_palettes[3]
     entity_palette_index = 6
     
     if 0 <= object_palette_id <= 5:
       entity_palette_index = object_palette_id
     elif 6 <= object_palette_id <= 0x14:
       background_palette_index = object_palette_id - 6
-      background_palette = room_bg_palettes[background_palette_index]
+      background_palette = self.curr_room_bg_palettes[background_palette_index]
       final_palettes[0x16] = background_palette
     elif object_palette_id == 0x15:
-      color = room_bg_palettes[3][0xC]
+      color = self.curr_room_bg_palettes[3][0xC]
       final_palettes[0x16] = [color]*0x10
     else:
       object_palette_index = object_palette_id - 0x16
