@@ -123,7 +123,7 @@ class Docs:
     format_string = "%0" + str(num_hex_digits) + "X"
     pretty_value = format_string % value
     
-    if entity.__class__ == Entity:
+    if isinstance(entity, Entity):
       if prop.attribute_name == "type" and value in ENTITY_TYPE_DOCS:
         type_data = ENTITY_TYPE_DOCS[value]
         pretty_value += ": " + type_data["name"]

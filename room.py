@@ -2,7 +2,7 @@
 import traceback
 from collections import OrderedDict
 
-from mclib.entity import EntityList, Entity
+from mclib.entity import Entity, EntityList, DelayedLoadEntity, DelayedLoadEntityList
 from mclib.tile_entity import TileEntity
 from mclib.exit import Exit
 from mclib.assets import AssetList
@@ -98,6 +98,18 @@ class Room:
           prop_index = entity.unknown_4
           prop_ptr = self.read_prop_ptr(prop_index)
           self.read_one_entity_list(prop_ptr, "Conditional enemies")
+        elif entity.type == 9 and entity.subtype == 0x16:
+          prop_index = entity.form
+          prop_ptr = self.read_prop_ptr(prop_index)
+          if prop_ptr in [0x080EECDC, 0x080EFAA4, 0x080EE80C, 0x0804DED1]:
+            # TODO: area 0x15 has some delayed load entity lists full of garbage entities
+            continue
+          if prop_ptr != 0:
+            if entity.unknown_5 == 0:
+              listed_entities_type = 7
+            else:
+              listed_entities_type = 6
+            self.read_one_delayed_load_entity_list(prop_ptr, listed_entities_type, "Delayed load entities")
     
   def read_one_entity_list(self, entity_list_ptr, name):
     if any(el.entity_list_ptr == entity_list_ptr for el in self.entity_lists):
@@ -105,6 +117,14 @@ class Room:
       return
     
     entity_list = EntityList(entity_list_ptr, name, self, self.rom)
+    self.entity_lists.append(entity_list)
+  
+  def read_one_delayed_load_entity_list(self, entity_list_ptr, listed_entities_type, name):
+    if any(el.entity_list_ptr == entity_list_ptr for el in self.entity_lists):
+      # Already read this list
+      return
+    
+    entity_list = DelayedLoadEntityList(entity_list_ptr, listed_entities_type, name, self, self.rom)
     self.entity_lists.append(entity_list)
   
   def read_tile_entities(self):
