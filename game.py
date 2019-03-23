@@ -53,7 +53,7 @@ class Game:
                     item_name = ITEM_ID_TO_NAME[item_id]
                     output.append("Room %02X-%02X: Command at %08X gives item %02X (??) - %s" % (area.area_index, room.room_index, command.command_ptr, item_id, item_name))
               if entity.subtype == 3: # Minish
-                cutscene_ptr = self.rom.read_u32(0x08109D18 + (entity.unknown_4 & 0xFF)*4)
+                cutscene_ptr = self.rom.read_u32(0x08109D18 + entity.unknown_4*4)
                 cutscene = Cutscene(cutscene_ptr, self.rom)
                 for command in cutscene.commands:
                   if command.type == 0x82:

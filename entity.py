@@ -34,11 +34,16 @@ class Entity:
     type_and_unknowns = self.rom.read_u8(self.entity_ptr + 0)
     self.type = type_and_unknowns & 0x0F
     self.unknown_1 = (type_and_unknowns & 0xF0) >> 4
-    self.unknown_2 = self.rom.read_u8(self.entity_ptr + 1)
+    unknowns = self.rom.read_u8(self.entity_ptr + 1)
+    self.unknown_2 = unknowns & 0x0F
+    self.unknown_3 = (unknowns & 0xF0) >> 4
     self.subtype = self.rom.read_u8(self.entity_ptr + 2)
     self.form = self.rom.read_u8(self.entity_ptr + 3)
     
-    self.unknown_4 = self.rom.read_u32(self.entity_ptr + 4)
+    self.unknown_4 = self.rom.read_u8(self.entity_ptr + 4)
+    self.unknown_5 = self.rom.read_u8(self.entity_ptr + 5)
+    self.unknown_6 = self.rom.read_u8(self.entity_ptr + 6)
+    self.unknown_7 = self.rom.read_u8(self.entity_ptr + 7)
     
     self.x_pos = self.rom.read_u16(self.entity_ptr + 8)
     self.y_pos = self.rom.read_u16(self.entity_ptr + 0xA)
