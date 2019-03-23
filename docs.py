@@ -50,6 +50,7 @@ for line_index, line in enumerate(type_doc_str.split("\n")):
   forms_header_match = re.search(r"^    Forms:$", line, re.IGNORECASE)
   form_match = re.search(r"^      ([0-9A-F]+) (.+)$", line, re.IGNORECASE)
   form_is_item_id_match = re.search(r"^    Form: The item ID.$", line, re.IGNORECASE)
+  form_is_prop_index_match = re.search(r"^    Form: A room property index.$", line, re.IGNORECASE)
   if type_match:
     type = int(type_match.group(1), 16)
     type_name = type_match.group(2)
@@ -109,8 +110,19 @@ for line_index, line in enumerate(type_doc_str.split("\n")):
       raise Exception("Found form is item ID not under a subtype on line %d" % (line_index+1))
     if found_forms_header_for_subtype:
       raise Exception("Cannot list forms and also have form be the item ID")
+    if last_seen_subtype_doc.get("form_is_prop_index"):
+      raise Exception("Form cannot be both an item ID and a property index")
     
     last_seen_subtype_doc["form_is_item_id"] = True
+  elif form_is_prop_index_match:
+    if last_seen_subtype_doc is None:
+      raise Exception("Found form is item ID not under a subtype on line %d" % (line_index+1))
+    if found_forms_header_for_subtype:
+      raise Exception("Cannot list forms and also have form be the item ID")
+    if last_seen_subtype_doc.get("form_is_item_id"):
+      raise Exception("Form cannot be both an item ID and a property index")
+    
+    last_seen_subtype_doc["form_is_prop_index"] = True
   else:
     continue
 
@@ -140,6 +152,8 @@ class Docs:
             pretty_value += ": " + subtype_data["forms"][value]["name"]
           elif subtype_data.get("form_is_item_id", False) and value in ITEM_ID_TO_NAME:
             pretty_value += ": " + ITEM_ID_TO_NAME[value]
+          elif subtype_data.get("form_is_prop_index", False) and value in entity.room.property_pointers:
+            pretty_value += ": %08X" % entity.room.property_pointers[value]
     
     return pretty_value
   
