@@ -5,6 +5,7 @@ import os
 import re
 
 from mclib.entity import Entity
+from mclib.tile_entity import TileEntity
 
 DATA_PATH = "./mclib/data" # TODO
 
@@ -31,7 +32,7 @@ for item_id, item_name in matches:
 
 
 with open(os.path.join(DATA_PATH, "entity_types.txt")) as f:
-  type_doc_str = f.read()
+  entity_doc_str = f.read()
 
 ENTITY_TYPE_DOCS = OrderedDict()
 
@@ -39,7 +40,7 @@ last_seen_type_doc = None
 last_seen_subtype_doc = None
 found_forms_header_for_subtype = False
 found_form_is_item_id_for_subtype = False
-for line_index, line in enumerate(type_doc_str.split("\n")):
+for line_index, line in enumerate(entity_doc_str.split("\n")):
   if len(line) == 0:
     continue
   if line[0] == "#":
@@ -128,6 +129,30 @@ for line_index, line in enumerate(type_doc_str.split("\n")):
 
 # TODO: implement best sprite frame into new doc format
 
+with open(os.path.join(DATA_PATH, "tile_entity_types.txt")) as f:
+  tile_entity_doc_str = f.read()
+
+TILE_ENTITY_TYPE_DOCS = OrderedDict()
+
+last_seen_type_doc = None
+for line_index, line in enumerate(tile_entity_doc_str.split("\n")):
+  if len(line) == 0:
+    continue
+  if line[0] == "#":
+    continue
+  
+  type_match = re.search(r"^([0-9A-F]{2}) (.+)$", line, re.IGNORECASE)
+  if type_match:
+    type = int(type_match.group(1), 16)
+    type_name = type_match.group(2)
+    
+    if type in TILE_ENTITY_TYPE_DOCS:
+      raise Exception("Duplicate doc for entity type %X on line %d" % (type, line_index+1))
+    
+    type_doc = OrderedDict()
+    type_doc["name"] = type_name
+    TILE_ENTITY_TYPE_DOCS[type] = type_doc
+
 class Docs:
   @staticmethod
   def prettify_prop_value(prop, value, entity):
@@ -154,6 +179,10 @@ class Docs:
             pretty_value += ": " + ITEM_ID_TO_NAME[value]
           elif subtype_data.get("form_is_prop_index", False) and value in entity.room.property_pointers:
             pretty_value += ": %08X" % entity.room.property_pointers[value]
+    elif isinstance(entity, TileEntity):
+      if prop.attribute_name == "type" and value in TILE_ENTITY_TYPE_DOCS:
+        type_data = TILE_ENTITY_TYPE_DOCS[value]
+        pretty_value += ": " + type_data["name"]
     
     return pretty_value
   

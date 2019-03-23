@@ -1,0 +1,15 @@
+
+01 
+02 Small chest
+  unknown1 - Flag for this chest being opened.
+03 Big chest
+04 ? place where you can jump down a ledge?
+05 Sign
+06 
+07 in upper left corner?
+08 
+09 
+0A ??? rocks, small trees, and other destroyable obstacles?
+0B 
+0C always in upper left corner?
+0D 
