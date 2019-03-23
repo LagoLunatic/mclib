@@ -24,6 +24,8 @@ class SpriteLoadingData:
     elif self.entity_type == 7:
       sprite_loading_datas_list = 0x08114AE4
       self.read_format_b(sprite_loading_datas_list)
+    else:
+      self.has_no_sprite = True
   
   def read_format_a(self, sprite_loading_datas_list):
     sprite_loading_data_ptr = sprite_loading_datas_list + self.entity_subtype*0x10
