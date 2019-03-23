@@ -24,6 +24,7 @@ class Room:
       self.property_list_ptr = 0
     else:
       self.property_list_ptr = self.rom.read_u32(self.area.room_property_lists_pointer + self.room_index*4)
+    self.property_pointers = {}
     
     self.exit_list_ptr = self.rom.read_u32(self.area.room_exit_lists_pointer + self.room_index*4)
     self.layer_list_ptr = self.rom.read_u32(self.area.room_layers_lists_pointer + self.room_index*4)
@@ -43,7 +44,7 @@ class Room:
       for entity_list in self.entity_lists:
         for entity in entity_list.entities:
           if entity.type == 9 and entity.subtype == 6:
-            region_list_ptr = self.rom.read_u32(self.property_list_ptr + entity.form*4)
+            region_list_ptr = self.read_prop_ptr(entity.form)
             regions = ExitRegion.read_list_of_entrances(region_list_ptr, self)
             self.exit_region_lists.append(regions)
     
@@ -52,6 +53,11 @@ class Room:
     self.read_exits()
     
     self.read_visual_zones()
+  
+  def read_prop_ptr(self, prop_index):
+    if prop_index not in self.property_pointers:
+      self.property_pointers[prop_index] = self.rom.read_u32(self.property_list_ptr + prop_index*4)
+    return self.property_pointers[prop_index]
   
   @property
   def layers_asset_list(self):
@@ -89,8 +95,8 @@ class Room:
     for entity_list in self.entity_lists:
       for entity in entity_list.entities:
         if entity.type == 9 and entity.subtype == 0xB and entity.form == 0:
-          prop_index = entity.unknown_4 & 0x000000FF
-          prop_ptr = self.rom.read_u32(self.property_list_ptr + prop_index*4)
+          prop_index = entity.unknown_4
+          prop_ptr = self.read_prop_ptr(prop_index)
           self.read_one_entity_list(prop_ptr, "Conditional enemies")
     
   def read_one_entity_list(self, entity_list_ptr, name):
