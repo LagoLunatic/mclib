@@ -170,6 +170,8 @@ class Docs:
       return 0x1A
     elif entity.type == 6 and entity.subtype == 0x16:
       return entity.form
+    elif entity.type == 6 and entity.subtype == 0x46:
+      return entity.form
     
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
@@ -181,7 +183,7 @@ class Docs:
     return 0
   
   def get_best_sprite_animation(entity):
-    if entity.type == 6 and entity.subtype in [0, 2]:
+    if entity.type == 6 and entity.subtype in [0, 2, 0x40]:
       return entity.form
     elif entity.type == 6 and entity.subtype == 0x47:
       return 0x62
@@ -193,5 +195,13 @@ class Docs:
       return 5
     elif entity.type == 6 and entity.subtype == 0x6B and entity.form == 3:
       return 0xC
+    elif entity.type == 6 and entity.subtype == 0x41:
+      return 0xA
+    elif entity.type == 6 and entity.subtype == 0x6A and entity.form == 7:
+      return 0x5B
+    elif entity.type == 6 and entity.subtype == 0x6A and entity.form == 0x12:
+      return 0x5C
+    elif entity.type == 6 and entity.subtype == 0x6A and entity.form == 8:
+      return 2
     
     return 0
