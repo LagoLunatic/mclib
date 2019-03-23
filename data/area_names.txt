@@ -35,21 +35,21 @@
 22 Various Homes
 23 Hyrule Town Shops
 24 Witch's Hut & Tree Interiors
-25 ???
+25 Blade Brothers Caves
 26 Mount Crenel Caves
-27 ???
+27 Minish Cave Homes
 28 ???
 29 Great Fairy Fountains
 2A Castor Wilds/Wind Ruins Caves
 2B ???
 2C ???
 2D Hyrule Town Minish-Sized Interiors
-2E ???
+2E Minish-Sized Rafters
 2F Goron Cave
 30 Wind Tribe Home Interior
 31 Wind Tribe Home Top Floor
 32 Various Hyrule Caves
-33 ???
+33 Veil Falls Caves
 34 Royal Valley Caves
 35 Minish-Sized Caves
 36 ???

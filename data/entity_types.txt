@@ -27,6 +27,7 @@
       1 Points down
       2 Points right
       3 Points left
+  07 Beetle
   08 Keese
   0A Rock Chuchu
   0B Spiny Chuchu
@@ -86,6 +87,11 @@
     Forms:
       0 Normal
       1 Corrupted
+    Params might affect the region the enemy is allowed to roam freely within?
+      Params & 0000FFFF - Left X of the rectangle the enemy is allowed within.
+      Params & FFFF0000 - Top Y of the rectangle the enemy is allowed within.
+      unknown6 - Width in 8x8 tiles of the rectangle the enemy is allowed within.
+      unknown7 - Height in 8x8 tiles of the rectangle the enemy is allowed within.
   31 Takkuri 1?
   32 Mulldozer
     Forms:
@@ -100,6 +106,9 @@
       1 under a rock?
   39 Big Octorok
   3B Gibdo
+  3C Golden Octorok
+  3D Golden Tektite
+  3E Golden Rope
   40 Scissors Beetle
   41 Cucco
   42 Stalfos
@@ -137,7 +146,10 @@
     params & FFFF0000 - Flag to set when pressed
     Form: usually 0. for the buttons that burn the vines to the rotating barrel in deepwood, this is 1 instead. and the flag to set is just 00.
   05 Pot
-    Form: The item ID. Or 0 for random.
+    Form: The item ID.
+      00 Random
+    unknown4 - If set to 1, this pot stays permanently destroyed.
+    params & FFFF0000 - Flag for this pot being permanently destroyed.
   08 Locked door
     params & FFFF0000 - Flag for this door being unlocked.
     Form: Bitfield.
@@ -162,12 +174,12 @@
       2 Big chest (appears)
       4 Big chest
     params & FFFF0000 - Flag for the chest appearing.
-    unknown4 & 000000FF - for big chests, this is used to find the tile entity. the big chest's unknown1 must be set to this same value.
+    unknown4 - for big chests, this is used to find the tile entity. the big chest's unknown1 must be set to this same value.
     the item ID is stored in the matching tile entity chest.
       if this is a small chest, it looks for the tile entity on the same tile as this entity.
-      if this is a big chest, the position doesn't matter, instead it looks for the tile entity with a matching unknown1 to this unknown4&000000FF
+      if this is a big chest, the position doesn't matter, instead it looks for the tile entity with a matching unknown1 to this (unknown4)
   13 Rotatable railtrack
-    unknown4 & 000000FF - Affects the default direction the track is in.
+    unknown4 - Affects the default direction the track is in.
       0 - Default vertical.
       2 - Default horizontal.
     params & FFFF0000 - Flag to check.
@@ -178,6 +190,7 @@
       1 1x2
       2 2x2
       3 3x3
+  18 Evil spirit
   19 House door
     Forms:
       0 ?
@@ -206,53 +219,95 @@
       0 Blue
       1 Red
       2 Green
-    unknown4 & 000000FF - Dest area index.
-    unknown4 & 0000FF00 - Dest room index.
+    unknown4 - Dest area index.
+    unknown5 - Dest room index.
     params & 0000003F - Dest X pos. (In 16x16 tiles.)
     params & 00000FC0 - Dest Y pos. (In 16x16 tiles.)
     params & FFFF0000 - Spawn flag.
+  36 something inside the big barrel room? (48-20)
   38 big jar?
   39 Boss door
     params & FFFF0000 - Flag for opening it?
-  3E Minish Village (Small)
+  3E Decoration?
+    Forms:
+      0 Minish Village (Small)
+      1 
+      2 
+      7 Stained glass
+      8 
   3F Giant leaf
-  40 Fairy flying around?
-    Form: The item ID?
-  41 Ladder up?
+  40 Fairy flying around
+    Form: The item ID.
+  41 Ladder up
+  46 Giant book ladder
   47 Heart container
     params & 0000FFFF - Picked up flag
-  4C pushable crates (e.g. in 20-09)
+  4A Background cloud
+  4C Pushable crate
   4D Furniture
     Forms:
       00 Bookshelf
       01 Crate
+      07 Weapon rack
       0A Shelf
+      0B Ladder up
+      0C Minish lamp
+      0D Glowing floor plant
+      0E Minish shelf
+      0F Kinstone rack
       18 Minish wheelbarrow
       1A Baker's rack
       1E Rem's workbench
       1F Ladder on Rem's workbench
+      25 Fancy bookshelf
+      26 Bed
+      28 Giant bread and cheese
+      2A Giant chess knight
+      2C Giant cup
+      2D 
+      2E 
+      30 Giant cog
+      31 Giant pincushion
+      32 Giant spool of thread
+      34 Box of scrolls
+      35 Giant apple
+      36 Giant candle
       3A Wheaton's table
       3B Dr. Left's table
-  4E Minish sized entrance?
+  4E Minish sized entrance
+    unknown5: A room property index.
+      The property is a pointer to a the exit data.
   4F Arch over a doorway
   54 Pullable lever
     params & FFFF0000 - Flag to set.
   55 Minecart
     form - ?
-    unknown4 & 000000FF - 0 for normal, 1 for flipped over?
-    unknown4 & 0000FF00 - 
+    unknown4 - 0 for normal, 1 for flipped over?
+    unknown5 - 
   57 in middle of hyrule field? maybe pitfall?
   58 Curtains in Gentari's room
   59 Platform on lava
   5E Whirlwind
-  62 
+  62 Giant twig
+    Forms:
+      0 ?
+      1 ?
+      2 ?
+      3 ?
+  65 Ladder hole in bookshelf
   69 Cutscene?
     params - pointer to a cutscene script
-  6A ???
+  6A Special item?
     Forms:
-      7 Jabber Nut? (in room 20-09)
-      8 sword from Melari?
-      9 sword from Melari?
+      01 Mage's Cap
+      05 Rubble blocking the way
+      06 Dog food
+      07 Jabber Nut
+      08 Broken Picori Blade
+      09 White Sword
+      12 Gold Kinstone Piece
+      17 Tablet in Elemental Sanctuary?
+      1C One of the Four Elements
   6B Crenal bean sprout
     Forms:
       0 Hole to put the green sprout in
@@ -263,11 +318,11 @@
     params & FFFF0000 - flag
     Small chest:
       form = 1
-      unknown4 = 20482088
+      unknown4-7 = 20482088
       params = 00250026
     Lever:
       form = 2
-      unknown4 = 104811D8
+      unknown4-7 = 104811D8
       params = 002F002E
   6F Arch over a doorway 2?
   71 grave
@@ -286,12 +341,23 @@
     Forms:
       0 Two red shoes
       1 One brown shoe
-  7F glowing flower thing (e.g. in room 20-09)
+  7F Pico Bloom
     Forms:
       00 White
       02 Green
       03 Red
   82 Big vortex
+  83 Pushable lever
+  84 Small ice block
+    Forms:
+      0 Normal
+      1 Frozen small key
+      2 Frozen big key
+  85 Big ice block
+    Forms:
+      0 Normal
+      1 Frozen chest
+  86 four leaf clover?
   89 in mazaal boss room of fortress of winds
   92 Baker's oven
   94 Flag in front of Wind Tribe home
@@ -314,17 +380,18 @@
   9A Giant acorn
   9C tree you can bonk into maybe?
   9D Bombable switch
-  A4 Town Minish's lamp?
+  A4 Town Minish's lamp
+  AA Opening in a waterfall
   AE Floating block
   B1 Jail bars
   B7 well?
   BB Wind Crest
 
-07 Cutscene? or NPC?
+07 NPC
   params - Pointer to the first cutscene script command.
     Can be 0.
   unknown1 - seen 0 and 1 here
-  unknown4 & 0000FF00 - default direction to face?
+  unknown5 - default direction to face?
     00 Up
     01 Right
     02 Down
@@ -332,20 +399,32 @@
   01 Gentari
   02 Festari
   03 Forest Minish
-    unknown4 & 000000FF - index in list 08109D18 of the script to run.
+    unknown4 - index in list 08109D18 of the script to run.
   04 Postman
+  06 Generic Hyrule Townsperson?
+  07 Generic Kid?
+  08 Guard without spear
+  0A Stamp
+  0C Marcy
   0D Wheaton
   0E Pita
   0F Minish Ezlo
-  13 Sitting man
+  11 Beedle
+  12 Brocco
+  13 Sitting person
     Forms:
+      0 ?
+      1 ?
       2 ?
+      3 ?
       4 ?
-  15 Guard
+  14 Pina
+  15 Guard with spear
   16 Maid
   17 Din
   18 Nayru
   19 Farore
+  1A Sturgeon
   1B Tingle Siblings
     Forms:
       0 Tingle
@@ -353,38 +432,91 @@
       2 Knuckle
       3 David Jr.
   1C Stockwell
+  1D Talon
   1E Malon
-  21 Spekter
+  1F Epona
+  20 Cart of Lon Lon Milk
+  21 Ghost brothers
+    Forms:
+      0 Spekter
+      1 Spookter
   22 Smith
   24 King Daltus
   25 Minister Potho
   27 Vaati
   28 Zelda
+  29 Mutoh
+  2A Carpenter
+    Forms:
+      0 ?
+      1 ?
+      2 ?
+      3 ?
   2C Cat
     Forms:
+      1 Brown cat 1
+      2 Brown cat 2
       4 Scratcher
+      5 Purry
   2D Mountain Minish
     unknown4? - which apprentice (0-6)
   2F Melari
+  30 Blade brothers
+    Forms:
+      0 Swiftblade I
+      1 Swiftblade
+      2 Grayblade
+      3 Waveblade
+      4 Grimblade
+      5 Scarblade
+      6 Splitblade
+      7 Greatblade
+  31 Cow
   32 Goron
+  33 Goron Merchant
+  34 Gorman
+  35 Dog
+    Forms:
+      0 Fifi
+      1 Growler (roaming)
+      2 Growler (blocks the way)
+      3 Rolf
   37 Rem
   38 Town Minish
     Forms:
       0 Blue
+      1 Blue (behind counter)
       2 Orange
       3 Red
       4 Purple
       5 Green
   39 Librari
+  3D Librarians
+    Forms:
+      0 Paige
+      1 Maggie
+  3E Farmers
+    Forms:
+      0 Eenie
+      1 Meenie
+  3F Carlov & Borlov
+    Forms:
+      0 Carlov
+      1 Borlov
   40 Dampe
   41 Dr. Left
   42 King Gustaf
   43 Gina
   44 Simon
+  45 Anju
   48 Teachers
     Forms:
       0 Tina
       1 Dina
+  4A Gregal
+    Forms:
+      0 Sick
+      3 Healthy
   4B Mayor Hagen
   4C Biggoron
     Forms:
@@ -392,7 +524,17 @@
       5 ?
       A ?
   4D Cap Ezlo
+  4F Clothes rack
+  50 Beedle's Picolyte Bottles
+  52 Small Town Minish
+    Forms:
+      0 Blue
+      1 Red
+      2 Purple
+      3 Green
+      4 Orange
   53 Hurdy-Gurdy Man
+  54 Cucco on Anju's roof
 
 08 ???
 
@@ -402,17 +544,27 @@
       0 Tree Trunk
       1 Rock
   06 Minish exit region handler.
-    Form - Index in this room's property list of a pointer to a list of Minish exit regions.
+    Form: A room property index.
+      The property is a pointer to a list of Minish exit regions.
+  07 Minish Village tileset swapper
   0B Enemy spawner
     For form 0:
-      unknown4 & 000000FF - Index in this room's property list of a pointer to an entity list to load.
-      unknown4 & 0000FF00 - substate? (stored to 0E,1 of the entity in RAM)
+      unknown4 - Index in this room's property list of a pointer to an entity list to load.
+      unknown5 - substate? (stored to 0E,1 of the entity in RAM)
       params & 0000FFFF - 
       params & FFFF0000 - Flag.
         If not set, the entities in this list are loaded.
         Once set, they no longer get loaded.
   0E Sets boss death flag?
     params & FFFF0000 - Flag to set.
+  12 Hyrule Town tileset swapper
+  16 Delayed entity loader?
+    Form: A room property index.
+      The property is a pointer to a list of delayed load entities.
+    unknown4 - Index offset in list 02031EC0? (add the value at 02033A98,1 to this)
+    unknown5 - Affects the type of entities in this list.
+      0 - Type 7.
+      Other: Type 6.
   17 item that falls from the sky?
     unknown2 - item ID?
     params & 00FF0000 - item ID?
@@ -420,7 +572,7 @@
   1F changes a tile in the room depending on a flag?
     params & FFFF0000 - Flag.
     form - 
-    unknown4 - 
+    unknown4? - 
   20 Pushable pot? (e.g. in room 48-03)
     or a pushable stone (room 26-01)
   23 Torch
