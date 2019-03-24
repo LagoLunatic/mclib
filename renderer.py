@@ -362,12 +362,12 @@ class Renderer:
     if entity.type == 6 and entity.subtype == 0xC and entity.form in [0, 1]:
       # Small chest spawner
       chest_tile_image = self.get_16x16_tile_by_index(self.curr_room_tileset_images[0], 0x10)
-      return chest_tile_image
+      return (chest_tile_image, -8, -8)
     
     loading_data = SpriteLoadingData(entity, self.rom)
     
     if loading_data.has_no_sprite:
-      return None
+      return (None, None, None)
     
     print(
       "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
@@ -379,11 +379,6 @@ class Renderer:
     
     sprite = Sprite(loading_data.sprite_index, self.rom)
     #print("%08X" % sprite.frame_gfx_data_list_ptr)
-    
-    #if not sprite.frames:
-    #  # TODO: why do some have no frames?
-    #  # example is entity type 06 subtype 2C in room 03-00
-    #  return Image.new("RGBA", (16, 16), (255, 0, 0, 255))
     
     best_anim_index = None
     keyframe = None
@@ -399,7 +394,7 @@ class Renderer:
     
     if loading_data.gfx_type == 0:
       if loading_data.fixed_gfx_index == 0:
-        return None
+        return (None, None, None)
       gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
     elif loading_data.gfx_type == 2:
       gfx_data = self.get_sprite_common_type_gfx_data(loading_data)
@@ -410,7 +405,7 @@ class Renderer:
     
     frame_obj_list = sprite.get_frame_obj_list(frame_index)
     
-    frame_image = self.render_sprite_frame(frame_obj_list, gfx_data, palettes, entity_palette_index)
+    frame_image, min_x, min_y = self.render_sprite_frame(frame_obj_list, gfx_data, palettes, entity_palette_index)
   
     if keyframe:
       if keyframe.h_flip:
@@ -418,7 +413,11 @@ class Renderer:
       if keyframe.v_flip:
         frame_image = frame_image.transpose(Image.FLIP_TOP_BOTTOM)
     
-    return frame_image
+    x_off, y_off = Docs.get_best_sprite_offset(entity)
+    x_off += min_x
+    y_off += min_y
+    
+    return (frame_image, x_off, y_off)
   
   def get_sprite_swap_type_gfx_data_for_frame(self, sprite, frame_index):
     frame_gfx_data = sprite.get_frame_gfx_data(frame_index)
@@ -525,7 +524,7 @@ class Renderer:
       
       obj_i -= 1
     
-    return frame_image
+    return (frame_image, min_x, min_y)
   
   def generate_palettes_for_area_by_gfx_index(self, area, gfx_index):
     palette_group = area.get_palette_group(gfx_index)

@@ -227,6 +227,7 @@ class Docs:
     
     return 0
   
+  @staticmethod
   def get_best_sprite_animation(entity):
     if entity.type == 6 and entity.subtype in [0, 2, 0x40, 0xAC]:
       return entity.form
@@ -254,3 +255,10 @@ class Docs:
       return entity.form & 0x1F
     
     return 0
+  
+  @staticmethod
+  def get_best_sprite_offset(entity):
+    if entity.type == 6 and entity.subtype == 5:
+      return (0, 3)
+    
+    return (0, 0)
