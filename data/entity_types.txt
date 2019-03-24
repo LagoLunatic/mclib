@@ -234,6 +234,16 @@
   36 something inside the big barrel room? (48-20)
   38 big jar?
   39 Boss door
+    Form: Bitfield.
+      & 1F - Animation index to use.
+      & 03 - Direction.
+        0 - Down facing
+        1 - Left facing (uses down sprite)
+        2 - Up facing
+        3 - Right facing (uses down sprite)
+      & FC - Type.
+        0 - Has big key hole
+        1 - No big key hole
     params & FFFF0000 - Flag for opening it?
   3E Decoration?
     Forms:
@@ -389,6 +399,8 @@
   9D Bombable switch
   A4 Town Minish's lamp
   AA Opening in a waterfall
+  AC Four Elements
+    Form: The item ID.
   AE Floating block
   B1 Jail bars
   B7 well?
@@ -574,13 +586,15 @@
     Form: A room property index.
       The property is a pointer to the list of entities to load 15 frames after the monitored tile changes.
       If this index is 0 it does not load any entities.
-  0E Entity spawner
+  0E One-off entity spawner
     params & FFFF0000 - Flag to check.
       If not set, the entities in this list are not loaded.
       Once set, they will be loaded immediately, without the player needing to exit and re-enter the room.
+      But when the player exit and re-enters the room with the flag still set, the entities will no longer be loaded.
     Form: A room property index.
         The property is a pointer to the list of entities to load.
-    unknown4 - Number of frames to wait after the flag is set before spawning the entities.
+    "Y pos" - Number of frames to wait after the flag is set before spawning the entities.
+    unknown4 - ? If nonzero, do ??? at 08058E94 as soon as the flag is set.
   0F ?
     unknown4 - Bit index in 02034364 bitfield?
   12 Hyrule Town tileset swapper

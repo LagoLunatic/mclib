@@ -228,7 +228,7 @@ class Docs:
     return 0
   
   def get_best_sprite_animation(entity):
-    if entity.type == 6 and entity.subtype in [0, 2, 0x40]:
+    if entity.type == 6 and entity.subtype in [0, 2, 0x40, 0xAC]:
       return entity.form
     elif entity.type == 6 and entity.subtype == 0x47:
       return 0x62
@@ -248,5 +248,9 @@ class Docs:
       return 0x5C
     elif entity.type == 6 and entity.subtype == 0x6A and entity.form == 8:
       return 2
+    elif entity.type == 6 and entity.subtype == 0x14:
+      return 9
+    elif entity.type == 6 and entity.subtype == 0x39:
+      return entity.form & 0x1F
     
     return 0
