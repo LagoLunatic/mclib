@@ -92,41 +92,43 @@ class Room:
     for entity_list_ptr in self.hardcoded_state_entity_list_pointers:
       self.read_one_entity_list(entity_list_ptr, "Conditional entities")
     
-    for entity_list in self.entity_lists:
-      for entity in entity_list.entities:
-        if entity.type == 9 and entity.subtype == 0xB and entity.form == 0:
-          prop_index = entity.unknown_4
-          prop_ptr = self.read_prop_ptr(prop_index)
-          self.read_one_entity_list(prop_ptr, "Disappearing enemies")
-        elif entity.type == 9 and entity.subtype == 0xE:
-          prop_index = entity.form
-          prop_ptr = self.read_prop_ptr(prop_index)
-          self.read_one_entity_list(prop_ptr, "Appearing entities")
-        elif entity.type == 9 and entity.subtype == 0xD:
-          prop_index = entity.form
-          if prop_index != 0:
-            prop_ptr = self.read_prop_ptr(prop_index)
-            self.read_one_entity_list(prop_ptr, "Tile appearing entities")
-        elif entity.type == 9 and entity.subtype == 0x16:
-          prop_index = entity.form
-          prop_ptr = self.read_prop_ptr(prop_index)
-          if prop_ptr in [0x080EECDC, 0x080EFAA4, 0x080EE80C, 0x0804DED1]:
-            # TODO: area 0x15 has some delayed load entity lists full of garbage entities
-            continue
-          if prop_ptr != 0:
-            if entity.unknown_5 == 0:
-              listed_entities_type = 7
-            else:
-              listed_entities_type = 6
-            self.read_one_delayed_load_entity_list(prop_ptr, listed_entities_type, "Delayed load entities")
-    
   def read_one_entity_list(self, entity_list_ptr, name):
-    if any(el.entity_list_ptr == entity_list_ptr for el in self.entity_lists):
+    existing_list = next((el for el in self.entity_lists if el.entity_list_ptr == entity_list_ptr), None)
+    if existing_list is not None:
       # Already read this list
+      existing_list.name += ", " + name
       return
     
     entity_list = EntityList(entity_list_ptr, name, self, self.rom)
     self.entity_lists.append(entity_list)
+    
+    # Whenever we add an entity list, we have to check all the entities in it to see if they load any more entity lists.
+    for entity in entity_list.entities:
+      if entity.type == 9 and entity.subtype == 0xB and entity.form == 0:
+        prop_index = entity.unknown_4
+        prop_ptr = self.read_prop_ptr(prop_index)
+        self.read_one_entity_list(prop_ptr, "Disappearing enemies")
+      elif entity.type == 9 and entity.subtype == 0xE:
+        prop_index = entity.form
+        prop_ptr = self.read_prop_ptr(prop_index)
+        self.read_one_entity_list(prop_ptr, "One-off entities")
+      elif entity.type == 9 and entity.subtype == 0xD:
+        prop_index = entity.form
+        if prop_index != 0:
+          prop_ptr = self.read_prop_ptr(prop_index)
+          self.read_one_entity_list(prop_ptr, "Tile appearing entities")
+      elif entity.type == 9 and entity.subtype == 0x16:
+        prop_index = entity.form
+        prop_ptr = self.read_prop_ptr(prop_index)
+        if prop_ptr in [0x080EECDC, 0x080EFAA4, 0x080EE80C, 0x0804DED1]:
+          # TODO: area 0x15 has some delayed load entity lists full of garbage entities
+          continue
+        if prop_ptr != 0:
+          if entity.unknown_5 == 0:
+            listed_entities_type = 7
+          else:
+            listed_entities_type = 6
+          self.read_one_delayed_load_entity_list(prop_ptr, listed_entities_type, "Delayed load entities")
   
   def read_one_delayed_load_entity_list(self, entity_list_ptr, listed_entities_type, name):
     if any(el.entity_list_ptr == entity_list_ptr for el in self.entity_lists):
