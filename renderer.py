@@ -610,9 +610,9 @@ class Renderer:
         blue_bits  = (color_data & 0b0111_1100_0000_0000) >> 10
         green_bits = (color_data & 0b0000_0011_1110_0000) >> 5
         red_bits   =  color_data & 0b0000_0000_0001_1111
-        red = red_bits << 3
-        green = green_bits << 3
-        blue = blue_bits << 3
+        red   = (red_bits   << 3) | (red_bits   >> 2)
+        green = (green_bits << 3) | (green_bits >> 2)
+        blue  = (blue_bits  << 3) | (blue_bits  >> 2)
         
         color = (red, green, blue, 0xFF)
         palette.append(color)
