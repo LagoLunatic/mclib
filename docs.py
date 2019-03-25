@@ -217,6 +217,8 @@ class Docs:
       return entity.form
     elif entity.type == 6 and entity.subtype == 0x46:
       return entity.form
+    elif entity.type == 6 and entity.subtype == 0x6D and entity.form <= 5:
+      return [0, 2, 4, 3, 7, 5][entity.form]
     
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
@@ -253,6 +255,8 @@ class Docs:
       return 9
     elif entity.type == 6 and entity.subtype == 0x39:
       return entity.form & 0x1F
+    elif entity.type == 3 and entity.subtype == 1:
+      return 2
     
     return 0
   

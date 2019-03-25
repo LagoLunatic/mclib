@@ -107,7 +107,7 @@ class Room:
       if entity.type == 9 and entity.subtype == 0xB and entity.form == 0:
         prop_index = entity.unknown_4
         prop_ptr = self.read_prop_ptr(prop_index)
-        self.read_one_entity_list(prop_ptr, "Disappearing enemies")
+        self.read_one_entity_list(prop_ptr, "One-off enemies")
       elif entity.type == 9 and entity.subtype == 0xE:
         prop_index = entity.form
         prop_ptr = self.read_prop_ptr(prop_index)

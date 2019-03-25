@@ -67,6 +67,7 @@
   1E Spiked Beetle
   1F Blade Trap 1?
   20 Helmasaur
+  21 Falling boulder
   22 Bob-omb
   23 Wall Master?
   24 Gleerok
@@ -331,6 +332,13 @@
       2 Blue sprout
       3 Green sprout (huge)
   6D Object on a pillar
+    Forms:
+      0 Nothing on the pillar
+      1 Small chest
+      2 Lever (right)
+      3 Lever (left)
+      4 Bugged red orb?
+      5 Bugged red orb?
     params & 0000FFFF - flag
     params & FFFF0000 - flag
     Small chest:
@@ -566,15 +574,22 @@
     Form: A room property index.
       The property is a pointer to a list of Minish exit regions.
   07 Minish Village tileset swapper
-  0B Enemy (de)spawner
+  0B One-off enemy spawner
     For form 0:
-      params & FFFF0000 - Flag to check.
-        If not set, the entities in this list are loaded when the player enters the room.
-        Once set, they no longer get loaded in the future.
+      params & 0000FFFF - Prerequisite flag that must be set before these enemies are spawned.
+        The enemies will be spawned the moment this flag is set without reloading the room.
+        If this flag is 0000, then the enemies spawn the moment you enter the room instead.
+      params & FFFF0000 - Flag for having killed all these enemies.
+        This is set once you kill the last of the enemies.
+        This being set means this spawner will no longer create enemies in the future.
       unknown4: A room property index.
         The property is a pointer to the list of entities to load.
       unknown5 - substate? (stored to 0E,1 of the entity in RAM)
-      params & 0000FFFF - 
+    For form 1:
+      Spawned automatically by form 0 when it creates all the enemies.
+      This form is responsible for checking all the enemy entities to see if they've been destroyed.
+      Each of these form 1 entities can only handle keeping track of a maximum of 8 enemies.
+      However, form 0 is smart enough to create multiple form 1 entities linking them together if more then 8 enemies are needed.
   0D Tile change monitor
     "Y pos" - Layer of the tile to monitor.
       1 - BG2
@@ -595,8 +610,10 @@
         The property is a pointer to the list of entities to load.
     "Y pos" - Number of frames to wait after the flag is set before spawning the entities.
     unknown4 - ? If nonzero, do ??? at 08058E94 as soon as the flag is set.
-  0F ?
-    unknown4 - Bit index in 02034364 bitfield?
+  0F ? Might be responsible for Ezlo hints?
+    unknown4 - Room flag?
+    params & 0000FFFF - Flag required for this hint event to start.
+    params & FFFF0000 - Flag for having seen this hint event.
   12 Hyrule Town tileset swapper
   16 Delayed entity loader?
     Form: A room property index.
@@ -609,7 +626,7 @@
     unknown2 - item ID?
     params & 00FF0000 - item ID?
   18 kinstone fusion reward related?
-  1E ? some kind of trigger region?
+  1E Trigger region
     Note that X and Y pos are of the upper left of the region.
     (unknown5 << 8) | unknown4: Width.
     (unknown7 << 8) | unknown6: Height.
@@ -622,8 +639,19 @@
     params & FFFF0000 - Flag.
     form - 
     unknown4? - 
-  20 Pushable pot? (e.g. in room 48-03)
-    or a pushable stone (room 26-01)
+  20 Object that can be permanently moved
+    This entity will create a type 6 entity 
+    unknown5: Subtype of the entity to create.
+    Form: Form of the entity to create.
+    unknown4: unknown4 of the entity to create.
+    params & FFFF0000: Flag for this entity being moved.
+      This is also stored to the created entity's params & FFFF0000.
+    (unknown7 << 8 | unknown6): Bitfield.
+      & 0FFF: X pos of the object once it's moved.
+      & F000: Layer of the object when it isn't moved.
+    params & 0000FFFF: Bitfield:
+      & 0FFF: Y pos of the object once it's moved.
+      & F000: Layer of the object once it's moved.
   23 Torch
     params & 00FF0000 - The torch will light up once this flag is set.
   28 kinstone fusion reward related?
