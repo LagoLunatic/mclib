@@ -13,7 +13,7 @@ class Exit:
     self.y_pos = self.rom.read_u16(self.exit_ptr + 4)
     self.dest_x = self.rom.read_u16(self.exit_ptr + 6)
     self.dest_y = self.rom.read_u16(self.exit_ptr + 8)
-    self.unknown_1 = self.rom.read_u8(self.exit_ptr + 0xA)
+    self.screen_edge = self.rom.read_u8(self.exit_ptr + 0xA)
     self.dest_area = self.rom.read_u8(self.exit_ptr + 0xB)
     self.dest_room = self.rom.read_u8(self.exit_ptr + 0xC)
     self.unknown_2 = self.rom.read_u8(self.exit_ptr + 0xD)
