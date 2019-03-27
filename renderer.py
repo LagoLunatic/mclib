@@ -421,6 +421,42 @@ class Renderer:
     
     return (frame_image, x_off, y_off)
   
+  def render_all_figurines(self):
+    for i in range(1, 136+1):
+      image = self.render_figurine(i)[0]
+      if image is None:
+        continue
+      image.save("./logs/figurine renders/figurine %d.png" % i)
+  
+  def render_figurine(self, figurine_id):
+    if figurine_id == 0:
+      return (None, None, None)
+    
+    sprite_index = 0x1F8
+    sprite = Sprite(sprite_index, self.rom)
+    
+    frame_index = figurine_id - 1
+    
+    frame_obj_list = sprite.get_frame_obj_list(frame_index)
+    
+    palette_data_ptr = self.rom.read_u32(0x081281A8 + figurine_id*0x10 + 0)
+    gfx_data_ptr = self.rom.read_u32(0x081281A8 + figurine_id*0x10 + 4)
+    gfx_data_len = self.rom.read_u32(0x081281A8 + figurine_id*0x10 + 8)
+    
+    final_palettes = self.common_palettes.copy()
+    final_palettes = self.generate_palettes_from_palette_group_by_index(0xCE, existing_palettes=final_palettes)
+    palettes = self.generate_palettes(palette_data_ptr, 9)
+    final_palettes[0x16:0x16+9] = palettes
+    
+    if gfx_data_len == 0 or gfx_data_len >= 0x80000000:
+      raise Exception("Compressed figurine GFX not yet implemented")
+    else:
+      gfx_data = self.rom.read_raw(gfx_data_ptr, gfx_data_len)
+    
+    entity_palette_index = 6
+    
+    return self.render_sprite_frame(frame_obj_list, gfx_data, final_palettes, entity_palette_index)
+  
   def get_sprite_swap_type_gfx_data_for_frame(self, sprite, frame_index):
     frame_gfx_data = sprite.get_frame_gfx_data(frame_index)
     gfx_data_ptr = sprite.gfx_pointer + frame_gfx_data.first_gfx_tile_index*0x20
@@ -525,16 +561,18 @@ class Renderer:
     
     return final_palettes
   
-  def generate_palettes_from_palette_group_by_index(self, palette_group_index):
+  def generate_palettes_from_palette_group_by_index(self, palette_group_index, existing_palettes=None):
     palette_group = PaletteGroup(palette_group_index, self.rom)
     
-    final_palettes = []
-    
-    # First fill all the palettes with bright red.
-    # This is so that any palettes not loaded in will be obviously wrong visually making it easier to notice problems.
-    dummy_palette = [(255, 0, 0, 255)]*16
-    for i in range(0x20):
-      final_palettes.append(dummy_palette)
+    if existing_palettes is None:
+      final_palettes = []
+      # First fill all the palettes with bright red.
+      # This is so that any palettes not loaded in will be obviously wrong visually making it easier to notice problems.
+      dummy_palette = [(255, 0, 0, 255)]*16
+      for i in range(0x20):
+        final_palettes.append(dummy_palette)
+    else:
+      final_palettes = existing_palettes.copy()
     
     for palette_set in palette_group.palette_sets:
       if palette_set.palette_load_offset < 0 or palette_set.palette_load_offset >= 0x20:
