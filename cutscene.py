@@ -16,6 +16,8 @@ class Cutscene:
         possible_end_marker = self.rom.read_u16(command_ptr)
         if possible_end_marker == 0xFFFF:
           break
+        if possible_end_marker == 0x0000:
+          break
         
         if command_ptr in all_checked_command_ptrs:
           # We looped back to something we already checked, so no need to check it again.
@@ -25,7 +27,7 @@ class Cutscene:
         self.commands.append(command)
         all_checked_command_ptrs.append(command_ptr)
         
-        print("%08X: command type %02X, args: " % (command_ptr, command.type) + (", ".join(["%04X" % arg for arg in command.arguments])))
+        #print("%08X: command type %02X, args: " % (command_ptr, command.type) + (", ".join(["%04X" % arg for arg in command.arguments])))
         
         if command.type in [3, 4, 5, 6]:
           offset = command.arguments[0]
@@ -44,6 +46,9 @@ class Cutscene:
           if command.type == 3:
             # 3 is unconditional, so don't keep checking this path.
             break
+        elif command.type == 0x47:
+          player_script_ptr = command.arguments[0] | (command.arguments[1] << 16)
+          path_starts_to_check.append(player_script_ptr)
         
         command_ptr += command.length*2
 
