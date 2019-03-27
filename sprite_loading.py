@@ -40,11 +40,11 @@ class SpriteLoadingData:
     if bitfield == 0:
       self.has_no_sprite = True
     else:
-      self.gfx_type = (bitfield & 0x4000) >> 14
+      self.gfx_type = (bitfield & 0xC000) >> 14
       if self.gfx_type == 0:
         self.fixed_gfx_index = bitfield
       elif self.gfx_type == 1:
-        pass # TODO
+        self.swap_gfx_slots_needed = (bitfield & 0x0FF0) >> 4
       elif self.gfx_type == 2:
         self.common_gfx_tile_index = bitfield & 0x03FF
     
@@ -70,7 +70,7 @@ class SpriteLoadingData:
     if self.gfx_type == 0:
       self.fixed_gfx_index = bitfield & 0x03FF
     elif self.gfx_type == 1:
-      pass # TODO
+      self.swap_gfx_slots_needed = (bitfield & 0x0FF0) >> 4
     elif self.gfx_type == 2:
       self.common_gfx_tile_index = bitfield & 0x03FF
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 4) & 0x03FF

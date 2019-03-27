@@ -396,10 +396,10 @@ class Renderer:
       if loading_data.fixed_gfx_index == 0:
         return (None, None, None)
       gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
+    elif loading_data.gfx_type == 1:
+      gfx_data = self.get_sprite_swap_type_gfx_data_for_frame(sprite, frame_index)
     elif loading_data.gfx_type == 2:
       gfx_data = self.get_sprite_common_type_gfx_data(loading_data)
-    elif sprite.frame_gfx_data_list_ptr != 0:
-      gfx_data = self.get_sprite_swap_type_gfx_data_for_frame(sprite, frame_index)
     else:
       raise Exception("Don't know how to render this sprite (GFX type %X)" % loading_data.gfx_type)
     
