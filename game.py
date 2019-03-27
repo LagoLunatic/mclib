@@ -69,26 +69,30 @@ class Game:
                 ))
         
         # Items given by cutscenes
-        all_cutscenes_for_room = []
+        all_cutscene_ptrs_for_room = []
         for entity_list in room.entity_lists:
           for entity in entity_list.entities:
             if entity.unknown_3 == 4 or entity.type == 7:
               if entity.params != 0:
-                cutscene = Cutscene(entity.params, self.rom)
-                all_cutscenes_for_room.append(cutscene)
+                all_cutscene_ptrs_for_room.append(entity.params)
             if entity.type == 7 and entity.subtype == 3: # Minish
               cutscene_ptr = self.rom.read_u32(0x08109D18 + entity.unknown_4*4)
-              cutscene = Cutscene(cutscene_ptr, self.rom)
-              all_cutscenes_for_room.append(cutscene)
+              all_cutscene_ptrs_for_room.append(cutscene_ptr)
+            elif entity.type == 7 and entity.subtype == 0x37: # Rem
+              cutscene_ptr = 0x08012F0C
+              all_cutscene_ptrs_for_room.append(cutscene_ptr)
         
-        for cutscene in all_cutscenes_for_room:
+        for cutscene_ptr in all_cutscene_ptrs_for_room:
+          cutscene = Cutscene(cutscene_ptr, self.rom)
           for command in cutscene.commands:
-            if command.type in [0x82, 0x85]:
+            if command.type == 0x82:
               item_id = command.arguments[0]
+              item_param = 0
               if item_id == 0x3F and len(command.arguments) > 1:
                 item_param = command.arguments[1]
-              else:
-                item_param = 0
+            elif command.type == 0x85:
+              item_id = command.arguments[0]
+              item_param = 0
             elif command.type == 0x83:
               item_id = 0x5C
               item_param = command.arguments[0]
