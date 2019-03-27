@@ -29,6 +29,10 @@ class DataInterface:
     requested_data_interface = DataInterface(requested_data)
     return requested_data_interface
   
+  def read_all_bytes(self):
+    self.data.seek(0)
+    return self.data.read()
+  
   def decompress_read(self, offset):
     self.data.seek(offset)
     # Read everything that remains in the data since we don't yet know how much is compressed
@@ -36,6 +40,15 @@ class DataInterface:
     decompressed_data = GBALZ77.decompress(compressed_data)
     decompressed_data_interface = DataInterface(decompressed_data)
     return decompressed_data_interface
+  
+  def write(self, offset, new_values, format_string):
+    new_bytes = struct.pack(format_string, *new_values)
+    self.data.seek(offset)
+    self.data.write(new_bytes)
+  
+  def write_bytes(self, offset, new_bytes):
+    self.data.seek(offset)
+    self.data.write(new_bytes)
   
   def write_raw(self, offset, new_data):
     self.data.seek(offset)
@@ -54,6 +67,22 @@ class DataInterface:
   
   def read_float(self, offset):
     return self.read(offset, 4, "f")[0]
+  
+  def write_u8(self, offset, new_value):
+    new_bytes = struct.pack("B", int(new_value))
+    self.write_bytes(offset, new_bytes)
+  
+  def write_u16(self, offset, new_value):
+    new_bytes = struct.pack("H", int(new_value))
+    self.write_bytes(offset, new_bytes)
+  
+  def write_u32(self, offset, new_value):
+    new_bytes = struct.pack("I", int(new_value))
+    self.write_bytes(offset, new_bytes)
+  
+  def write_float(self, offset, new_value):
+    new_bytes = struct.pack("f", int(new_value))
+    self.write_bytes(offset, new_bytes)
   
   
   def read_s8(self, offset):
@@ -75,6 +104,13 @@ class RomInterface(DataInterface):
     with open(rom_path, "rb") as file:
       self.data = BytesIO(file.read())
   
+  def is_pointer(self, address):
+    if address >= 0x08000000 and address <= 0x08FFFFFF:
+      return True
+    else:
+      return False
+  
+  
   def read(self, address, length, format_string):
     if not self.is_pointer(address):
       raise InvalidAddressError("%08X is not a valid ROM address." % address)
@@ -88,11 +124,25 @@ class RomInterface(DataInterface):
     return super().read_raw(offset, length)
   
   def decompress_read(self, address):
+    if not self.is_pointer(address):
+      raise InvalidAddressError("%08X is not a valid ROM address." % address)
     offset = address-0x08000000
     return super().decompress_read(offset)
   
-  def is_pointer(self, address):
-    if address >= 0x08000000 and address <= 0x08FFFFFF:
-      return True
-    else:
-      return False
+  def write(self, address, new_values, format_string):
+    if not self.is_pointer(address):
+      raise InvalidAddressError("%08X is not a valid ROM address." % address)
+    offset = address-0x08000000
+    super().write(offset, new_values, format_string)
+  
+  def write_bytes(self, address, new_bytes):
+    if not self.is_pointer(address):
+      raise InvalidAddressError("%08X is not a valid ROM address." % address)
+    offset = address-0x08000000
+    super().write_bytes(offset, new_bytes)
+  
+  def write_raw(self, address, new_data):
+    if not self.is_pointer(address):
+      raise InvalidAddressError("%08X is not a valid ROM address." % address)
+    offset = address-0x08000000
+    super().write_raw(offset, new_data)
