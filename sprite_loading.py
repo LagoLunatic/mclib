@@ -50,6 +50,10 @@ class SpriteLoadingData:
     
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 2)
     self.sprite_index = self.rom.read_u16(sprite_loading_data_ptr + 8)
+    
+    if self.entity_type == 3 and self.entity_subtype == 0x17:
+      # Rupee Like. Change the sprite index to be the Rupee Like sprite instead of an item sprite.
+      self.sprite_index = 0xD1
   
   def read_format_b(self, sprite_loading_datas_list):
     sprite_loading_data_ptr = sprite_loading_datas_list + self.entity_subtype*8
