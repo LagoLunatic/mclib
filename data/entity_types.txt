@@ -14,6 +14,11 @@
     Forms:
       0 Green
       1 Red
+      2 Blue
+  02 Leever
+    Forms:
+      0 Red
+      1 Blue
   03 Peahat
   04 Rollobite
   05 Dark Nut
@@ -29,10 +34,21 @@
       3 Points left
   07 Beetle
   08 Keese
+  09 Door Mimic
+    Forms:
+      0 Red, down facing
+      1 Red, left facing
+      2 Red, up facing
+      3 Red, right facing
+      4 Blue, down facing
+      5 Blue, left facing
+      6 Blue, up facing
+      7 Blue, right facing
   0A Rock Chuchu
   0B Spiny Chuchu
   0C Cucco Chick
   0D Moldorm
+  0F Moldworm
   10 Sluggula
     Forms:
       0 Falls from ceiling
@@ -44,6 +60,7 @@
   12 Puffstool
   13 Big Green Chuchu
     Form: ?
+  14 Like Like
   15 Spear Moblin
     Forms:
       0 Normal
@@ -59,13 +76,15 @@
   17 Rupee Like
     Forms:
       0 Green Rupee
+      1 Blue Rupee
+      2 Red Rupee
   18 Madderpillar
   1A Wall Master?
   1B Bomb Peahat
   1C Spark
   1D Chaser
   1E Spiked Beetle
-  1F Blade Trap 1?
+  1F Sensor Blade Trap
   20 Helmasaur
   21 Falling boulder
   22 Bob-omb
@@ -83,7 +102,7 @@
   2C Rope
   2D 
   2E Acro-Bandits
-  2F Blade Trap 2?
+  2F Automatic Blade Trap
   30 Keaton
     Forms:
       0 Normal
@@ -93,7 +112,7 @@
       Params & FFFF0000 - Top Y of the rectangle the enemy is allowed within.
       unknown6 - Width in 8x8 tiles of the rectangle the enemy is allowed within.
       unknown7 - Height in 8x8 tiles of the rectangle the enemy is allowed within.
-  31 Takkuri 1?
+  31 Crow
   32 Mulldozer
     Forms:
       0 Red
@@ -104,12 +123,16 @@
       1 Red
   35 Spiny Beetle
     Forms:
-      1 under a rock?
+      0 Under bush
+      1 Under rock
+    It creates a 6-7D entity to be the object on its back.
   39 Big Octorok
+  3A Flying Pot
   3B Gibdo
   3C Golden Octorok
   3D Golden Tektite
   3E Golden Rope
+  3F Cloud Piranha
   40 Scissors Beetle
   41 Cucco
   42 Stalfos
@@ -117,7 +140,7 @@
     Forms:
       0 ?
       1 ?
-  45 Takkuri 2?
+  45 Takkuri
   46 Bow Moblin
     Forms:
       0 Normal
@@ -125,6 +148,9 @@
   4C Ball & Chain Soldier 1?
   4D Ball & Chain Soldier 2?
   4E Ghini
+    Forms:
+      0 Awake
+      1 Sleeping
   65 tree? in minish woods
 
 04 Obstacle?
@@ -149,8 +175,14 @@
   05 Pot
     Form: The item ID.
       00 Random
-    unknown4 - If set to 1, this pot stays permanently destroyed.
-    params & FFFF0000 - Flag for this pot being permanently destroyed.
+    unknown4:
+      0 Normal
+      1 This pot stays permanently destroyed
+      2 The item inside this pot does not respawn
+    unknown5 - The parameter of the item (number of shells or which kinstone).
+    params & FFFF0000 - Flag.
+      For type 1 this flag means the pot is destroyed.
+      For type 2 it means the item inside is taken.
   07 Block being pushed
     Forms:
       0 1x1
@@ -199,7 +231,7 @@
       2 2x2
       3 3x3
   18 Evil spirit
-  19 House door
+  19 Outdoors house door
     Forms:
       0 ?
       8 ?
@@ -208,7 +240,12 @@
       00 big bomb bag one on mount crenal
       0B 
       16 
+  1C decoration on top of Hyrule Town shop?
   21 special fence posts in royal valley?
+  22 Figurine devices
+    Forms:
+      0 Display case
+      1 Dispenser
   23 Eye switch
   25 Big rotating barrel
   26 something inside the big barrel room? (48-20)
@@ -233,7 +270,11 @@
     params & 00000FC0 - Dest Y pos. (In 16x16 tiles.)
     params & FFFF0000 - Spawn flag.
   36 something inside the big barrel room? (48-20)
-  38 big jar?
+  38 Big jar Minish portal
+    Only acts as a Minish portal when upside down.
+    Can be flipped with Cane of Pacci.
+    unknown4: If this is nonzero, the pot starts out upside down. Otherwise it starts rightside up.
+    Form: Local event flag for this jar being flipped compared to its starting state.
   39 Boss door
     Form: Bitfield.
       & 1F - Animation index to use.
@@ -246,6 +287,8 @@
         0 - Has big key hole
         1 - No big key hole
     params & FFFF0000 - Flag for opening it?
+  3B Mushrooms when shrinking?
+  3C Link falling down when shrinking?
   3E Decoration?
     Forms:
       0 Minish Village (Small)
@@ -261,7 +304,14 @@
   47 Heart container
     params & 0000FFFF - Picked up flag
   4A Background cloud
-  4C Pushable crate
+  4C Pushable object
+    Forms:
+      0 Drawer dresser
+      1 Crate
+      2 Wardrobe
+      3 Shelf
+    unknown4: 
+    unknown5: X offset (signed) this object must be pushed before it will set its flag for having been permanently pushed.
   4D Furniture
     Forms:
       00 Bookshelf
@@ -293,18 +343,49 @@
       3A Wheaton's table
       3B Dr. Left's table
   4E Minish sized entrance
+    unknown4: Direction.
+      0 - Down facing
+      1 - Left facing
+      2 - Up facing
+      3 - Right facing
     unknown5: A room property index.
       The property is a pointer to the exit data.
-  4F Arch over a doorway
+  4F Archway
+    unknown4: The sprite frame index to use.
   54 Pullable lever
     params & FFFF0000 - Flag to set.
   55 Minecart
     form - ?
-    unknown4 - 0 for normal, 1 for flipped over?
-    unknown5 - 
+    unknown4 - Orientation.
+      0 - Up/down
+      1 - Left/right
+      Add 4 to this to get the animation index?
+    unknown5 - Unique ID of this minecart.
+      Index in list 080FCAF8.
   57 in middle of hyrule field? maybe pitfall?
   58 Curtains in Gentari's room
   59 Platform on lava
+  5A ?
+  5C Mask
+    Forms:
+      0 Red
+      1 Blue
+  5D Indoors house door
+    Forms:
+      0 Brown, barred
+      1 Brown with window
+      2 Librari's door
+      3 ???
+      4 Green with window
+      5 Blue with window
+    unknown4 - Direction. Th sprite frame index to use. (Only if form is 0-1.)
+      0 Down facing
+      1 Left facing
+      2 Up facing
+      3 Right facing
+    unknown5 - ?
+    params & FFFF0000 - Variable type flag to check. The door disappears once it's set.
+      Can be 0 to check no flag.
   5E Whirlwind
   62 Giant twig
     Forms:
@@ -349,7 +430,8 @@
       form = 2
       unknown4-7 = 104811D8
       params = 002F002E
-  6F Arch over a doorway 2?
+  6F Minish-sized archway
+    Form: The sprite frame index to use.
   71 grave
   73 Lily pad (small)
   74 might set a flag when enemies die?
@@ -366,6 +448,10 @@
     Forms:
       0 Two red shoes
       1 One brown shoe
+  7D Object on a Spiny Beetle
+    Forms:
+      0 Bush
+      1 Rock
   7F Pico Bloom
     Forms:
       00 White
@@ -384,6 +470,13 @@
       1 Frozen chest
   86 four leaf clover?
   89 in mazaal boss room of fortress of winds
+  8C Book
+    Forms:
+      0 A Hyrulean Bestiary
+      1 Legend of the Picori
+      2 A History of Masks
+  8D Fireplace
+  8F Water element in ice
   92 Baker's oven
   94 Flag in front of Wind Tribe home
     Forms:
@@ -410,8 +503,11 @@
   AC Four Elements
     Form: The item ID.
   AE Floating block
+  B0 Big metal door
+    params & 0000FFFF - Flag to check for being unlocked?
+    params & FFFF0000 - Flag to check for being unlocked?
   B1 Jail bars
-  B7 well?
+  B7 Well
   BB Wind Crest
 
 07 NPC
@@ -607,14 +703,18 @@
       Once set, they will be loaded immediately, without the player needing to exit and re-enter the room.
       But when the player exit and re-enters the room with the flag still set, the entities will no longer be loaded.
     Form: A room property index.
-        The property is a pointer to the list of entities to load.
+      The property is a pointer to the list of entities to load.
     "Y pos" - Number of frames to wait after the flag is set before spawning the entities.
     unknown4 - ? If nonzero, do ??? at 08058E94 as soon as the flag is set.
   0F ? Might be responsible for Ezlo hints?
     unknown4 - Room flag?
     params & 0000FFFF - Flag required for this hint event to start.
     params & FFFF0000 - Flag for having seen this hint event.
+  11 Flag AND operator
+    params & FFFF0000 - Flag(s) to check.
+    params & 0000FFFF - Flag to set once all the flags to check are set.
   12 Hyrule Town tileset swapper
+  13 loads in decorations on top of Hyrule Town shops? (6-1C entities)
   16 Delayed entity loader?
     Form: A room property index.
       The property is a pointer to a list of delayed load entities.
@@ -626,6 +726,8 @@
     unknown2 - item ID?
     params & 00FF0000 - item ID?
   18 kinstone fusion reward related?
+  1A Hole you can fall into
+    Form: Index in list 08108764.
   1E Trigger region
     Note that X and Y pos are of the upper left of the region.
     (unknown5 << 8) | unknown4: Width.
@@ -654,4 +756,17 @@
       & F000: Layer of the object once it's moved.
   23 Torch
     params & 00FF0000 - The torch will light up once this flag is set.
+  26 Pushable object creator?
+    Creates a number of 6-4C pushable objects.
+    Form: A room property index.
+      Pointer to a list of data describing the entities to create.
+      Format:
+        Entry length 8.
+        00,1: Local event flag for this object being pushed?
+          FF means...?
+        01,1: Form of the entity to create.
+        02,1: unknown4 of the entity to create.
+        03,1: unknown5 of the entity to create (X offset to push to set flag).
+        04,2: X pos of the entity to create.
+        06,2: Y pos of the entity to create.
   28 kinstone fusion reward related?

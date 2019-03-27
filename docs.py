@@ -38,7 +38,7 @@ ENTITY_TYPE_DOCS = OrderedDict()
 
 last_seen_type_doc = None
 last_seen_subtype_doc = None
-found_forms_header_for_subtype = False
+on_forms_list = False
 found_form_is_item_id_for_subtype = False
 for line_index, line in enumerate(entity_doc_str.split("\n")):
   if len(line) == 0:
@@ -66,7 +66,7 @@ for line_index, line in enumerate(entity_doc_str.split("\n")):
     
     last_seen_type_doc = type_doc
     last_seen_subtype_doc = None
-    found_forms_header_for_subtype = False
+    on_forms_list = False
     found_form_is_item_id_for_subtype = False
   elif subtype_match:
     subtype = int(subtype_match.group(1), 16)
@@ -83,7 +83,7 @@ for line_index, line in enumerate(entity_doc_str.split("\n")):
     subtype_doc["forms"] = OrderedDict()
     
     last_seen_subtype_doc = subtype_doc
-    found_forms_header_for_subtype = False
+    on_forms_list = False
     found_form_is_item_id_for_subtype = False
   elif forms_header_match:
     if last_seen_subtype_doc is None:
@@ -91,14 +91,14 @@ for line_index, line in enumerate(entity_doc_str.split("\n")):
     if found_form_is_item_id_for_subtype:
       raise Exception("Cannot list forms and also have form be the item ID")
     
-    found_forms_header_for_subtype = True
+    on_forms_list = True
   elif form_match:
     form = int(form_match.group(1), 16)
     form_name = form_match.group(2)
     
     if last_seen_subtype_doc is None:
       raise Exception("Found forms list doc not under a subtype on line %d" % (line_index+1))
-    if not found_forms_header_for_subtype:
+    if not on_forms_list:
       continue
     if form in last_seen_subtype_doc["forms"]:
       raise Exception("Duplicate doc for entity form %X on line %d" % (form, line_index+1))
@@ -109,7 +109,7 @@ for line_index, line in enumerate(entity_doc_str.split("\n")):
   elif form_is_item_id_match:
     if last_seen_subtype_doc is None:
       raise Exception("Found form is item ID not under a subtype on line %d" % (line_index+1))
-    if found_forms_header_for_subtype:
+    if on_forms_list:
       raise Exception("Cannot list forms and also have form be the item ID")
     if last_seen_subtype_doc.get("form_is_prop_index"):
       raise Exception("Form cannot be both an item ID and a property index")
@@ -118,13 +118,14 @@ for line_index, line in enumerate(entity_doc_str.split("\n")):
   elif form_is_prop_index_match:
     if last_seen_subtype_doc is None:
       raise Exception("Found form is item ID not under a subtype on line %d" % (line_index+1))
-    if found_forms_header_for_subtype:
+    if on_forms_list:
       raise Exception("Cannot list forms and also have form be the item ID")
     if last_seen_subtype_doc.get("form_is_item_id"):
       raise Exception("Form cannot be both an item ID and a property index")
     
     last_seen_subtype_doc["form_is_prop_index"] = True
   else:
+    on_forms_list = False
     continue
 
 # TODO: implement best sprite frame into new doc format
@@ -219,6 +220,20 @@ class Docs:
       return entity.form
     elif entity.type == 6 and entity.subtype == 0x6D and entity.form <= 5:
       return [0, 2, 4, 3, 7, 5][entity.form]
+    elif entity.type == 6 and entity.subtype == 0x4F:
+      return entity.unknown_4
+    elif entity.type == 6 and entity.subtype == 0x6F:
+      return entity.form
+    elif entity.type == 6 and entity.subtype == 0x4E:
+      return entity.unknown_4
+    elif entity.type == 6 and entity.subtype == 0x5D:
+      if entity.form <= 5:
+        frame_index = [0xFF, 0xFF, 0, 0, 2, 2][entity.form]
+        if frame_index != 0xFF:
+          return frame_index
+      return entity.unknown_4
+    elif entity.type == 3 and entity.subtype == 6:
+      return entity.form
     
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
@@ -257,12 +272,42 @@ class Docs:
       return entity.form & 0x1F
     elif entity.type == 3 and entity.subtype == 1:
       return 2
+    elif entity.type == 6 and entity.subtype == 0x55:
+      anim_index = 4
+      if entity.unknown_5 <= 3:
+        anim_index += [1, 2, 0, 0][entity.unknown_5]
+        anim_index += [4, 0, 4, 0][entity.unknown_5]
+      return anim_index
+    elif entity.type == 6 and entity.subtype == 0x38:
+      if entity.unknown_4 == 0:
+        return 0
+      else:
+        return 1
+    elif entity.type == 6 and entity.subtype == 0x8C:
+      return entity.form + 0x39
+    elif entity.type == 3 and entity.subtype == 0x3A:
+      return 5
+    elif entity.type == 3 and entity.subtype == 0x35:
+      return 3
+    elif entity.type == 3 and entity.subtype == 9:
+      return entity.form & 0x03
+    elif entity.type == 3 and entity.subtype == 0x14:
+      return 1
+    elif entity.type == 3 and entity.subtype == 0x4E:
+      if entity.form == 0:
+        return 1
+      else:
+        return 9
+    elif entity.type == 3 and entity.subtype == 2:
+      return 2
     
     return 0
   
   @staticmethod
   def get_best_sprite_offset(entity):
     if entity.type == 6 and entity.subtype == 5:
+      return (0, 3)
+    elif entity.type == 3 and entity.subtype == 0x3A:
       return (0, 3)
     
     return (0, 0)
