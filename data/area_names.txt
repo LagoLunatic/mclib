@@ -111,7 +111,7 @@
 6E 
 6F Prototype Royal Crypt
 70 Palace of Winds
-71 Palace of Winds ??? Room
+71 Palace of Winds Boss Room
 72 
 73 
 74 

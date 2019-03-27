@@ -234,6 +234,10 @@ class Docs:
       return entity.unknown_4
     elif entity.type == 3 and entity.subtype == 6:
       return entity.form
+    elif entity.type == 6 and entity.subtype == 0xBC:
+      return None
+    elif entity.type == 6 and entity.subtype == 0xA1:
+      return entity.unknown_4
     
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
@@ -300,6 +304,8 @@ class Docs:
         return 9
     elif entity.type == 3 and entity.subtype == 2:
       return 2
+    elif entity.type == 6 and entity.subtype == 0xC0:
+      return entity.unknown_5
     
     return 0
   

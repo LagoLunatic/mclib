@@ -391,6 +391,8 @@ class Renderer:
       print("Has animations, using anim %02X, which has frame %02X for its first keyframe" % (best_anim_index, frame_index))
     else:
       frame_index = Docs.get_best_sprite_frame(entity)
+      if frame_index is None:
+        return (None, None, None)
     
     if loading_data.gfx_type == 0:
       if loading_data.fixed_gfx_index == 0:

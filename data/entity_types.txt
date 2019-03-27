@@ -151,6 +151,7 @@
     Forms:
       0 Awake
       1 Sleeping
+  5C Gyorg Female
   65 tree? in minish woods
 
 04 Obstacle?
@@ -167,6 +168,8 @@
 06 Object
   00 Item on the ground
     Form: The item ID.
+    unknown4: The item parameter (number of shells or which kinstone).
+    unknown5: ?? index in list 0811E7E8
   02 Item for sale
     Form: The item ID.
   03 Button
@@ -342,6 +345,11 @@
       36 Giant candle
       3A Wheaton's table
       3B Dr. Left's table
+    unknown4: The sprite frame index to use, but only for certain forms?
+    Note that there's a list of form data for each piece of furniture, 08121EF8.
+      The form is the index in that list.
+      Then some forms have further sublists for each unknown4.
+      Each entry's data includes stuff like the visual X and Y offset to use.
   4E Minish sized entrance
     unknown4: Direction.
       0 - Down facing
@@ -498,7 +506,14 @@
   9A Giant acorn
   9C tree you can bonk into maybe?
   9D Bombable switch
-  A4 Town Minish's lamp
+  A1 Archway in Palace of Winds
+    unknown4: The sprite frame index to use.
+  A4 Minish's light
+    Forms:
+      0 Town Minish lamp
+      1 Mountain Minish furnace
+      2 Mountain Minish crystal
+      3 Mountain Minish light
   AA Opening in a waterfall
   AC Four Elements
     Form: The item ID.
@@ -508,7 +523,19 @@
     params & FFFF0000 - Flag to check for being unlocked?
   B1 Jail bars
   B7 Well
+  BA Handles the Gyorg Pair fight?
+    Also hardcodes BG3 to have a character base block of 1 instead of the usual 0.
   BB Wind Crest
+  BC Lit area in a dark room
+  BE Pinwheel
+  C0 Item carried by an enemy
+    unknown5: The item ID.
+    unknown4: The enemy subtype to latch onto?
+    params & FFFF0000: Flag for getting this item.
+    Form: Unused? Just gets overwritten by unknown5.
+    The enemy for it to latch onto must have its X and Y pos be close to this item's X and Y pos.
+    Specifically, both X and Y must be at most 16 pixels less than this item, and at most 15 pixels greater than this item.
+    If it doesn't find any matching enemy, the item will just be on the ground.
 
 07 NPC
   params - Pointer to the first cutscene script command.
