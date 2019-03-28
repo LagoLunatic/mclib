@@ -18,12 +18,12 @@ class Renderer:
     self.common_palettes = self.generate_palettes_from_palette_group_by_index(0xB)
     
     self.curr_room_bg_palettes = None
-    self.curr_room_tileset_images = [None]*2
+    self.curr_room_tileset_images = [None]*4
   
   def update_curr_room_palettes_and_tilesets(self, room):
     if room is None:
       self.curr_room_bg_palettes = None
-      self.curr_room_tileset_images = [None]*2
+      self.curr_room_tileset_images = [None]*4
     
     area = room.area
     
@@ -33,10 +33,10 @@ class Renderer:
       gfx_index = room.gfx_index
     self.curr_room_bg_palettes = self.generate_palettes_for_area_by_gfx_index(area, gfx_index)
     
-    self.curr_room_tileset_images = [None]*2
+    self.curr_room_tileset_images = [None]*4
     if area.uses_256_color_bg1s:
       return
-    for layer_index in range(2):
+    for layer_index in range(1, 3+1):
       try:
         tileset_image = self.render_tileset(area, room.gfx_index, self.curr_room_bg_palettes, layer_index)
         self.curr_room_tileset_images[layer_index] = tileset_image
@@ -50,38 +50,34 @@ class Renderer:
     
     gfx_asset_list = area.get_gfx_asset_list(gfx_index)
     gfx_data = gfx_asset_list.gfx_data
-    #palette_metadata_index = gfx_asset_list.palette_metadata_index
-    tile_mappings_8x8 = area.tilesets_asset_list.tile_mappings
+    tileset_datas = area.tilesets_asset_list.tileset_datas
     
-    # TODO: figure out what these are
-    if [x for x in gfx_asset_list.tile_mappings if x is not None]:
-      print("gfx_asset_list.tile_mappings: ", gfx_asset_list.tile_mappings)
-    if len(area.tilesets_asset_list.gfx_data) != 0:
-      print("area.tilesets_asset_list.gfx_data: ", area.tilesets_asset_list.gfx_data)
-    if area.tilesets_asset_list.palette_metadata_index is not None:
-      print("area.tilesets_asset_list.palette_metadata_index: ", area.tilesets_asset_list.palette_metadata_index)
+    tileset_image = self.render_tileset_by_assets(gfx_data, palettes, tileset_datas, layer_index)
     
-    tileset_image = self.render_tileset_by_assets(gfx_data, palettes, tile_mappings_8x8, layer_index)
+    #if tileset_image is not None:
+    #  tileset_image.save("../tileset_renders/area%02X-layer%02X-gfxindex%02X-tileset.png" % (area.area_index, layer_index, gfx_index))
     
-    #tileset_image.save("../tileset_renders/area%02X-layer%02X-gfxindex%02X-tileset.png" % (area.area_index, layer_index, gfx_index))
     return tileset_image
   
-  def render_tileset_by_assets(self, gfx_data, palettes, tile_mappings_8x8, layer_index):
-    if layer_index >= 1:
+  def render_tileset_by_assets(self, gfx_data, palettes, tileset_datas, layer_index):
+    if layer_index in [1, 3]:
       gfx_data = gfx_data.read_raw(0x4000, len(gfx_data)-0x4000)
     
-    tile_mapping_8x8_data = tile_mappings_8x8[layer_index]
+    tileset_data = tileset_datas[layer_index]
     
-    tileset_height = (len(tile_mapping_8x8_data)+7)//8
+    if tileset_data is None:
+      return None
+    
+    tileset_height = (len(tileset_data)+7)//8
     tileset_image = Image.new("RGBA", (16*16, tileset_height), (255, 255, 255, 0))
     
     cached_tile_images_by_tile_attrs = {}
-    for tile_index_16x16 in range(len(tile_mapping_8x8_data)//8):
+    for tile_index_16x16 in range(len(tileset_data)//8):
       tile_x = tile_index_16x16 % 16
       tile_y = tile_index_16x16 // 16
       
       for tile_8x8_i in range(4):
-        tile_attrs = tile_mapping_8x8_data.read_u16(tile_index_16x16*8 + tile_8x8_i*2)
+        tile_attrs = tileset_data.read_u16(tile_index_16x16*8 + tile_8x8_i*2)
         
         if tile_attrs in cached_tile_images_by_tile_attrs:
           tile_image = cached_tile_images_by_tile_attrs[tile_attrs]
@@ -103,7 +99,7 @@ class Renderer:
     
     room_image = Image.new("RGBA", (room.width, room.height), (255, 255, 255, 0))
     
-    for layer_index in range(len(room.layers_asset_list.tile_mappings)):
+    for layer_index in range(1, 3+1):
       layer_image = self.render_layer(room, palettes, layer_index)
       
       room_image.alpha_composite(layer_image)
@@ -114,10 +110,10 @@ class Renderer:
   
   def render_layer(self, room, tileset_image, palettes, layer_index):
     if room.area.uses_256_color_bg1s:
-      if layer_index == 1:
-        return self.render_layer_256_color(room, palettes, layer_index)
+      if layer_index == 2:
+        return self.render_layer_mapped(room, palettes, layer_index, color_mode=256)
       else:
-        # Their BG2s may be unused? They seem to error out when trying to render them. TODO figure them out
+        # Their BG1s may be unused? They seem to error out when trying to render them. TODO figure them out
         return Image.new("RGBA", (room.width, room.height), (255, 255, 255, 0))
     else:
       return self.render_layer_16_color(room, tileset_image, layer_index)
@@ -137,16 +133,16 @@ class Renderer:
     if room.layers_asset_list.palette_metadata_index is not None:
       print("room.layers_asset_list.palette_metadata_index: ", room.layers_asset_list.palette_metadata_index)
     
-    tile_mapping_16x16_data = room.layers_asset_list.tile_mappings[layer_index]
-    if tile_mapping_16x16_data is None:
-      raise Exception("Layer BG%d has no 16x16 tile mapping" % (layer_index+1))
+    layer_data = room.layers_asset_list.layer_datas[layer_index]
+    if layer_data is None:
+      raise Exception("Layer BG%d has no layer data" % layer_index)
     
     room_width_in_16x16_tiles = room.width//16
     
     cached_tile_images_by_16x16_index = {}
-    for i in range(len(tile_mapping_16x16_data)//2):
-      tile_map_16x16_offset = i*2
-      tile_index_16x16 = tile_mapping_16x16_data.read_u16(tile_map_16x16_offset)
+    for i in range(len(layer_datas)//2):
+      layer_data_offset = i*2
+      tile_index_16x16 = layer_datas.read_u16(layer_data_offset)
       
       if tile_index_16x16 in cached_tile_images_by_16x16_index:
         tile_image = cached_tile_images_by_16x16_index[tile_index_16x16]
@@ -160,7 +156,7 @@ class Renderer:
     
     return layer_image
   
-  def render_layer_256_color(self, room, palettes, layer_index):
+  def render_layer_mapped(self, room, palettes, layer_index, color_mode=256):
     rom = self.rom
     area = room.area
     
@@ -170,22 +166,17 @@ class Renderer:
     gfx_data = gfx_asset_list.gfx_data
     palette_metadata_index = gfx_asset_list.palette_metadata_index
     
-    if [x for x in gfx_asset_list.tile_mappings if x is not None]:
-      print("1: ", gfx_asset_list.tile_mappings)
-    if len(area.tilesets_asset_list.gfx_data) != 0:
-      print("2: ", area.tilesets_asset_list.gfx_data)
-    if area.tilesets_asset_list.palette_metadata_index is not None:
-      print("3: ", area.tilesets_asset_list.palette_metadata_index)
-    if len(room.layers_asset_list.gfx_data) != 0:
-      print("4: ", room.layers_asset_list.gfx_data)
-    if room.layers_asset_list.palette_metadata_index is not None:
-      print("5: ", room.layers_asset_list.palette_metadata_index)
+    if layer_index in [1, 3]:
+      gfx_data = gfx_data.read_raw(0x4000, len(gfx_data)-0x4000)
     
-    tile_mapping_8x8_data = room.layers_asset_list.tile_mappings[layer_index]
+    if layer_index == 3:
+      tile_mapping_8x8_data = area.get_gfx_asset_list(room.gfx_index).tile_mappings_8x8[layer_index]
+    else:
+      tile_mapping_8x8_data = room.layers_asset_list.tile_mappings_8x8[layer_index]
     if tile_mapping_8x8_data is None:
-      raise Exception("Layer BG%d has no 8x8 tile mapping" % (layer_index+1))
+      raise Exception("Layer BG%d has no 8x8 tile mapping" % layer_index)
     
-    layer_image_in_chunks = self.render_gfx_mapped(gfx_data, tile_mapping_8x8_data, palettes, color_mode=256)
+    layer_image_in_chunks = self.render_gfx_mapped(gfx_data, tile_mapping_8x8_data, palettes, color_mode=color_mode)
     
     # Reassemble the layer out of the 256x256 chunks.
     dst_y = 0
@@ -361,7 +352,7 @@ class Renderer:
   def render_entity_sprite_frame(self, entity):
     if entity.type == 6 and entity.subtype == 0xC and entity.form in [0, 1]:
       # Small chest spawner
-      chest_tile_image = self.get_16x16_tile_by_index(self.curr_room_tileset_images[0], 0x10)
+      chest_tile_image = self.get_16x16_tile_by_index(self.curr_room_tileset_images[2], 0x10)
       return (chest_tile_image, -8, -8)
     
     loading_data = SpriteLoadingData(entity, self.rom)

@@ -8,7 +8,9 @@ class AssetList:
     
     self.gfx_data = DataInterface(b'')
     self.palette_metadata_index = None
-    self.tile_mappings = [None, None]
+    self.layer_datas = [None, None, None, None]
+    self.tileset_datas = [None, None, None, None]
+    self.tile_mappings_8x8 = [None, None, None, None]
     
     self.read()
   
@@ -42,34 +44,54 @@ class AssetList:
         #print(compressed)
         #print("%08X" % rom_address)
         
-        if ram_address >= 0x06000000 and ram_address <= 0x06FFFFFF: # Tile GFX data
-          #print(f"Tile GFX data: %08X -> %08X (len %04X) (compressed: {compressed})" % (rom_address, ram_address, len(decompressed_data)))
+        #print("%08X -> %08X (len %04X) (compressed: %s)" % (rom_address, ram_address, len(decompressed_data), compressed))
+        
+        if 0x06000000 <= ram_address <= 0x0600DFFF: # Tile GFX data
+          #print("Tile GFX data")
           offset = ram_address - 0x06000000
           self.gfx_data.write_raw(offset, decompressed_data)
-        elif ram_address == 0x02025EB4: # BG1 8x8 tile mappings
-          #print(f"8x8 tile mapping BG1: %08X -> %08X (compressed: {compressed})" % (rom_address, ram_address))
-          if self.tile_mappings[0] is not None:
+        elif ram_address == 0x0200B654: # BG1 layer data
+          #print("Layer data BG1")
+          if self.layer_datas[1] is not None:
             raise Exception("Duplicate tile mapping for layer BG1")
-          self.tile_mappings[0] = decompressed_data
-        elif ram_address == 0x0200B654: # BG2 tile mappings
-          #print(f"8x8 tile mapping BG2: %08X -> %08X (compressed: {compressed})" % (rom_address, ram_address))
-          if self.tile_mappings[1] is not None:
+          self.layer_datas[1] = decompressed_data
+        elif ram_address == 0x02025EB4: # BG2 layer data
+          #print("Layer data BG2")
+          if self.layer_datas[2] is not None:
             raise Exception("Duplicate tile mapping for layer BG2")
-          self.tile_mappings[1] = decompressed_data
-        elif ram_address == 0x0202CEB4: # BG1 16x16 tile mappings
-          #print(f"16x16 tile mapping BG1: %08X -> %08X (compressed: {compressed})" % (rom_address, ram_address))
-          if self.tile_mappings[0] is not None:
+          self.layer_datas[2] = decompressed_data
+        elif ram_address == 0x02012654: # BG1 tileset
+          #print("tileset BG1")
+          if self.tileset_datas[1] is not None:
+            raise Exception("Duplicate tileset for layer BG1")
+          self.tileset_datas[1] = decompressed_data
+        elif ram_address == 0x0202CEB4: # BG2 tileset
+          #print("tileset BG2")
+          if self.tileset_datas[2] is not None:
+            raise Exception("Duplicate tileset for layer BG2")
+          self.tileset_datas[2] = decompressed_data
+        elif ram_address == 0x02002F00: # BG1 8x8 tile mapping
+          #print("8x8 tile mapping BG1")
+          if self.tile_mappings_8x8[1] is not None:
             raise Exception("Duplicate tile mapping for layer BG1")
-          self.tile_mappings[0] = decompressed_data
-        elif ram_address in [0x02012654, 0x02019EE0]: # BG2 16x16 tile mappings
-          #print(f"16x16 tile mapping BG2: %08X -> %08X (compressed: {compressed})" % (rom_address, ram_address))
-          if self.tile_mappings[1] is not None:
+          self.tile_mappings_8x8[1] = decompressed_data
+        elif ram_address == 0x02019EE0: # BG2 8x8 tile mapping
+          #print("8x8 tile mapping BG2")
+          if self.tile_mappings_8x8[2] is not None:
             raise Exception("Duplicate tile mapping for layer BG2")
-          self.tile_mappings[1] = decompressed_data
+          self.tile_mappings_8x8[2] = decompressed_data
+        elif ram_address == 0x0600F000: # BG3 8x8 tile mapping
+          #print("8x8 tile mapping BG3")
+          if self.tile_mappings_8x8[3] is not None:
+            raise Exception("Duplicate tile mapping for layer BG3")
+          self.tile_mappings_8x8[3] = decompressed_data
         else:
+          # TODO
           pass
-          # TODO:
-          #print(f"UNKNOWN ASSET TYPE: %08X -> %08X (len: %04X) (compressed: {compressed})" % (rom_address, ram_address, properties[2]))
+          print(
+            "UNKNOWN ASSET TYPE: %08X -> %08X (len: %04X) (compressed: %s)" % (
+              rom_address, ram_address, properties[2], compressed
+            ))
           # unknowns found in area 00:
           # 0832EAF0 -> 0202AEB4 (len: 80001000) (compressed: True)
           # 0832EF20 -> 02010654 (len: 80000FFC) (compressed: True)
@@ -78,7 +100,8 @@ class AssetList:
           # 08385748 -> 02010654 (len: 80000FFC) (compressed: True)
           # unknowns found in room 20-09:
           # 0847ED74 -> 02027EB4 (len: 80000159) (compressed: True)
-          # 0847A370 -> 02019EE0 (len: 80001000) (compressed: True)
+          # unknowns found in room 0D-13:
+          # 083B0414 -> 0202AEB4 (len: 8000016A) (compressed: True)
       
       if (properties[0] & 0x80000000) == 0:
         break
