@@ -57,6 +57,7 @@
     Forms:
       0 Red
       1 Blue (with dirt ball)
+      2 Green (does not appear)
   12 Puffstool
   13 Big Green Chuchu
     Form: ?
@@ -72,7 +73,6 @@
       6 The one at the bottom of Mount Crenal that tells you about the empty bottle one
       This is an index in list 080CC954.
     params & FFFF0000 - Flag for having reflected a Deku Nut back at it.
-      This is argument r0 to CheckVariableTypeBits.
   17 Rupee Like
     Forms:
       0 Green Rupee
@@ -90,6 +90,7 @@
   22 Bob-omb
   23 Wall Master?
   24 Gleerok
+  25 Minish-sized Vaati eyes
   26 Tektite
     Forms:
       0 Red
@@ -100,7 +101,11 @@
   2A Armos
   2B Eyegore Statue
   2C Rope
-  2D 
+  2D Small Pesto
+    Forms:
+      0 Red
+      1 Blue
+      2 Green
   2E Acro-Bandits
   2F Automatic Blade Trap
   30 Keaton
@@ -126,6 +131,8 @@
       0 Under bush
       1 Under rock
     It creates a 6-7D entity to be the object on its back.
+  36 part of Mazaal
+  37 part of Mazaal
   39 Big Octorok
   3A Flying Pot
   3B Gibdo
@@ -145,16 +152,33 @@
     Forms:
       0 Normal
       1 Corrupted
+  47 Lakitu
+  48 electrified cloud?
+  4A Vaati Reborn
   4C Ball & Chain Soldier 1?
   4D Ball & Chain Soldier 2?
   4E Ghini
     Forms:
       0 Awake
       1 Sleeping
+  4F Vaati Transfigured
+  50 appearing Ghini?
+  51 Vaati's Wrath
+  52 part of Vaati's Wrath fight?
+  53 Dust on Beedle's shop
+  54 part of Vaati's Wrath fight?
+  5B Prologue Business Scrub
   5C Gyorg Female
+  5D Gyorg Male
+  61 Gyorg Female's eye?
+    Form: Which of the 8 eyes it is. 0-7.
+  63 Gyorg Female's mouth?
   65 tree? in minish woods
 
-04 Obstacle?
+04 Obstacle/projectile/weapon?
+  03 Moblin's spear?
+    Invisible, but deals damage
+  13 Part of Scissors Beetle?
   14 hole in the ground you can fall in when tiny?
     or spiky dust that covers something up
     params & FFFF0000 is something, maybe a flag
@@ -162,6 +186,7 @@
     params & FFFF0000 - Flag for this web being destroyed.
   1D Winder
   1E roller trap?
+  22 part of Gyorg Pair fight?
 
 05 Invalid, nothing
 
@@ -210,6 +235,10 @@
         3 - Invalid?
       & 10 - ?
       & 80 - ??
+  0B Item cutscene? created automatically
+    Form: The item ID.
+    unknown4: The item param for shells and kinstones.
+    unknown5: Affects what the cutscene does?
   0C Chest spawner
     Forms:
       0 Small chest 1?
@@ -221,6 +250,11 @@
     The item ID is stored in the matching tile entity chest.
       If this is a small chest, it looks for the tile entity on the same tile as this entity.
       If this is a big chest, the position doesn't matter, instead it looks for the tile entity with a matching unknown1 to this entity's unknown4.
+  0F Special effect
+    Forms:
+      11 Dust from rolling
+      12 Sword tip sparkle
+      32 Enemy struck
   13 Rotatable railtrack
     unknown4 - Affects the default direction the track is in.
       0 - Default vertical.
@@ -255,6 +289,7 @@
   27 Pushable statue
   29 might be a warp up/down in palace of winds?
     unknown 1 - 08 means warp up, 80 means warp down
+  2A Flame inside an Armos?
   2C Bean stalk
   2D smoke from smith's chimney?
   2E Pushable rock
@@ -319,13 +354,19 @@
     Forms:
       00 Bookshelf
       01 Crate
+      03 Shelf
+      05 Firewood
+      06 Bucket of water
       07 Weapon rack
+      08 Red potion cauldron
+      09 Smith's furnace
       0A Shelf
       0B Ladder up
       0C Minish lamp
       0D Glowing floor plant
       0E Minish shelf
       0F Kinstone rack
+      10 Blue potion cauldron
       18 Minish wheelbarrow
       1A Baker's rack
       1E Rem's workbench
@@ -345,6 +386,11 @@
       36 Giant candle
       3A Wheaton's table
       3B Dr. Left's table
+      3F Big candle in cup
+      40 Ezlo's cogs
+      41 Ezlo's bookshelf
+      42 Ezlo's staves & leaf
+      43 Ezlo's books & buttons
     unknown4: The sprite frame index to use, but only for certain forms?
     Note that there's a list of form data for each piece of furniture, 08121EF8.
       The form is the index in that list.
@@ -360,6 +406,10 @@
       The property is a pointer to the exit data.
   4F Archway
     unknown4: The sprite frame index to use.
+  50 Giant foreground rock
+    Forms:
+      0 Pointing right
+      1 Pointing left
   54 Pullable lever
     params & FFFF0000 - Flag to set.
   55 Minecart
@@ -395,6 +445,20 @@
     params & FFFF0000 - Variable type flag to check. The door disappears once it's set.
       Can be 0 to check no flag.
   5E Whirlwind
+  5F Object blocking hidden stairs
+    Forms:
+      0 Statue in the school
+      1 Throne in Dark Castle
+  60 Swordsman Newsletter
+    Forms:
+      0 
+      1 
+      2 
+      3 
+      4 
+      5 
+      6 
+      7 
   62 Giant twig
     Forms:
       0 ?
@@ -420,6 +484,7 @@
       0 Hole to put the green sprout in
       2 Blue sprout
       3 Green sprout (huge)
+  6C Minecart door
   6D Object on a pillar
     Forms:
       0 Nothing on the pillar
@@ -438,6 +503,7 @@
       form = 2
       unknown4-7 = 104811D8
       params = 002F002E
+  6E Mineral water source
   6F Minish-sized archway
     Form: The sprite frame index to use.
   71 grave
@@ -452,6 +518,8 @@
       2 Giant fence post
       3 Water sausage
   7A Steam coming up off the top of the cave of flames
+  7B Pushable lever
+    params & FFFF0000: Flag to set?
   7C Huge shoes
     Forms:
       0 Two red shoes
@@ -462,11 +530,18 @@
       1 Rock
   7F Pico Bloom
     Forms:
-      00 White
-      02 Green
-      03 Red
+      0 White
+      1 Orange
+      2 Green
+      3 Red
+      4 Blue
+      5 Yellow
+    unknown4:
+      0 Bloomed
+      1 Unbloomed
   82 Big vortex
-  83 Pushable lever
+  83 Big pushable lever
+    params & FFFF0000: Flag to set?
   84 Small ice block
     Forms:
       0 Normal
@@ -477,6 +552,7 @@
       0 Normal
       1 Frozen chest
   86 four leaf clover?
+  88 Big droppable book
   89 in mazaal boss room of fortress of winds
   8C Book
     Forms:
@@ -506,8 +582,16 @@
   9A Giant acorn
   9C tree you can bonk into maybe?
   9D Bombable switch
+  9F Fan
+    params & 0000FFFF: Flag that must be set for this fan to activate.
+    Forms:
+      0 Facing down
+      1 Facing left
+      2 Facing up
+      3 Facing right
   A1 Archway in Palace of Winds
     unknown4: The sprite frame index to use.
+  A3 cloud?
   A4 Minish's light
     Forms:
       0 Town Minish lamp
@@ -515,6 +599,7 @@
       2 Mountain Minish crystal
       3 Mountain Minish light
   AA Opening in a waterfall
+  AB ?
   AC Four Elements
     Form: The item ID.
   AE Floating block
@@ -523,6 +608,7 @@
     params & FFFF0000 - Flag to check for being unlocked?
   B1 Jail bars
   B7 Well
+  B8 ? in Wind Tribe home
   BA Handles the Gyorg Pair fight?
     Also hardcodes BG3 to have a character base block of 1 instead of the usual 0.
   BB Wind Crest
@@ -551,14 +637,51 @@
   03 Forest Minish
     unknown4 - index in list 08109D18 of the script to run.
   04 Postman
-  06 Generic Hyrule Townsperson?
-  07 Generic Kid?
+  05 Unused Zelda follower?
+  06 Townsperson
+    Forms:
+      00 Klaus
+      01 Marshall
+      02 Dottie
+      03 Breve
+      04 
+      05 Gepper
+      06 Keeley
+      07 Verona
+      08 Anton
+      09 Bindle
+      0A 
+      0B June
+      0C Monster Lady
+      0D Romio
+      0E Julietta
+      0F Crenel Hermit
+      10 
+      11 
+      12 
+      13 
+      14 
+      form used as index in list 0810B680, entry len 4
+  07 Kid
+    Forms:
+      0 Joel
+      1 Harrison
+      2 Erik
+      3 Jim
+      4 Berry
+      5 Leila
+      6 Zill
+      7 Lolly
+      8 Candy
+      form used in switch statement at 0806285A
+      also index in list 0810C0A0, entry len 4
   08 Guard without spear
   0A Stamp
   0C Marcy
   0D Wheaton
   0E Pita
   0F Minish Ezlo
+  10 Postbox on roof
   11 Beedle
   12 Brocco
   13 Sitting person
@@ -602,6 +725,7 @@
       1 ?
       2 ?
       3 ?
+  2B castor wilds statue
   2C Cat
     Forms:
       1 Brown cat 1
@@ -610,6 +734,7 @@
       5 Purry
   2D Mountain Minish
     unknown4? - which apprentice (0-6)
+  2E Zelda follower
   2F Melari
   30 Blade brothers
     Forms:
@@ -622,6 +747,11 @@
       6 Splitblade
       7 Greatblade
   31 Cow
+    unknown4: Starting facing direction.
+      0 Up
+      1 Right
+      2 Down
+      3 Left
   32 Goron
   33 Goron Merchant
   34 Gorman
@@ -631,6 +761,7 @@
       1 Growler (roaming)
       2 Growler (blocks the way)
       3 Rolf
+  36 Syrup
   37 Rem
   38 Town Minish
     Forms:
@@ -641,6 +772,9 @@
       4 Purple
       5 Green
   39 Librari
+  3A Percy
+  3B Vaati Reborn
+  3C Moblin Lady
   3D Librarians
     Forms:
       0 Paige
@@ -659,10 +793,20 @@
   43 Gina
   44 Simon
   45 Anju
+  46 Mama
+  47 Emma
   48 Teachers
     Forms:
       0 Tina
       1 Dina
+  49 Wind Tribespeople
+    Forms:
+      0 Stranger
+      1 
+      2 
+      3 
+      4 
+      5 
   4A Gregal
     Forms:
       0 Sick
@@ -674,6 +818,7 @@
       5 ?
       A ?
   4D Cap Ezlo
+  4E ?? no graphics
   4F Clothes rack
   50 Beedle's Picolyte Bottles
   52 Small Town Minish
@@ -685,14 +830,24 @@
       4 Orange
   53 Hurdy-Gurdy Man
   54 Cucco on Anju's roof
+  55 Harmless Cucco Chick
+  57 Phonograph
 
-08 ???
+08 ??? Player item being used
+  01 Sword
+  02 Bomb
+  05 Shield
+  08 Gust Jar
+  09 Cane of Pacci
+  0E Bottled fairy
 
-09 ?
+09 Manager
   03 Minish Portal
     Forms:
       0 Tree Trunk
       1 Rock
+      3 Metal
+      6 Temple of Droplets entrance
   06 Minish exit region handler.
     Form: A room property index.
       The property is a pointer to a list of Minish exit regions.
@@ -738,7 +893,7 @@
     params & 0000FFFF - Flag required for this hint event to start.
     params & FFFF0000 - Flag for having seen this hint event.
   11 Flag AND operator
-    params & FFFF0000 - Flag(s) to check.
+    params & FFFF0000 - Flags to check.
     params & 0000FFFF - Flag to set once all the flags to check are set.
   12 Hyrule Town tileset swapper
   13 loads in decorations on top of Hyrule Town shops? (6-1C entities)
@@ -755,12 +910,12 @@
   18 kinstone fusion reward related?
   1A Hole you can fall into
     Form: Index in list 08108764.
+  1D Sets BG3's character base block to 1
   1E Trigger region
     Note that X and Y pos are of the upper left of the region.
     (unknown5 << 8) | unknown4: Width.
     (unknown7 << 8) | unknown6: Height.
-    params & FFFF0000: Flag(s) to set when the player is in the region, or to clear when they are not.
-      This is the arg to CheckVariableTypeBits.
+    params & FFFF0000: Flag to set when the player is in the region, or to clear when they are not.
       if set, delete this entity.
     Form: If zero, this is a one-off trigger region.
       If nonzero, the player can leave it to unset the flag and re-enter it to set the flag again.
@@ -769,8 +924,7 @@
     form - 
     unknown4? - 
   20 Object that can be permanently moved
-    This entity will create a type 6 entity 
-    unknown5: Subtype of the entity to create.
+    unknown5: Subtype of the type 6 entity to create.
     Form: Form of the entity to create.
     unknown4: unknown4 of the entity to create.
     params & FFFF0000: Flag for this entity being moved.

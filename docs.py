@@ -49,7 +49,7 @@ for line_index, line in enumerate(entity_doc_str.split("\n")):
   type_match = re.search(r"^([0-9A-F]{2}) (.+)$", line, re.IGNORECASE)
   subtype_match = re.search(r"^  ([0-9A-F]{2}) (.+)$", line, re.IGNORECASE)
   forms_header_match = re.search(r"^    Forms:$", line, re.IGNORECASE)
-  form_match = re.search(r"^      ([0-9A-F]+) (.+)$", line, re.IGNORECASE)
+  form_match = re.search(r"^      ([0-9A-F]+) (.*)$", line, re.IGNORECASE)
   form_is_item_id_match = re.search(r"^    Form: The item ID.$", line, re.IGNORECASE)
   form_is_prop_index_match = re.search(r"^    Form: A room property index.$", line, re.IGNORECASE)
   if type_match:
@@ -205,7 +205,7 @@ class Docs:
   
   @staticmethod
   def get_best_sprite_frame(entity):
-    if entity.type == 6 and entity.subtype == 8:
+    if entity.type == 6 and entity.subtype in [8, 0x6C]:
       # Door
       frame_index = entity.form & 0x03
       if ((entity.form & 0x0C) >> 2) == 2:
@@ -238,6 +238,8 @@ class Docs:
       return None
     elif entity.type == 6 and entity.subtype == 0xA1:
       return entity.unknown_4
+    elif entity.type == 6 and entity.subtype == 0x60:
+      return entity.form
     
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
@@ -363,6 +365,36 @@ class Docs:
       return 2
     elif entity.type == 6 and entity.subtype == 0xC0:
       return entity.unknown_5
+    elif entity.type == 7 and entity.subtype == 0x31:
+      return entity.unknown_4
+    elif entity.type == 3 and entity.subtype == 0x2E:
+      return 1
+    elif entity.type == 7 and entity.subtype == 7:
+      return None
+    elif entity.type == 7 and entity.subtype == 6:
+      return None
+    elif entity.type == 6 and entity.subtype == 0xF:
+      return entity.form
+    elif entity.type == 6 and entity.subtype == 0x9F:
+      return entity.form
+    elif entity.type == 6 and entity.subtype == 0x7F:
+      anim_index = entity.unknown_4
+      if entity.form <= 5:
+        anim_index += [
+          3,
+          0,
+          3,
+          3,
+          3,
+          3,
+        ][entity.form]
+      return anim_index
+    elif entity.type == 7 and entity.subtype == 3:
+      return 2
+    elif entity.type == 7 and entity.subtype == 0x15:
+      return 2
+    elif entity.type == 7 and entity.subtype == 0x49:
+      return 2
     
     return 0
   

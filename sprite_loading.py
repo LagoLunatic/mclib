@@ -80,7 +80,7 @@ class SpriteLoadingData:
     self.object_palette_id = self.rom.read_u16(sprite_loading_data_ptr + 4) & 0x03FF
     self.sprite_index = self.rom.read_u16(sprite_loading_data_ptr + 6) & 0x03FF
     
-    if self.entity_type == 6 and self.entity_subtype == 8:
+    if self.entity_type == 6 and self.entity_subtype in [8, 0x6C]:
       # Door
       if self.area.area_index == 0x25:
         self.fixed_gfx_index = 0x1E7
