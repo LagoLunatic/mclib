@@ -356,7 +356,7 @@ class Renderer:
       frame_image = self.render_sprite_frame_swap_type_gfx(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_entity_sprite_frame(self, entity):
+  def render_entity_pretty_sprite(self, entity):
     if entity.type == 6 and entity.subtype == 0xC and entity.form in [0, 1]:
       # Small chest spawner
       chest_tile_image = self.get_16x16_tile_by_index(self.curr_room_tileset_images[2], 0x10)
@@ -393,21 +393,14 @@ class Renderer:
       if frame_index is None:
         return (None, None, None)
     
-    if loading_data.gfx_type == 0:
-      if loading_data.fixed_gfx_index == 0:
-        return (None, None, None)
-      gfx_data = self.get_sprite_fixed_type_gfx_data(loading_data)
-    elif loading_data.gfx_type == 1:
-      gfx_data = self.get_sprite_swap_type_gfx_data_for_frame(sprite, frame_index)
-    elif loading_data.gfx_type == 2:
-      gfx_data = self.get_sprite_common_type_gfx_data(loading_data)
-    else:
-      raise Exception("Don't know how to render this sprite (GFX type %X)" % loading_data.gfx_type)
+    gfx_data = self.get_sprite_gfx_data_for_frame(loading_data, sprite, frame_index)
+    if gfx_data is None:
+      return (None, None, None)
     
     frame_obj_list = sprite.get_frame_obj_list(frame_index)
     
-    frame_image, min_x, min_y = self.render_sprite_frame(frame_obj_list, gfx_data, palettes, entity_palette_index)
-  
+    frame_image, min_x, min_y = self.render_sprite_frame_by_assets(frame_obj_list, gfx_data, palettes, entity_palette_index)
+    
     if keyframe:
       if keyframe.h_flip:
         frame_image = frame_image.transpose(Image.FLIP_LEFT_RIGHT)
@@ -454,7 +447,17 @@ class Renderer:
     
     entity_palette_index = 6
     
-    return self.render_sprite_frame(frame_obj_list, gfx_data, final_palettes, entity_palette_index)
+    return self.render_sprite_frame_by_assets(frame_obj_list, gfx_data, final_palettes, entity_palette_index)
+  
+  def get_sprite_gfx_data_for_frame(self, loading_data, sprite, frame_index):
+    if loading_data.gfx_type == 0:
+      return self.get_sprite_fixed_type_gfx_data(loading_data)
+    elif loading_data.gfx_type == 1:
+      return self.get_sprite_swap_type_gfx_data_for_frame(sprite, frame_index)
+    elif loading_data.gfx_type == 2:
+      return self.get_sprite_common_type_gfx_data(loading_data)
+    else:
+      raise Exception("Don't know how to render this sprite (GFX type %X)" % loading_data.gfx_type)
   
   def get_sprite_swap_type_gfx_data_for_frame(self, sprite, frame_index):
     frame_gfx_data = sprite.get_frame_gfx_data(frame_index)
@@ -467,6 +470,9 @@ class Renderer:
     return gfx_data
   
   def get_sprite_fixed_type_gfx_data(self, loading_data):
+    if loading_data.fixed_gfx_index == 0:
+      return None
+    
     bitfield = self.rom.read_u32(0x08132B30 + loading_data.fixed_gfx_index*4)
     gfx_data_ptr = 0x085A2E80 + (bitfield & 0x00FFFFFC)
     if bitfield & 0x00000001 == 1:
@@ -488,7 +494,7 @@ class Renderer:
     gfx_data = self.rom.read_raw(gfx_data_ptr+tile_offset, 0x2000-tile_offset)
     return gfx_data
   
-  def render_sprite_frame(self, frame_obj_list, gfx_data, palettes, entity_palette_index):
+  def render_sprite_frame_by_assets(self, frame_obj_list, gfx_data, palettes, entity_palette_index):
     if not frame_obj_list.objs:
       raise Exception("Frame has no objs")
     
