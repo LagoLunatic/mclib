@@ -10,6 +10,7 @@ from mclib.docs import Docs
 
 class Renderer:
   MAX_8x8_TILES_PER_ROW = 32
+  DUMMY_PALETTE = [(255, 0, 0, 255)]*16
   
   def __init__(self, game):
     self.game = game
@@ -278,6 +279,9 @@ class Renderer:
     tile_image = Image.new("RGBA", (8, 8), (255, 255, 255, 0))
     pixels = tile_image.load()
     
+    if palette is None:
+      palette = self.DUMMY_PALETTE
+    
     tile_gfx_offset = tile_index*0x20
     x_in_tile = 0
     y_in_tile = 0
@@ -307,6 +311,9 @@ class Renderer:
   def render_tile_256_colors(self, gfx_data, tile_index, palette):
     tile_image = Image.new("RGBA", (8, 8), (255, 255, 255, 0))
     pixels = tile_image.load()
+    
+    if palette is None:
+      palette = self.DUMMY_PALETTE
     
     tile_gfx_offset = tile_index*0x40
     x_in_tile = 0
@@ -534,11 +541,10 @@ class Renderer:
     palette_group = area.get_palette_group(gfx_index)
     final_palettes = self.common_palettes.copy()
     
-    # First fill all the palettes with bright red.
+    # First fill all the palettes with None, which will be rendered as bright red.
     # This is so that any palettes not loaded in will be obviously wrong visually making it easier to notice problems.
-    dummy_palette = [(255, 0, 0, 255)]*16
     for i in range(0x20):
-      final_palettes.append(dummy_palette)
+      final_palettes.append(None)
     
     for palette_set in palette_group.palette_sets:
       if palette_set.palette_load_offset < 0 or palette_set.palette_load_offset >= 0x20:
@@ -556,12 +562,11 @@ class Renderer:
     palette_group = PaletteGroup(palette_group_index, self.rom)
     
     if existing_palettes is None:
-      final_palettes = []
-      # First fill all the palettes with bright red.
+      # First fill all the palettes with None, which will be rendered as bright red.
       # This is so that any palettes not loaded in will be obviously wrong visually making it easier to notice problems.
-      dummy_palette = [(255, 0, 0, 255)]*16
+      final_palettes = []
       for i in range(0x20):
-        final_palettes.append(dummy_palette)
+        final_palettes.append(None)
     else:
       final_palettes = existing_palettes.copy()
     
@@ -577,28 +582,42 @@ class Renderer:
     
     return final_palettes
   
-  def generate_object_palettes(self, object_palette_id):
-    final_palettes = self.common_palettes.copy()
-    final_palettes[0x15] = self.curr_room_bg_palettes[3]
-    entity_palette_index = 6
+  def generate_object_palettes(self, object_palette_id, existing_palettes=None):
+    if existing_palettes is None:
+      final_palettes = self.common_palettes.copy()
+      final_palettes[0x15] = self.curr_room_bg_palettes[3]
+    else:
+      final_palettes = existing_palettes.copy()
+    
+    entity_palette_index = None
+    for i in range(0x16, 0x20):
+      if final_palettes[i] is None:
+        entity_palette_index = i - 0x10
+        break
+    if entity_palette_index is None:
+      raise Exception("Failed to find any empty object palette slots")
     
     if 0 <= object_palette_id <= 5:
       entity_palette_index = object_palette_id
     elif 6 <= object_palette_id <= 0x14:
       background_palette_index = object_palette_id - 6
       background_palette = self.curr_room_bg_palettes[background_palette_index]
-      final_palettes[0x16] = background_palette
+      final_palettes[0x10 + entity_palette_index] = background_palette
     elif object_palette_id == 0x15:
       color = self.curr_room_bg_palettes[3][0xC]
-      final_palettes[0x16] = [color]*0x10
+      final_palettes[0x10 + entity_palette_index] = [color]*0x10
     else:
       object_palette_index = object_palette_id - 0x16
       bitfield = self.rom.read_u32(0x08133368 + object_palette_index*4)
       palette_ptr = 0x085A2E80 + (bitfield & 0x00FFFFFF)
       num_palettes = (bitfield & 0x0F000000) >> 24
       
+      first_obj_pal_index = 0x10 + entity_palette_index
+      if 0x20 - first_obj_pal_index < num_palettes:
+        raise Exception("Failed to find enough empty object palette slots")
+      
       palettes = self.generate_palettes(palette_ptr, num_palettes)
-      final_palettes[0x16:0x16+num_palettes] = palettes
+      final_palettes[first_obj_pal_index:first_obj_pal_index+num_palettes] = palettes
     
     return (final_palettes, entity_palette_index)
   
@@ -634,6 +653,9 @@ class Renderer:
     
     for palette_index in range(0x20):
       palette = palettes[palette_index]
+      
+      if palette is None:
+        palette = self.DUMMY_PALETTE
       
       for color_index in range(0x10):
         color = palette[color_index]
@@ -695,6 +717,9 @@ class Renderer:
     
     room_image = Image.new("RGBA", (image_width, image_height), (255, 255, 255, 0))
     pixels = room_image.load()
+    
+    if palette is None:
+      palette = self.DUMMY_PALETTE
     
     for y in range(image_height):
       for x in range(0, image_width, 4):
