@@ -25,6 +25,7 @@ class Renderer:
     if room is None:
       self.curr_room_bg_palettes = None
       self.curr_room_tileset_images = [None]*4
+      return
     
     area = room.area
     
