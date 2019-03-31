@@ -376,18 +376,19 @@ class Renderer:
     palettes, entity_palette_index = self.generate_object_palettes(loading_data.object_palette_id)
     
     sprite = Sprite(loading_data.sprite_index, self.rom)
-    #print("%08X" % sprite.frame_gfx_data_list_ptr)
     
     best_anim_index = None
     keyframe = None
     if sprite.animation_list_ptr != 0:
       best_anim_index = Docs.get_best_sprite_animation(entity)
     
+    frame_index = 0xFF
     if best_anim_index is not None:
       keyframe = sprite.get_animation(best_anim_index).keyframes[0]
       frame_index = keyframe.frame_index
       print("Has animations, using anim %02X, which has frame %02X for its first keyframe" % (best_anim_index, frame_index))
-    else:
+    
+    if frame_index == 0xFF:
       frame_index = Docs.get_best_sprite_frame(entity)
       if frame_index is None:
         return (None, None, None)
