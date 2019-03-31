@@ -249,6 +249,63 @@ class Docs:
     return 0
   
   @staticmethod
+  def get_best_sprite_head_frame(entity):
+    if entity.type != 7:
+      return None
+    
+    if entity.subtype == 7:
+      if entity.form <= 8:
+        return [
+          0x19,
+          0x25,
+          0x2E,
+          0x37,
+          0x40,
+          0x48,
+          0x78,
+          0x83,
+          0x8B
+        ][entity.form] + 4
+    elif entity.subtype == 6:
+      if entity.form <= 0x14:
+        return [
+          0x00,
+          0x08,
+          0x80,
+          0x88,
+          0x18,
+          0x20,
+          0x90,
+          0x98,
+          0x40,
+          0x48,
+          0x68,
+          0x70,
+          0xA0,
+          0x50,
+          0x78,
+          0x10,
+          0x28,
+          0x30,
+          0x38,
+          0x58,
+          0x60
+        ][entity.form] + 4
+    elif entity.subtype == 3:
+      return 0x1C
+    elif entity.subtype == 0x34:
+      return 0xF
+    elif entity.subtype in [8, 0x15]:
+      return 0x46
+    elif entity.subtype == 0x38:
+      return 0x1C
+    elif entity.subtype == 0x49:
+      # TODO: correct behavior is to grab the current keyframe's extra_frame_index
+      return 7
+    
+    return None
+  
+  @staticmethod
   def get_best_sprite_animation(entity):
     if entity.type == 6 and entity.subtype in [0, 2, 0x40, 0xAC]:
       return entity.form

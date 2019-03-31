@@ -25,6 +25,14 @@ class Sprite:
     frame_obj_list = FrameObjList(frame_obj_data_ptr, self.rom)
     return frame_obj_list
   
+  def get_head_offsets_for_frame(self, frame_index):
+    offset_1 = self.rom.read_u16(0x089FB780 + self.sprite_index*2)
+    unk_index = self.rom.read_u8(0x089FB770 + offset_1 + frame_index)
+    offset_data_ptr = 0x089FB770 + unk_index*4 + 0xD00
+    head_x_off = self.rom.read_s8(offset_data_ptr+0)
+    head_y_off = self.rom.read_s8(offset_data_ptr+1)
+    return (head_x_off, head_y_off)
+  
   def get_animation(self, anim_index):
     if self.animation_list_ptr == 0:
       return None
@@ -73,8 +81,9 @@ class Keyframe:
     bitfield = self.rom.read_u8(self.keyframe_ptr+2)
     self.h_flip = (bitfield & 0x40) != 0
     self.v_flip = (bitfield & 0x80) != 0
-    unknown = self.rom.read_u8(self.keyframe_ptr+3)
-    self.end_of_animation = (unknown & 0x80) != 0
+    bitfield = self.rom.read_u8(self.keyframe_ptr+3)
+    self.end_of_animation = (bitfield & 0x80) != 0
+    self.extra_frame_index = bitfield & 0x3F
 
 class FrameGfxData:
   def __init__(self, frame_gfx_data_ptr, rom):

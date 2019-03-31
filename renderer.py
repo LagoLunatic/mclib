@@ -407,11 +407,69 @@ class Renderer:
       if keyframe.v_flip:
         frame_image = frame_image.transpose(Image.FLIP_TOP_BOTTOM)
     
+    
+    head_frame_index = Docs.get_best_sprite_head_frame(entity)
+    if head_frame_index is not None:
+      body_sprite = sprite
+      body_frame_index = frame_index
+      body_frame_image = frame_image
+      body_min_x = min_x
+      body_min_y = min_y
+      
+      head_sprite = sprite
+      if entity.subtype == 6:
+        # Hyrule Townspeople have a different sprite for their head and body.
+        head_sprite = Sprite(0x3A, self.rom)
+      
+      head_x_off, head_y_off = body_sprite.get_head_offsets_for_frame(body_frame_index)
+      
+      gfx_data = self.get_sprite_gfx_data_for_frame(loading_data, head_sprite, head_frame_index)
+      
+      head_frame_obj_list = head_sprite.get_frame_obj_list(head_frame_index)
+      head_frame_image, head_min_x, head_min_y = self.render_sprite_frame_by_assets(
+        head_frame_obj_list, gfx_data, palettes, entity_palette_index
+      )
+      
+      images_and_offsets = [
+        (body_frame_image, body_min_x, body_min_y),
+        (head_frame_image, head_min_x + head_x_off, head_min_y + head_y_off),
+      ]
+      frame_image, min_x, min_y = self.combine_multiple_images_with_offsets(images_and_offsets)
+    
+    
     x_off, y_off = Docs.get_best_sprite_offset(entity)
     x_off += min_x
     y_off += min_y
     
     return (frame_image, x_off, y_off)
+  
+  def combine_multiple_images_with_offsets(self, images_and_offsets):
+    final_image_min_x = 9999
+    final_image_min_y = 9999
+    final_image_max_x = -9999
+    final_image_max_y = -9999
+    for image, min_x, min_y in images_and_offsets:
+      max_x = min_x + image.width
+      max_y = min_y + image.height
+      if min_x < final_image_min_x:
+        final_image_min_x = min_x
+      if min_y < final_image_min_y:
+        final_image_min_y = min_y
+      if max_x > final_image_max_x:
+        final_image_max_x = max_x
+      if max_y > final_image_max_y:
+        final_image_max_y = max_y
+    
+    final_image_width = final_image_max_x - final_image_min_x
+    final_image_height = final_image_max_y - final_image_min_y
+    final_image = Image.new("RGBA", (final_image_width, final_image_height), (255, 255, 255, 0))
+    
+    for image, min_x, min_y in images_and_offsets:
+      x_off = min_x - final_image_min_x
+      y_off = min_y - final_image_min_y
+      final_image.paste(image, (x_off, y_off), image)
+    
+    return final_image, final_image_min_x, final_image_min_y 
   
   def render_all_figurines(self):
     for i in range(1, 136+1):
