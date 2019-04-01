@@ -1,7 +1,7 @@
 
 00 Invalid, nothing
 
-01 ???
+01 Player
 
 02 Invalid, nothing
 
@@ -833,13 +833,17 @@
   55 Harmless Cucco Chick
   57 Phonograph
 
-08 ??? Player item being used
+08 Player item in use
   01 Sword
   02 Bomb
+  03 ?
+  04 Arrow?
   05 Shield
+  06 ?
+  07 Sword again?
   08 Gust Jar
   09 Cane of Pacci
-  0E Bottled fairy
+  0E Bottle
 
 09 Manager
   03 Minish Portal

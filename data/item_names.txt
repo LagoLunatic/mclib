@@ -3,7 +3,7 @@
 02 White Sword
 03 White Sword (Two Elements)
 04 White Sword (Three Elements)
-05 ? looks like the lit Flame Lantern, but can be used as a sword?
+05 Unused Sword
 06 Four Sword
 07 Bombs
 08 Remote Bombs

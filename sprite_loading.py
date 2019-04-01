@@ -12,7 +12,13 @@ class SpriteLoadingData:
   def read(self):
     self.has_no_sprite = False
     
-    if self.entity_type == 3:
+    if self.entity_type == 1:
+      # The player, Link.
+      # Always uses swap type GFX.
+      self.gfx_type = 1
+      self.sprite_index = 0x001
+      self.object_palette_id = 0x16
+    elif self.entity_type == 3:
       sprite_loading_datas_list = 0x080D2C58
       self.read_format_a(sprite_loading_datas_list)
     elif self.entity_type == 4:
@@ -24,6 +30,9 @@ class SpriteLoadingData:
     elif self.entity_type == 7:
       sprite_loading_datas_list = 0x08114AE4
       self.read_format_b(sprite_loading_datas_list)
+    elif self.entity_type == 8:
+      sprite_loading_datas_list = 0x08126DA8
+      self.read_format_c(sprite_loading_datas_list)
     else:
       self.has_no_sprite = True
   
@@ -32,9 +41,11 @@ class SpriteLoadingData:
     bitfield = self.rom.read_u16(sprite_loading_data_ptr + 0)
     
     if bitfield == 0xFFFF:
+      # Multiple forms
       sprite_loading_data_ptr = self.rom.read_u32(sprite_loading_data_ptr + 4) + self.entity_form*0x10
       bitfield = self.rom.read_u16(sprite_loading_data_ptr + 0)
     else:
+      # Single form
       sprite_loading_data_ptr = sprite_loading_data_ptr
     
     if bitfield == 0:
@@ -63,8 +74,10 @@ class SpriteLoadingData:
       self.has_no_sprite = True
       return
     elif self.sprite_data_type == 1:
+      # Single form
       sprite_loading_data_ptr = sprite_loading_data_ptr
     elif self.sprite_data_type == 2:
+      # Multiple forms
       sprite_loading_data_ptr = self.rom.read_u32(sprite_loading_data_ptr + 4) + self.entity_form*8
     else:
       raise Exception("Unknown sprite loading data type")
@@ -101,3 +114,32 @@ class SpriteLoadingData:
         self.fixed_gfx_index = self.rom.read_u16(0x08120CCC + (self.area.area_index-0x40)*2)
       else:
         self.fixed_gfx_index = 0xE9
+  
+  def read_format_c(self, sprite_loading_datas_list):
+    sprite_loading_data_ptr = sprite_loading_datas_list + self.entity_subtype*8
+    bitfield = self.rom.read_u8(sprite_loading_data_ptr + 0)
+    
+    if bitfield == 0xFF:
+      # Multiple forms
+      index = self.rom.read_u8(sprite_loading_data_ptr + 1)
+      #first_item_id = self.rom.read_u8(sprite_loading_data_ptr + 2)
+      list_ptr = self.rom.read_u32(0x08126ED8 + index*4)
+      #sprite_loading_data_ptr = list_ptr + (item_id - first_item_id)*8
+      sprite_loading_data_ptr = list_ptr + self.entity_form*8 # TODO: form is not really the index, the index is item_id-first_item_id
+    else:
+      # Single form
+      sprite_loading_data_ptr = sprite_loading_data_ptr
+    
+    bitfield = self.rom.read_u8(sprite_loading_data_ptr + 0)
+    self.object_palette_id = bitfield & 0x0F
+    
+    self.sprite_index = self.rom.read_u8(sprite_loading_data_ptr + 5)
+    
+    gfx_load_bitfield = self.rom.read_u16(sprite_loading_data_ptr + 6)
+    if gfx_load_bitfield == 0:
+      # Use Link's GFX, which is swap type
+      self.gfx_type = 1
+    else:
+      # Use common GFX
+      self.gfx_type = 2
+      self.common_gfx_tile_index = gfx_load_bitfield & 0x03FF
