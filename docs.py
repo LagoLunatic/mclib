@@ -7,7 +7,7 @@ import re
 from mclib.entity import Entity
 from mclib.tile_entity import TileEntity
 
-DATA_PATH = "./mclib/data" # TODO
+from paths import DATA_PATH
 
 
 AREA_INDEX_TO_NAME = {}
