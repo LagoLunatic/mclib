@@ -55,6 +55,8 @@ class Room:
     self.read_visual_zones()
   
   def read_prop_ptr(self, prop_index):
+    if self.property_list_ptr == 0:
+      return 0
     if prop_index not in self.property_pointers:
       self.property_pointers[prop_index] = self.rom.read_u32(self.property_list_ptr + prop_index*4)
     return self.property_pointers[prop_index]
@@ -74,10 +76,13 @@ class Room:
     if self.property_list_ptr == 0:
       return
     
-    self.entity_list_ptr_1 = self.rom.read_u32(self.property_list_ptr + 0)
-    self.entity_list_ptr_2 = self.rom.read_u32(self.property_list_ptr + 4)
-    self.enemy_list_ptr = self.rom.read_u32(self.property_list_ptr + 8)
-    self.state_changing_func_ptr = self.rom.read_u32(self.property_list_ptr + 0x1C)
+    self.entity_list_ptr_1 = self.read_prop_ptr(0)
+    self.entity_list_ptr_2 = self.read_prop_ptr(1)
+    self.enemy_list_ptr = self.read_prop_ptr(2)
+    self.unknown_func_ptr_1 = self.read_prop_ptr(4) # TODO: only run during kinstone fusion reward cutscenes. can include conditional entity lists.
+    self.unknown_func_ptr_2 = self.read_prop_ptr(5) # TODO
+    self.unknown_func_ptr_3 = self.read_prop_ptr(6) # TODO this can be responsible for changing entities like in room 50-12
+    self.state_changing_func_ptr = self.read_prop_ptr(7)
     
     if self.entity_list_ptr_1 != 0:
       self.read_one_entity_list(self.entity_list_ptr_1, "Entities 1")
@@ -144,7 +149,7 @@ class Room:
     if self.property_list_ptr == 0:
       return
     
-    self.tile_entity_list_ptr = self.rom.read_u32(self.property_list_ptr + 0xC)
+    self.tile_entity_list_ptr = self.read_prop_ptr(3)
     
     if self.tile_entity_list_ptr != 0:
       entity_ptr = self.tile_entity_list_ptr
