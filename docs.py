@@ -240,6 +240,16 @@ class Docs:
       return entity.unknown_4
     elif entity.type == 6 and entity.subtype == 0x60:
       return entity.form
+    elif entity.type == 7 and entity.subtype == 0x13:
+      if entity.form <= 5:
+        return [
+          0x00,
+          0x00,
+          0x00,
+          0x01,
+          0x01,
+          0x00,
+        ][entity.form]
     
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
@@ -304,8 +314,51 @@ class Docs:
     elif entity.subtype == 0x49:
       # TODO: correct behavior is to grab the current keyframe's extra_frame_index
       return 7
+    elif entity.subtype == 0x48:
+      return 3
+    elif entity.subtype == 0x13:
+      if entity.form <= 5:
+        return [
+          0x04,
+          0x0C,
+          0x14,
+          0x1C,
+          0x24,
+          0x2C,
+        ][entity.form] + 5
+    elif entity.subtype == 0x46:
+      # TODO: correct behavior is to grab the current keyframe's extra_frame_index
+      return 0xB
+    elif entity.subtype == 0x53:
+      # TODO: correct behavior is to grab the current keyframe's extra_frame_index and add 8
+      return 8
     
     return None
+  
+  @staticmethod
+  def get_best_sprite_accessory_frame(entity):
+    if entity.type != 7:
+      return None
+    
+    if entity.subtype == 0x48:
+      return 6
+    elif entity.subtype == 0x15:
+      return 0x1F
+    
+    return None
+  
+  @staticmethod
+  def get_best_extra_sprite_frames_for_entity(entity):
+    if entity.type != 7:
+      return None
+    
+    frames = [
+      Docs.get_best_sprite_head_frame(entity),
+      Docs.get_best_sprite_accessory_frame(entity),
+    ]
+    frames = [frame for frame in frames if frame is not None]
+    
+    return frames
   
   @staticmethod
   def get_best_sprite_animation(entity):
@@ -395,6 +448,8 @@ class Docs:
       return 2
     elif entity.type == 7 and entity.subtype == 0x49:
       return 2
+    elif entity.type == 7 and entity.subtype == 0x13:
+      return None
     
     return 0
   

@@ -1,9 +1,9 @@
 
-00 Invalid, nothing
+00 [Nothing]
 
 01 Player
 
-02 Invalid, nothing
+02 [Nothing]
 
 03 Enemy
   00 Octorok
@@ -187,8 +187,9 @@
   1D Winder
   1E roller trap?
   22 part of Gyorg Pair fight?
+  25 [Nothing]
 
-05 Invalid, nothing
+05 [Nothing]
 
 06 Object
   00 Item on the ground
@@ -632,6 +633,7 @@
     01 Right
     02 Down
     03 Left
+  00 [Nothing]
   01 Gentari
   02 Festari
   03 Forest Minish
@@ -691,6 +693,10 @@
       2 ?
       3 ?
       4 ?
+      5 (unused?)
+    unknown5 & 01:
+      0 Facing left
+      1 Facing right
   14 Pina
   15 Guard with spear
   16 Maid
@@ -832,8 +838,48 @@
   54 Cucco on Anju's roof
   55 Harmless Cucco Chick
   57 Phonograph
+  59 [Nothing]
+  5A [Nothing]
+  5B [Nothing]
+  5C [Nothing]
+  5D [Nothing]
+  5E [Nothing]
+  5F [Nothing]
+  60 [Nothing]
+  61 [Nothing]
+  62 [Nothing]
+  63 [Nothing]
+  64 [Nothing]
+  65 [Nothing]
+  66 [Nothing]
+  67 [Nothing]
+  68 [Nothing]
+  69 [Nothing]
+  6A [Nothing]
+  6B [Nothing]
+  6C [Nothing]
+  6D [Nothing]
+  6E [Nothing]
+  6F [Nothing]
+  70 [Nothing]
+  71 [Nothing]
+  72 [Nothing]
+  73 [Nothing]
+  74 [Nothing]
+  75 [Nothing]
+  76 [Nothing]
+  77 [Nothing]
+  78 [Nothing]
+  79 [Nothing]
+  7A [Nothing]
+  7B [Nothing]
+  7C [Nothing]
+  7D [Nothing]
+  7E [Nothing]
+  7F [Nothing]
 
 08 Player item in use
+  00 [Nothing]
   01 Sword
   02 Bomb
   03 ?
@@ -843,6 +889,8 @@
   07 Sword again?
   08 Gust Jar
   09 Cane of Pacci
+  0A [Nothing]
+  0B [Nothing]
   0E Bottle
 
 09 Manager

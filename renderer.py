@@ -409,32 +409,52 @@ class Renderer:
         frame_image = frame_image.transpose(Image.FLIP_TOP_BOTTOM)
     
     
-    head_frame_index = Docs.get_best_sprite_head_frame(entity)
-    if head_frame_index is not None:
+    extra_frame_indexes = Docs.get_best_extra_sprite_frames_for_entity(entity)
+    if extra_frame_indexes:
       body_sprite = sprite
       body_frame_index = frame_index
       body_frame_image = frame_image
       body_min_x = min_x
       body_min_y = min_y
       
-      head_sprite = sprite
-      if entity.subtype == 6:
-        # Hyrule Townspeople have a different sprite for their head and body.
-        head_sprite = Sprite(0x3A, self.rom)
-      
-      head_x_off, head_y_off = body_sprite.get_head_offsets_for_frame(body_frame_index)
-      
-      gfx_data = self.get_sprite_gfx_data_for_frame(loading_data, head_sprite, head_frame_index)
-      
-      head_frame_obj_list = head_sprite.get_frame_obj_list(head_frame_index)
-      head_frame_image, head_min_x, head_min_y = self.render_sprite_frame_by_assets(
-        head_frame_obj_list, gfx_data, palettes, entity_palette_index
-      )
-      
       images_and_offsets = [
         (body_frame_image, body_min_x, body_min_y),
-        (head_frame_image, head_min_x + head_x_off, head_min_y + head_y_off),
       ]
+      for subentry_index, extra_frame_index in enumerate(extra_frame_indexes):
+        extra_sprite = sprite
+        if entity.subtype == 6:
+          # Hyrule Townspeople have a different sprite for their head and body.
+          # TODO: don't hardcode this
+          extra_sprite = Sprite(0x3A, self.rom)
+        
+        extra_palettes = palettes
+        extra_entity_palette_index = entity_palette_index
+        if entity.subtype == 0x13:
+          # Some sitting people have different palettes for their head??
+          # TODO: don't hardcode this
+          if entity.form in [1, 5]:
+            extra_palettes, extra_entity_palette_index = self.generate_object_palettes(0x3E)
+          elif entity.form in [2, 3, 4]:
+            extra_palettes, extra_entity_palette_index = self.generate_object_palettes(0x40)
+          # TODO: the main body sprite for sitting people can also be a different palette from the one specified in the main sprite loading data
+        
+        extra_x_off, extra_y_off = body_sprite.get_extra_frame_offsets_by_main_frame(body_frame_index, subentry_index)
+        
+        gfx_data = self.get_sprite_gfx_data_for_frame(loading_data, extra_sprite, extra_frame_index)
+        
+        extra_frame_obj_list = extra_sprite.get_frame_obj_list(extra_frame_index)
+        extra_frame_image, extra_min_x, extra_min_y = self.render_sprite_frame_by_assets(
+          extra_frame_obj_list, gfx_data, extra_palettes, extra_entity_palette_index
+        )
+        
+        images_and_offsets.append(
+          (extra_frame_image, extra_min_x + extra_x_off, extra_min_y + extra_y_off),
+        )
+      
+      # Reorder the sprites so the z-indexing looks right.
+      # Accessory on the bottom, then body, then head on top.
+      images_and_offsets = images_and_offsets[2:] + images_and_offsets[0:1] + images_and_offsets[1:2]
+      
       frame_image, min_x, min_y = self.combine_multiple_images_with_offsets(images_and_offsets)
     
     

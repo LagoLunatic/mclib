@@ -25,13 +25,19 @@ class Sprite:
     frame_obj_list = FrameObjList(frame_obj_data_ptr, self.rom)
     return frame_obj_list
   
-  def get_head_offsets_for_frame(self, frame_index):
+  def get_extra_frame_offsets_by_main_frame(self, frame_index, subentry_index):
     offset_1 = self.rom.read_u16(0x089FB780 + self.sprite_index*2)
     unk_index = self.rom.read_u8(0x089FB770 + offset_1 + frame_index)
     offset_data_ptr = 0x089FB770 + unk_index*4 + 0xD00
-    head_x_off = self.rom.read_s8(offset_data_ptr+0)
-    head_y_off = self.rom.read_s8(offset_data_ptr+1)
-    return (head_x_off, head_y_off)
+    if subentry_index == 0:
+      pass
+    elif subentry_index == 1:
+      offset_data_ptr += 2
+    else:
+      raise Exception("Given a sprite subentry index other than 0 or 1")
+    extra_x_off = self.rom.read_s8(offset_data_ptr+0)
+    extra_y_off = self.rom.read_s8(offset_data_ptr+1)
+    return (extra_x_off, extra_y_off)
   
   def get_animation(self, anim_index):
     if self.animation_list_ptr == 0:
