@@ -239,7 +239,11 @@ class Renderer:
     else:
       full_palette = []
       for i in range(0x10):
-        full_palette += palettes[i]
+        palette = palettes[i]
+        if palette is None:
+          full_palette += self.DUMMY_PALETTE
+        else:
+          full_palette += palette
       
       tile_image = self.render_tile_256_colors(gfx_data, tile_number, full_palette)
     
