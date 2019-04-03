@@ -9,6 +9,61 @@ from mclib.tile_entity import TileEntity
 
 from paths import DATA_PATH
 
+def parse_doc(doc_str):
+  doc_dict = OrderedDict()
+  doc_dict["name"] = "ROOT"
+  doc_dict["children"] = OrderedDict()
+  doc_dict["properties"] = OrderedDict()
+  last_entry_by_indent = OrderedDict()
+  last_entry_by_indent[-1] = doc_dict
+  for line_index, line in enumerate(doc_str.split("\n")):
+    line_num = line_index + 1
+    
+    if not line.strip():
+      continue
+    
+    index_value_match = re.search(r"^( *)([0-9A-F]+) (.*)$", line, re.IGNORECASE)
+    property_match = re.search(r"^( *)(.+?)(?: - |: )(.+)$$", line, re.IGNORECASE)
+    value_list_start_match = re.search(r"^( *)([^:]+):$", line, re.IGNORECASE)
+    if index_value_match:
+      indent_spaces = index_value_match.group(1)
+      key = int(index_value_match.group(2), 16)
+      value = index_value_match.group(3)
+      is_property = False
+    elif property_match:
+      indent_spaces = property_match.group(1)
+      key = property_match.group(2)
+      value = property_match.group(3)
+      is_property = True
+    elif value_list_start_match:
+      indent_spaces = value_list_start_match.group(1)
+      key = value_list_start_match.group(2)
+      value = None
+      is_property = True
+    else:
+      #print(line_num)
+      #print("??? TODO")
+      continue
+    
+    indent_level = (len(indent_spaces) + 1) // 2
+    
+    parent_indent_level = indent_level - 1
+    if parent_indent_level not in last_entry_by_indent:
+      continue
+    parent = last_entry_by_indent[parent_indent_level]
+    
+    new_entry = OrderedDict()
+    if is_property:
+      parent["properties"][key] = new_entry
+    else:
+      parent["children"][key] = new_entry
+    new_entry["name"] = value
+    new_entry["children"] = OrderedDict()
+    new_entry["properties"] = OrderedDict()
+    last_entry_by_indent[indent_level] = new_entry
+  
+  return doc_dict
+
 
 AREA_INDEX_TO_NAME = {}
 with open(os.path.join(DATA_PATH, "area_names.txt"), "r") as f:
@@ -33,126 +88,11 @@ for item_id, item_name in matches:
 
 with open(os.path.join(DATA_PATH, "entity_types.txt")) as f:
   entity_doc_str = f.read()
-
-ENTITY_TYPE_DOCS = OrderedDict()
-
-last_seen_type_doc = None
-last_seen_subtype_doc = None
-on_forms_list = False
-found_form_is_item_id_for_subtype = False
-for line_index, line in enumerate(entity_doc_str.split("\n")):
-  if len(line) == 0:
-    continue
-  if line[0] == "#":
-    continue
-  
-  type_match = re.search(r"^([0-9A-F]{2}) (.+)$", line, re.IGNORECASE)
-  subtype_match = re.search(r"^  ([0-9A-F]{2}) (.+)$", line, re.IGNORECASE)
-  forms_header_match = re.search(r"^    Forms:$", line, re.IGNORECASE)
-  form_match = re.search(r"^      ([0-9A-F]+) (.*)$", line, re.IGNORECASE)
-  form_is_item_id_match = re.search(r"^    Form: The item ID.$", line, re.IGNORECASE)
-  form_is_prop_index_match = re.search(r"^    Form: A room property index.$", line, re.IGNORECASE)
-  if type_match:
-    type = int(type_match.group(1), 16)
-    type_name = type_match.group(2)
-    
-    if type in ENTITY_TYPE_DOCS:
-      raise Exception("Duplicate doc for entity type %X on line %d" % (type, line_index+1))
-    
-    type_doc = OrderedDict()
-    type_doc["name"] = type_name
-    type_doc["subtypes"] = OrderedDict()
-    ENTITY_TYPE_DOCS[type] = type_doc
-    
-    last_seen_type_doc = type_doc
-    last_seen_subtype_doc = None
-    on_forms_list = False
-    found_form_is_item_id_for_subtype = False
-  elif subtype_match:
-    subtype = int(subtype_match.group(1), 16)
-    subtype_name = subtype_match.group(2)
-    
-    if last_seen_type_doc is None:
-      raise Exception("Found subtype doc not under a type on line %d" % (line_index+1))
-    if subtype in last_seen_type_doc["subtypes"]:
-      raise Exception("Duplicate doc for entity subtype %X on line %d" % (subtype, line_index+1))
-    
-    subtype_doc = OrderedDict()
-    last_seen_type_doc["subtypes"][subtype] = subtype_doc
-    subtype_doc["name"] = subtype_name
-    subtype_doc["forms"] = OrderedDict()
-    
-    last_seen_subtype_doc = subtype_doc
-    on_forms_list = False
-    found_form_is_item_id_for_subtype = False
-  elif forms_header_match:
-    if last_seen_subtype_doc is None:
-      raise Exception("Found forms list doc not under a subtype on line %d" % (line_index+1))
-    if found_form_is_item_id_for_subtype:
-      raise Exception("Cannot list forms and also have form be the item ID")
-    
-    on_forms_list = True
-  elif form_match:
-    form = int(form_match.group(1), 16)
-    form_name = form_match.group(2)
-    
-    if last_seen_subtype_doc is None:
-      raise Exception("Found forms list doc not under a subtype on line %d" % (line_index+1))
-    if not on_forms_list:
-      continue
-    if form in last_seen_subtype_doc["forms"]:
-      raise Exception("Duplicate doc for entity form %X on line %d" % (form, line_index+1))
-    
-    form_doc = OrderedDict()
-    last_seen_subtype_doc["forms"][form] = form_doc
-    form_doc["name"] = form_name
-  elif form_is_item_id_match:
-    if last_seen_subtype_doc is None:
-      raise Exception("Found form is item ID not under a subtype on line %d" % (line_index+1))
-    if on_forms_list:
-      raise Exception("Cannot list forms and also have form be the item ID")
-    if last_seen_subtype_doc.get("form_is_prop_index"):
-      raise Exception("Form cannot be both an item ID and a property index")
-    
-    last_seen_subtype_doc["form_is_item_id"] = True
-  elif form_is_prop_index_match:
-    if last_seen_subtype_doc is None:
-      raise Exception("Found form is item ID not under a subtype on line %d" % (line_index+1))
-    if on_forms_list:
-      raise Exception("Cannot list forms and also have form be the item ID")
-    if last_seen_subtype_doc.get("form_is_item_id"):
-      raise Exception("Form cannot be both an item ID and a property index")
-    
-    last_seen_subtype_doc["form_is_prop_index"] = True
-  else:
-    on_forms_list = False
-    continue
-
-# TODO: implement best sprite frame into new doc format
+ENTITY_TYPE_DOCS = parse_doc(entity_doc_str)
 
 with open(os.path.join(DATA_PATH, "tile_entity_types.txt")) as f:
   tile_entity_doc_str = f.read()
-
-TILE_ENTITY_TYPE_DOCS = OrderedDict()
-
-last_seen_type_doc = None
-for line_index, line in enumerate(tile_entity_doc_str.split("\n")):
-  if len(line) == 0:
-    continue
-  if line[0] == "#":
-    continue
-  
-  type_match = re.search(r"^([0-9A-F]{2}) (.+)$", line, re.IGNORECASE)
-  if type_match:
-    type = int(type_match.group(1), 16)
-    type_name = type_match.group(2)
-    
-    if type in TILE_ENTITY_TYPE_DOCS:
-      raise Exception("Duplicate doc for entity type %X on line %d" % (type, line_index+1))
-    
-    type_doc = OrderedDict()
-    type_doc["name"] = type_name
-    TILE_ENTITY_TYPE_DOCS[type] = type_doc
+TILE_ENTITY_TYPE_DOCS = parse_doc(tile_entity_doc_str)
 
 class Docs:
   @staticmethod
@@ -162,27 +102,29 @@ class Docs:
     pretty_value = format_string % value
     
     if isinstance(entity, Entity):
-      if prop.attribute_name == "type" and value in ENTITY_TYPE_DOCS:
-        type_data = ENTITY_TYPE_DOCS[value]
+      type_list = ENTITY_TYPE_DOCS["children"]
+      if prop.attribute_name == "type" and value in type_list:
+        type_data = type_list[value]
         pretty_value += ": " + type_data["name"]
-      elif prop.attribute_name == "subtype" and entity.type in ENTITY_TYPE_DOCS:
-        type_data = ENTITY_TYPE_DOCS[entity.type]
-        if value in type_data["subtypes"]:
-          subtype_data = type_data["subtypes"][value]
+      elif prop.attribute_name == "subtype" and entity.type in type_list:
+        type_data = type_list[entity.type]
+        if value in type_data["children"]:
+          subtype_data = type_data["children"][value]
           pretty_value += ": " + subtype_data["name"]
-      elif prop.attribute_name == "form" and entity.type in ENTITY_TYPE_DOCS:
-        type_data = ENTITY_TYPE_DOCS[entity.type]
-        if entity.subtype in type_data["subtypes"]:
-          subtype_data = type_data["subtypes"][entity.subtype]
-          if value in subtype_data["forms"]:
-            pretty_value += ": " + subtype_data["forms"][value]["name"]
-          elif subtype_data.get("form_is_item_id", False) and value in ITEM_ID_TO_NAME:
+      elif prop.attribute_name == "form" and entity.type in type_list:
+        type_data = type_list[entity.type]
+        if entity.subtype in type_data["children"]:
+          subtype_data = type_data["children"][entity.subtype]
+          if "Forms" in subtype_data["properties"] and value in subtype_data["properties"]["Forms"]["children"]:
+            pretty_value += ": " + subtype_data["properties"]["Forms"]["children"][value]["name"]
+          elif subtype_data["properties"].get("Form", {}).get("name") == "The item ID." and value in ITEM_ID_TO_NAME:
             pretty_value += ": " + ITEM_ID_TO_NAME[value]
-          elif subtype_data.get("form_is_prop_index", False) and value in entity.room.property_pointers:
+          elif subtype_data["properties"].get("Form", {}).get("name") == "A room property index." and value in entity.room.property_pointers:
             pretty_value += ": %08X" % entity.room.property_pointers[value]
     elif isinstance(entity, TileEntity):
-      if prop.attribute_name == "type" and value in TILE_ENTITY_TYPE_DOCS:
-        type_data = TILE_ENTITY_TYPE_DOCS[value]
+      type_list = TILE_ENTITY_TYPE_DOCS["children"]
+      if prop.attribute_name == "type" and value in type_list:
+        type_data = type_list[value]
         pretty_value += ": " + type_data["name"]
       elif prop.attribute_name == "item_id" and value in ITEM_ID_TO_NAME:
         pretty_value += ": " + ITEM_ID_TO_NAME[value]
@@ -193,13 +135,15 @@ class Docs:
   def get_name_for_entity(entity):
     name = ""
     
-    if entity.type in ENTITY_TYPE_DOCS:
-      type_data = ENTITY_TYPE_DOCS[entity.type]
-      if entity.subtype in type_data["subtypes"]:
-        subtype_data = type_data["subtypes"][entity.subtype]
-        name += subtype_data["name"]
-        if entity.form in subtype_data["forms"]:
-          name += " " + subtype_data["forms"][entity.form]["name"]
+    if isinstance(entity, Entity):
+      type_list = ENTITY_TYPE_DOCS["children"]
+      if entity.type in type_list:
+        type_data = type_list[entity.type]
+        if entity.subtype in type_data["children"]:
+          subtype_data = type_data["children"][entity.subtype]
+          name += subtype_data["name"]
+          if "Forms" in subtype_data["properties"] and entity.form in subtype_data["properties"]["Forms"]["children"]:
+            name += " " + subtype_data["properties"]["Forms"]["children"][entity.form]["name"]
     
     return name
   
