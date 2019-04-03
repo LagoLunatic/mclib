@@ -45,7 +45,7 @@ class Room:
         for entity in entity_list.entities:
           if entity.type == 9 and entity.subtype == 6:
             region_list_ptr = self.read_prop_ptr(entity.form)
-            regions = ExitRegion.read_list_of_entrances(region_list_ptr, self)
+            regions = ExitRegion.read_list_of_exit_regions(region_list_ptr, self)
             self.exit_region_lists.append(regions)
     
     self.read_tile_entities()

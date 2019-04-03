@@ -9,7 +9,7 @@ class ExitRegion:
     self.read()
   
   @staticmethod
-  def read_list_of_entrances(region_list_ptr, room):
+  def read_list_of_exit_regions(region_list_ptr, room):
     regions = []
     
     region_ptr = region_list_ptr
