@@ -455,9 +455,8 @@ class Renderer:
           (extra_frame_image, extra_min_x + extra_x_off, extra_min_y + extra_y_off),
         )
       
-      # Reorder the sprites so the z-indexing looks right.
-      # Accessory on the bottom, then body, then head on top.
-      images_and_offsets = images_and_offsets[2:] + images_and_offsets[0:1] + images_and_offsets[1:2]
+      # TODO: the z-indexing order of the sprites can be different for each entity.
+      # for example, guard with spear has his spear below his body. dina on the other hand has her pointing stick above her body.
       
       frame_image, min_x, min_y = self.combine_multiple_images_with_offsets(images_and_offsets)
     
