@@ -679,6 +679,7 @@
       also index in list 0810C0A0, entry len 4
   08 Guard without spear
   0A Stamp
+  0B Town Maid
   0C Marcy
   0D Wheaton
   0E Pita
@@ -699,7 +700,7 @@
       1 Facing right
   14 Pina
   15 Guard with spear
-  16 Maid
+  16 Castle Maid
   17 Din
   18 Nayru
   19 Farore
@@ -794,7 +795,10 @@
       0 Carlov
       1 Borlov
   40 Dampe
-  41 Dr. Left
+  41 Dr. Left & Book
+    Forms:
+      0 Dr. Left
+      1 Dr. Left's book
   42 King Gustaf
   43 Gina
   44 Simon

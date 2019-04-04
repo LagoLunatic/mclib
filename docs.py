@@ -194,6 +194,9 @@ class Docs:
           0x01,
           0x00,
         ][entity.form]
+    elif entity.type == 7 and entity.subtype == 0x0B:
+      # TODO: correct behavior is to grab the current animation's current frame index and add 0x10
+      return 0x10
     
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]
@@ -276,6 +279,24 @@ class Docs:
     elif entity.subtype == 0x53:
       # TODO: correct behavior is to grab the current keyframe's extra_frame_index and add 8
       return 8
+    elif entity.subtype == 0x0B:
+      # TODO: correct behavior is to grab the current keyframe's extra_frame_index&7F and add 1A (or if that value is 0, don't add anything)
+      return 0x1B
+    elif entity.subtype == 0x16:
+      # TODO: correct behavior is to grab the current keyframe's extra_frame_index&7F and add A (or if that value is 0, don't add anything)
+      return 0xB
+    elif entity.subtype == 0x11:
+      # TODO: correct behavior is to grab the current keyframe's extra_frame_index&3F
+      return 8
+    elif entity.subtype == 0x2D:
+      # TODO: correct behavior is to grab the current keyframe's extra_frame_index&1F and add 4
+      return 4
+    elif entity.subtype == 0x2F:
+      # TODO: correct behavior is to grab the current keyframe's extra_frame_index&1F
+      return 0xA
+    elif entity.subtype == 0x1D:
+      # TODO: correct behavior is to grab the current keyframe's extra_frame_index&7 and add B
+      return 0xB
     
     return None
   
@@ -394,6 +415,22 @@ class Docs:
       return 2
     elif entity.type == 7 and entity.subtype == 0x13:
       return None
+    elif entity.type == 7 and entity.subtype == 0x0B:
+      return None
+    elif entity.type == 7 and entity.subtype == 0x16:
+      return 2
+    elif entity.type == 7 and entity.subtype == 0x45:
+      return 2
+    elif entity.type == 7 and entity.subtype == 0x52:
+      return 2
+    elif entity.type == 7 and entity.subtype == 0x25:
+      return 2
+    elif entity.type == 7 and entity.subtype == 0x22:
+      return 2
+    elif entity.type == 7 and entity.subtype == 0x2D:
+      return 2
+    elif entity.type == 7 and entity.subtype == 0x1D:
+      return 2
     
     return 0
   
