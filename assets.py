@@ -11,6 +11,8 @@ class AssetList:
     self.layer_datas = [None, None, None, None]
     self.tileset_datas = [None, None, None, None]
     self.tile_mappings_8x8 = [None, None, None, None]
+    self.collision_tileset_datas = [None, None, None, None]
+    self.collision_layer_datas = [None, None, None, None]
     
     self.read()
   
@@ -85,23 +87,26 @@ class AssetList:
           if self.tile_mappings_8x8[3] is not None:
             raise Exception("Duplicate tile mapping for layer BG3")
           self.tile_mappings_8x8[3] = decompressed_data
+        elif ram_address == 0x02010654: # BG1 collision tileset data
+          #print("BG1 collision tileset")
+          if self.collision_tileset_datas[1] is not None:
+            raise Exception("Duplicate BG1 collision tileset found")
+          self.collision_tileset_datas[1] = decompressed_data
+        elif ram_address == 0x0202AEB4: # BG2 collision tileset data
+          #print("BG2 collision tileset")
+          if self.collision_tileset_datas[2] is not None:
+            raise Exception("Duplicate BG2 collision tileset found")
+          self.collision_tileset_datas[2] = decompressed_data
+        elif ram_address == 0x02027EB4: # BG2 collision layer data
+          #print("BG2 collision layer data")
+          if self.collision_layer_datas[2] is not None:
+            raise Exception("Duplicate BG2 collision layer data found")
+          self.collision_layer_datas[2] = decompressed_data
         else:
-          # TODO
-          pass
           print(
             "UNKNOWN ASSET TYPE: %08X -> %08X (len: %04X) (compressed: %s)" % (
               rom_address, ram_address, properties[2], compressed
             ))
-          # unknowns found in area 00:
-          # 0832EAF0 -> 0202AEB4 (len: 80001000) (compressed: True)
-          # 0832EF20 -> 02010654 (len: 80000FFC) (compressed: True)
-          # unknowns found in area 03:
-          # 08385130 -> 0202AEB4 (len: 80001000) (compressed: True)
-          # 08385748 -> 02010654 (len: 80000FFC) (compressed: True)
-          # unknowns found in room 20-09:
-          # 0847ED74 -> 02027EB4 (len: 80000159) (compressed: True)
-          # unknowns found in room 0D-13:
-          # 083B0414 -> 0202AEB4 (len: 8000016A) (compressed: True)
       
       if (properties[0] & 0x80000000) == 0:
         break
