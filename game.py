@@ -12,7 +12,8 @@ class Game:
   def __init__(self, input_rom_path):
     self.input_rom_path = input_rom_path
     
-    self.rom = RomInterface(self.input_rom_path)
+    with open(self.input_rom_path, "rb") as file:
+      self.rom = RomInterface(file.read())
     
     self.read()
   

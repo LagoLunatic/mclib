@@ -15,7 +15,7 @@ class DataInterface:
   def copy(self):
     self.data.seek(0)
     copy_data = self.data.read()
-    return DataInterface(copy_data)
+    return self.__class__(copy_data)
   
   def read(self, offset, length, format_string):
     self.data.seek(offset)
@@ -98,11 +98,8 @@ class InvalidAddressError(Exception):
   pass
 
 class RomInterface(DataInterface):
-  def __init__(self, rom_path):
-    self.rom_path = rom_path
-    
-    with open(rom_path, "rb") as file:
-      self.data = BytesIO(file.read())
+  def __init__(self, data):
+    self.data = BytesIO(data)
   
   def is_pointer(self, address):
     if address >= 0x08000000 and address <= 0x08FFFFFF:
