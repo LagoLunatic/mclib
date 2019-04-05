@@ -35,6 +35,8 @@ class Game:
       self.rom = RomInterface(file.read())
     
     self.read()
+    
+    self.read_custom_symbols()
   
   def read(self):
     self.areas = []
@@ -56,6 +58,18 @@ class Game:
       
       for org_address, new_bytes in diffs.items():
         rom.write(org_address, new_bytes, "B"*len(new_bytes))
+  
+  def read_custom_symbols(self):
+    self.custom_symbols = {}
+    
+    custom_symbols_path = os.path.join(ASM_PATH, "custom_symbols.txt")
+    if not os.path.isfile(custom_symbols_path):
+      return
+    
+    with open(custom_symbols_path, "r") as f:
+      matches = re.findall(r"^([0-9a-f]{8}) (\S+)", f.read(), re.IGNORECASE | re.MULTILINE)
+    for symbol_address, symbol_name in matches:
+      self.custom_symbols[symbol_name] = int(symbol_address, 16)
   
   def print_item_locations(self):
     output = []
