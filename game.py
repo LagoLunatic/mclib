@@ -1,12 +1,31 @@
 
 import os
 import re
+from collections import OrderedDict
 
 from mclib.data_interface import RomInterface
 from mclib.area import Area
 from mclib.map import Dungeon
 from mclib.cutscene import Cutscene
 from mclib.docs import ITEM_ID_TO_NAME
+
+import yaml
+try:
+  from yaml import CDumper as Dumper
+except ImportError:
+  from yaml import Dumper
+
+# Allow yaml to load and dump OrderedDicts.
+yaml.SafeLoader.add_constructor(
+  yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+  lambda loader, node: OrderedDict(loader.construct_pairs(node))
+)
+yaml.Dumper.add_representer(
+  OrderedDict,
+  lambda dumper, data: dumper.represent_dict(data.items())
+)
+
+from paths import ASM_PATH
 
 class Game:
   def __init__(self, input_rom_path):
@@ -27,6 +46,16 @@ class Game:
     for dungeon_index in range(7):
       dungeon = Dungeon(dungeon_index, self.rom)
       self.dungeons.append(dungeon)
+  
+  def apply_patch(self, patch_name, rom=None):
+    if rom is None:
+      rom = self.rom
+    
+    with open(os.path.join(ASM_PATH, patch_name + "_diff.txt")) as f:
+      diffs = yaml.safe_load(f)
+      
+      for org_address, new_bytes in diffs.items():
+        rom.write(org_address, new_bytes, "B"*len(new_bytes))
   
   def print_item_locations(self):
     output = []
