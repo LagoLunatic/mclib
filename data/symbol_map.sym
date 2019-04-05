@@ -1,0 +1,1459 @@
+
+0800015E SetTile
+  ; r0 - New 16x16 tile index to set
+  ; r1 - Position of the tile, and index within the layer's 16x16 tile mapping
+  ; r2 - Layer index
+080002B0 GetTile
+  ; r0 - Position of the tile, and index within the layer's 16x16 tile mapping
+  ; r1 - Layer index
+
+080002A0 GetTile???ByEntity
+  ; r0 - Entity pointer
+080002A4 GetTile???ByPos
+  ; r0 - X pos in pixels
+  ; r1 - Y pos in pixels
+  ; r2 - Layer index (index in list 08000228)
+080002E4 GetTile??????
+  ; r0 - 
+
+0808094C GetLayerDataByIndex
+  ; r0 - Layer index
+  ; If layer index is 2, return the BG1 layer data pointer, 0200B650.
+  ; Otherwise, return the BG2 layer data pointer, 02025EB0.
+
+0807B314 SetTileAndCollision?
+  ; r0 - Tile to set? But what is this exactly? 16x16 tile index in the tileset? or something else? it's an index in list 0202BEB4? collision?
+  ; r1 - Position of the tile, and index within the layer's 16x16 tile mapping
+  ; r2 - Layer index
+
+0801AF8C DeleteLoadedTileEntity
+  ; r0 - Bitfield of the tile entity's X and Y pos in 16x16 tiles
+  ; r1 - Layer index
+  ; If it finds the matching tile entity, it deletes it?
+
+
+08000EF2 CallFuncInR0
+08000EF4 CallFuncInR1
+08000EF6 CallFuncInR2
+08000EF8 CallFuncInR3
+08000EFA CallFuncInR4
+08000EFC CallFuncInR5
+08000EFE CallFuncInR6
+08000F00 CallFuncInR7
+08000F02 CallFuncInR8
+08000F04 CallFuncInR9
+08000F06 CallFuncInR10
+08000F08 CallFuncInR11
+08000F0A CallFuncInR12
+08000F0C CallFuncInR13
+08000F0E CallFuncInR14
+
+
+0800290E CheckRectOnScreen
+  ; r0 - X pos
+  ; r1 - Y pos
+  ; r2 - Width
+  ; r3 - Height
+
+0800293E CheckPlayerInRegion
+  ; r0 - Center X pos
+  ; r1 - Center Y pos
+  ; r2 - Width (on either side of the center)
+  ; r3 - Height (above or below the center)
+
+
+;;; Items
+
+08053FF0 GiveItem
+  ; r0 - Item ID
+  ; r1 - ? Maybe number of mysterious shells to give? or 0 for any other item
+  ; This function seems to be responsible for actually putting the item in your inventory, and maybe deciding on the item get message text too. But it's not responsible for making Link hold the item over his head and have the music play.
+  ; 08083C34 calls GiveItem. this is in function 08083C9C.
+  ;   r0 is from r4+A, r1 is from r4+B
+  ;   r4 is 030011E8 - seems to be an entity?
+080A7C38 GiveItemWithCutscene
+  ; r0 - Item ID
+  ; r1 - ? Maybe number of mysterious shells to give? or 0 for any other item
+  ; r2 - affects what the cutscene does? (used in a switch statement at 08083C04)
+  ;   0 - Normal
+  ;   3 - ??? (used by script command 86, doesn't seem to give the item...?)
+  ; If item ID is 3F (Mysterious Shells), but the byte at 02002AFB,1 is nonzero, it instead gives item ID 57 (big green rupee). Also it sets argument r1 to 0.
+  ; This function seems to be responsible for having Link hold the item over his head and have the music play. It seems to create an item get entity in RAM which then makes the cutscene happen?
+080A7C00 GiveItem3?
+  ; Same args as GiveItemWithCutscene
+080A7C18 GiveItem4?
+  ; Same args as GiveItemWithCutscene
+
+0807CA84 GetOwnedItemInfo
+  ; r0 - Which item ID
+  ; Returns the owned item info bits for that item (1, 2, or 3).
+0807CAA0 SetOwnedItemInfo
+  ; r0 - Which item ID. e.g. 0 is Smith's Blade (key item), 4 is White Sword (Three Elements).
+  ; r1 - Which bits to set for that item. Could be 1, 2, or 3 (both), but it seems like only 1 is used?
+
+08054398 EquipItem1??
+  ; 080543A4 - gives you the ability to pause
+08054414 EquipItem2?
+  ; r0 - Item ID
+  ; r1 - Which slot to equip the item in?
+
+080526CC GiveRupees
+  ; r0 - Number of rupees to give
+
+08081450 CheckShouldPlayItemGetCutscene
+  ; r0 - Item entity
+  ; Returns true if an item get cutscene should play when the player walks into this item, or false if it should just appear above the player's head briefly like a rupee.
+
+
+;;; Scripting
+
+0807DAD0 StartCutscene1?
+  ; r0 - Pointer to the entity that started this cutscene? (in list 03001160)
+  ; r1 - ROM pointer to first script command (e.g. 08009B78)
+0807DAF0 StartCutscene2?
+  ; r0 - Pointer to the entity that started this cutscene? (in list 03001160)
+  ; r1 - RAM pointer to cutscene entity (e.g. 02036570)
+  ; r2 - ROM pointer to first script command (e.g. 08009B78)
+0807DB88 StartCutscene3?
+  ; r0 - RAM pointer to cutscene entity (e.g. 02036570)
+  ; r1 - ROM pointer to first script command (e.g. 08009B78)
+
+0807DB2C StartPlayerScript?
+  ; r0 - ROM pointer to first script command (e.g. 08008FC0)
+  ; Seems to start executing a script on the player entity (03001160)
+
+0807DF74 ExecuteSetOfScriptCommands
+  ; r0 - Pointer to the entity that started this cutscene? (in list 03001160)
+  ; r1 - RAM pointer to cutscene entity (e.g. 02036570)
+
+08016986 GetNextScriptCommandHalfword
+  ; r0 - Pointer to the script command
+  ; Reads the next halfword of the script command and returns it, which can be the command metadata, or one of its arguments.
+0801698A GetNextScriptCommandHalfwordAfterCommandMetadata
+  ; r0 - Pointer to the script command
+  ; Skips one halfword, then reads the next halfword of the script command and returns it.
+0801698E GetNextScriptCommandWord
+  ; r0 - Pointer to the script command
+  ; Reads the next 2 halfwords and ORs them together and returns it as a word.
+08016998 GetNextScriptCommandWordAfterCommandMetadata
+  ; r0 - Pointer to the script command
+  ; Skips one halfword, then reads 2 halfwords and ORs them together and returns it as a word.
+
+0807E000 ScriptCommand00Dummy
+0807E004 ScriptCommand01StartInit
+0807E014 ScriptCommand02EndInit
+0807E024 ScriptCommand03Jump
+0807E050 ScriptCommand04IfCondition
+0807E064 ScriptCommand05IfNotCondition
+0807E078 ScriptCommand06???Condition
+0807E0A0 ScriptCommand07
+0807E0B8 ScriptCommand08
+0807E0CC ScriptCommand09
+0807E0E0 ScriptCommand0A
+0807E10C ScriptCommand0BExecFunction
+0807E124 ScriptCommand0CExecFunctionWithArg
+0807E148 ScriptCommand0DLoadRoomEntityList
+0807E158 ScriptCommand0E
+0807E188 ScriptCommand0F
+0807E1D8 ScriptCommand10
+0807E4AC ScriptCommand11
+0807E200 ScriptCommand12
+0807E220 ScriptCommand13
+0807E240 ScriptCommand14CheckBitInEventBitfield
+0807E260 ScriptCommand15
+0807E280 ScriptCommand16CheckPlayerInRegion
+0807E2A8 ScriptCommand17
+0807E2E4 ScriptCommand18
+0807E30C ScriptCommand19
+0807E390 ScriptCommand1A
+0807E3BC ScriptCommand1B
+0807E3E8 ScriptCommand1C
+0807E40C ScriptCommand1D
+0807E42C ScriptCommand1E
+0807E48C ScriptCommand1F
+0807E4CC ScriptCommand20
+0807E4EC ScriptCommand21
+0807E514 ScriptCommand22
+0807E538 ScriptCommand23
+0807E564 ScriptCommand24Check???PlayerState
+0807E584 ScriptCommand25
+0807E5A0 ScriptCommand26
+0807E5CC ScriptCommand27
+0807E5F8 ScriptCommand28
+0807E610 ScriptCommand29
+0807E628 ScriptCommand2ASetLocalFlag
+0807E634 ScriptCommand2BSetLocalFlagByOffset
+0807E644 ScriptCommand2C
+0807E650 ScriptCommand2DSetGlobalFlag
+0807E65C ScriptCommand2E
+0807E668 ScriptCommand2FSetRoomFlag
+0807E674 ScriptCommand30
+0807E680 ScriptCommand31
+0807E690 ScriptCommand32
+0807E6AC ScriptCommand33
+0807E6DC ScriptCommand34
+0807E700 ScriptCommand35
+0807E72C ScriptCommand36
+0807E75C ScriptCommand37
+0807E778 ScriptCommand38
+0807E788 ScriptCommand39
+0807E79C ScriptCommand3A
+0807E7AC ScriptCommand3B
+0807E7B0 ScriptCommand3C
+0807E7C4 ScriptCommand3D
+0807E7D8 ScriptCommand3E
+0807E7EC ScriptCommand3F
+0807E800 ScriptCommand40
+0807E80C ScriptCommand41
+0807E858 ScriptCommand42
+0807E864 ScriptCommand43RemovePlayerControl
+0807E878 ScriptCommand44GivePlayerControl
+0807E888 ScriptCommand45
+0807E898 ScriptCommand46
+0807E8C4 ScriptCommand47RunPlayerScript
+0807E8D4 ScriptCommand48
+0807E8E4 ScriptCommand49
+0807E8E4 ScriptCommand4A
+0807E8E4 ScriptCommand4B
+0807E8E4 ScriptCommand4C
+0807E908 ScriptCommand4D
+0807E914 ScriptCommand4E
+0807E924 ScriptCommand4F
+0807E930 ScriptCommand50
+0807E944 ScriptCommand51
+0807E974 ScriptCommand52
+0807E9D4 ScriptCommand53
+0807E9DC ScriptCommand54
+0807E9E4 ScriptCommand55
+0807E9F0 ScriptCommand56
+0807EA4C ScriptCommand57
+0807EA88 ScriptCommand58
+0807EA94 ScriptCommand59
+0807EAB4 ScriptCommand5A
+0807EAC0 ScriptCommand5B
+0807EAD0 ScriptCommand5C
+0807EAF0 ScriptCommand5D
+0807EB18 ScriptCommand5E
+0807EB28 ScriptCommand5F
+0807EB38 ScriptCommand60
+0807EB44 ScriptCommand61SetAnimOffset
+0807EB4C ScriptCommand62
+0807EB74 ScriptCommand63FaceTowardsPlayer
+0807EB8C ScriptCommand64
+0807EBA8 ScriptCommand65
+0807EBB0 ScriptCommand66
+0807EBC0 ScriptCommand67
+0807EBC8 ScriptCommand68
+0807EBD8 ScriptCommand69
+0807EBF4 ScriptCommand6A
+0807EC08 ScriptCommand6B
+0807EC18 ScriptCommand6C
+0807EC1C ScriptCommand6D
+0807EC64 ScriptCommand6E
+0807EC94 ScriptCommand6F
+0807ECC4 ScriptCommand70
+0807ECF4 ScriptCommand71
+0807ED24 ScriptCommand72
+0807EDD4 ScriptCommand73
+0807EE04 ScriptCommand74
+0807EE30 ScriptCommand75
+0807EEB4 ScriptCommand76
+0807EEF4 ScriptCommand77
+0807EF3C ScriptCommand78
+0807EF80 ScriptCommand79
+0807EF90 ScriptCommand7A
+0807EFA0 ScriptCommand7B
+0807EFAC ScriptCommand7C
+0807EFD4 ScriptCommand7D
+0807EFE4 ScriptCommand7E
+0807EFF4 ScriptCommand7F
+0807F004 ScriptCommand80
+0807F010 ScriptCommand81
+0807F034 ScriptCommand82GiveItem
+0807F050 ScriptCommand83GiveKinstonePiece
+0807F060 ScriptCommand84CheckItemOwned
+0807F078 ScriptCommand85SetOwnedItemInfo
+0807F088 ScriptCommand86GiveItem???
+0807F098 ScriptCommand87
+0807F0A4 ScriptCommand88
+0807F0B4 ScriptCommand89
+0807F0C8 ScriptCommand8A
+; All of the above script commands take the following arguments:
+  ; r0 - Pointer to the entity that started this cutscene? (in list 03001160)
+  ; r1 - Cutscene entity pointer (e.g. 02036570)
+
+
+
+0807F6F8 UnsetPlayerState?
+  ; r0 - Pointer to a cutscene entity (e.g. 02036570)
+  ; This function reads the word at [r0+4], and clears any of those bits from the bitfield of player states (03003FB0).
+
+08059C8C UpdateCurrentVisualZoneID
+  ; r0 - 
+  ; r1 - Index of which visual zone grouping this is?
+  ; r2 - Where in RAM to store the new zone ID
+  ; r3 - Pointer to the list of visual zones in ROM to check
+  ; Returns true if there is a visual zone on screen at the moment.
+
+080045C4 GetNPCFacingDirection?
+  ; r0 - NPC entity
+  ; r1 - Entity to face towards (e.g. 03001160 for the player)
+  ; Returns an index in list 08114F58
+0806F5B0 GetNPCFacingDirectionAnimOffset?
+  ; r0 - Return value from GetNPCFacingDirection?
+  ; Returns the animation index offset for this facing direction, read from 08114F58
+
+
+
+;;; Flags
+
+0801D5BC SetGenericBit
+  ; r0 - Pointer to the bitfield
+  ; r1 - Bit index to set in that bitfield
+  ; Also returns whether the bit was already set before calling this function.
+0801D5A8 CheckGenericBit
+  ; r0 - Pointer to the bitfield
+  ; r1 - Bit index to check in that bitfield
+0801D5D4 ClearGenericBit
+  ; r0 - Pointer to the bitfield
+  ; r1 - Bit index to set in that bitfield
+08000F10 CheckGenericBits
+  ; (Simply calls CheckGenericBitsRAM, passing the same arguments.)
+03005E60 CheckGenericBitsRAM
+  ; r0 - Pointer to the bitfield
+  ; r1 - First bit index to check in that bitfield
+  ; r2 - Number of bits to check, sequentially from the first one specified
+  ; Returns true only if all of the bits are set.
+
+0807CD04 SetGlobalFlag
+  ; r0 - Bit index
+0807CC9C SetLocalFlagByOffset
+  ; r0 - Bit index offset
+  ; r1 - Bit index
+  ; Adds r0 and r1 together and sets that bit.
+0807CCB4 SetLocalFlag
+  ; r0 - Bit index
+  ; Sets the bit of index r0 plus [02033A94,2] (the current area's event flag offset).
+
+0807CC30 CheckGlobalFlag
+  ; r0 - Bit index
+0807CB10 CheckLocalFlagByOffset
+  ; r0 - Bit index offset
+  ; r1 - Bit index
+  ; Adds r0 and r1 together and checks that bit.
+0807CBD0 CheckLocalFlag
+  ; r0 - Bit index
+  ; Checks the bit of index r0 plus [02033A94,2] (the current area's event flag offset).
+
+0807CC78 CheckGlobalFlags
+  ; r0 - First bit index
+  ; r1 - Number of bits to check, sequentially from the first one specified
+0807CC4C CheckLocalFlagsByOffset
+  ; r0 - Bit index offset
+  ; r1 - First bit index
+  ; r2 - Number of bits to check, sequentially from the first one specified
+0807CC60 CheckLocalFlags
+  ; r0 - First bit index
+  ; r1 - Number of bits to check, sequentially from the first one specified
+  ; Sets the bit of index r0 plus [02033A94,2] (the current area's event flag offset).
+
+0807CD10 SetRoomFlag
+  ; r0 - Bit index
+  ; 02034364 is the bitfield in question
+0807CC3C CheckRoomFlag
+  ; r0 - Bit index
+0807CD8C ClearRoomFlag
+  ; r0 - Bit index
+0807CC88 CheckRoomFlags
+  ; r0 - First bit index to check in that bitfield
+  ; r1 - Number of bits to check, sequentially from the first one specified
+  ; 02034364 is the bitfield in question
+
+0807CD80 ClearGlobalFlag
+  ; r0 - Bit index
+0807CD20 ClearLocalFlagByOffset
+  ; r0 - Bit index offset
+  ; r1 - Bit index
+0807CD34 ClearLocalFlag
+  ; r0 - Bit index
+
+0807CCC8 SetFlag
+  ; r0 - Bitfield. (Note that if this equal to 0, it's invalid and no bit is set.)
+  ;   & 0x03FF - Bit index. 
+  ;   & 0xC000 - Affects what function to call.
+  ;     0 - SetLocalFlag
+  ;     1 - SetGlobalFlag
+  ;     2 - SetRoomFlag
+0807CBE4 CheckFlags
+  ; r0 - Bitfield.
+  ;   & 0x03FF - Bit index. 
+  ;   & 0x3C00 - Number of bits to check (you need to add 1 to this, so 0 here means check 1 bit, etc)
+  ;   & 0xC000 - Affects what function to call.
+  ;     0 - CheckLocalFlags
+  ;     1 - CheckGlobalFlags
+  ;     2 - CheckRoomFlags
+0807CD48 ClearFlag
+  ; r0 - Bitfield.
+  ;   & 0x03FF - Bit index. 
+  ;   & 0xC000 - Affects what function to call.
+  ;     0 - ClearLocalFlag
+  ;     1 - ClearGlobalFlag
+  ;     2 - ClearRoomFlag
+
+08049D1C CheckEnemyIndexValid?
+  ; r0 - Enemy index? (The index of the enemy entity in this room's enemy list)
+  ; Returns false if that bit index is set in bitfield 02024050,4.
+  ; Maybe checking if the enemy is dead?
+
+
+
+0801E7F4 CheckKinstoneFused
+  ; r0 - Kinstone ID (must subtract 1 to get the bit index)
+  ; 02002C81 is the bitfield it looks in.
+
+08000E50 Rand
+  ; r0 - ?
+08000EE8 RandClampToMax
+  ; r0 - Random number from Rand
+  ; r1 - Maximum is r1-1
+
+0801D66C DMA
+  ; r0 - Address to copy from
+  ; r1 - Address to copy to
+  ; r2 - Number of bytes to copy
+
+0801D5EC FillAreaWithHalfword
+  ; r0 - Halfword value to fill with
+  ; r1 - Destination area to fill
+  ; r2 - Length of the area to fill in bytes
+0801D610 FillAreaWithWord
+  ; r0 - Word value to fill with
+  ; r1 - Destination area to fill
+  ; r2 - Length of the area to fill in bytes
+0801D630 FillAreaWithZero
+  ; r0 - Destination area to fill
+  ; r1 - Length of the area to fill in bytes
+
+080B14D8 Decompress16Bit
+080B14DC Decompress8Bit
+
+
+0804B0C0 SetCurrentRoomPropertyList
+  ; r0 - Area index
+  ; r1 - Room index
+  ; Reads the property list for the specified room and stores it to 020342EC.
+
+0804B128 GetCurrentRoomProperty
+  ; r0 - Property index (e.g. 3 is the tile entity list)
+  ; Returns that property for the current room.
+0804B0FC GetRoomProperty
+  ; r0 - Area index
+  ; r1 - Room index
+  ; r2 - Property index
+  ; Returns that property for the specified room.
+
+0804AFDC RunCurrentRoomFuncProp6
+0804AFF4 RunCurrentRoomFuncProps5And7AndDoOtherStuff?
+
+0804B01C LoadAllCurrentRoomEntityLists
+  ; Loads entity list in prop 1
+  ; Loads entity list in prop 0
+  ; Loads enemy entity list in prop 2 if global flag 0x15 is set
+  ; Loads tile entity list in prop 3
+
+0804B0B0 LoadRoomEntityListInProp1
+  ; r0 - Area index
+  ; r1 - Room index
+
+0804B0E8 RunRoomFuncProp4
+  ; r0 - Area index
+  ; r1 - Room index
+
+0804AF90 ChangeRoomAuto
+0804AFB0 ChangeRoom
+  ; r0 - New room pointer
+
+
+080197D4 LoadTilesetAssetList
+  ; r0 - Pointer to a tileset asset list (which has data about which GFX, palettes, and tile mappings to load)
+
+0801D7EC LoadAssetList?
+  ; r0 - An index of a pointer to the asset list in list 08100AA8.
+
+03005E98 SetPaletteWithFade
+  ; r0 - Pointer to the palette in RAM
+  ; r1 - Pointer to where to load the palette in palette VRAM
+  ; r2 - Multiplier 1?
+  ; r3 - Multiplier 2?
+
+08052CFC LoadArea?
+08052DA8 InitializeRoomListInRAM
+08052E10 InitializeRoomInRAM
+  ; r0 - RAM pointer to initialize the room at (e.g. 02033CCC)
+  ; r1 - ROM pointer to room's graphics metadata
+  ; r2 - Area index
+  ; r3 - Room index
+
+0804ADDC LoadRoomEntityList
+  ; r0 - Pointer to a room entity list.
+0804ADF8 LoadRoomEntity
+  ; r0 - Pointer to a room entity.
+0804B058 LoadRoomEnemyList
+  ; r0 - Pointer to a room entity list
+
+0804B1AC LoadRoomTileEntities
+  ; r0 - Pointer to the room's tile entity list in ROM
+0804B29C LoadRoomTileEntity
+  ; r0 - Pointer to the tile entity in ROM
+
+0804B300 CreateTileEntityType4
+  ; Creates a 9-24 entity.
+
+
+080524A8 CreatePlayerEntity
+  ; Creates the player entity, a type 1 entity
+
+0804AA60 CreateEntityType3
+  ; r0 - Subtype
+  ; r1 - Form
+080A7EE0 CreateEntityType4
+  ; r0 - Subtype
+080A2960 CreateEntityType6
+  ; r0 - Subtype
+  ; r1 - Form
+  ; r2 - unknown4
+0806ED50 CreateEntityType7
+  ; r0 - Subtype
+  ; r1 - Form
+  ; r2 - unknown4
+08053178 CreateEntity9-39
+08058760 CreateEntity9-0B
+  ; r0 - Pointer to the parent entity?
+0805DDEC CreateEntity9-36
+  ; r1 - A pointer. The form for the entity can be read from [pointer+4,4]
+
+08077C54 CreateEntityType8?1
+  ; r0 - ? 03000B80?
+08077CB8 CreateEntityType8?2
+  ; r0 - ? 03000B80?
+
+0805E768 GetEntitySlot
+  ; r0 - Entity type
+0805E678 Get03EntitySlot
+0805E679 Get03EntitySlot
+0805E744 GetSpecial03EntitySlot?
+  ; Gets an entity slot out of slots 1-7.
+  ; 030011E8 being the first and 03001518 being the last.
+0805E8D4 Get02EntitySlot
+0805E8D5 Get02EntitySlot
+
+0805E89C DeleteSomeEntities?
+  ; Deletes some entities in list 02033290 and calls DeleteAll03EntitiesMarkedForDeletion
+  ; This is called when you change rooms
+
+0805E79C DeleteEntity
+  ; r0 - Entity pointer
+0805E7BC Delete03Entity
+0805E7BD Delete03Entity
+  ; r0 - Entity pointer in list 03001160
+0805E900 Delete02Entity
+0805E901 Delete02Entity
+  ; r0 - Entity pointer in list 02033290
+
+0805E84C DeleteAll03EntitiesMarkedForDeletion
+  ; This function is called every frame.
+  ; Any entities in list 03001160 marked for deletion (-1 for the entity's "previous entity pointer") will be deleted by this function.
+0805E870 Delete03EntityMarkedForDeletion
+  ; r0 - Entity pointer in list 03001160
+
+
+
+0801D714 LoadPalettesByPaletteGroupIndex
+  ; r0 - Palette group index (index in list 080FF850)
+0801D754 LoadPalettes
+  ; r0 - Pointer to the first palette in ROM to copy.
+  ; r1 - What slot index to load the first palette into palette VRAM. (00-1F.)
+  ; r2 - Number of palettes to copy.
+
+
+
+0804A57C Type3EntityLoadSprite
+  ; r0 - Entity pointer in RAM
+080A7D80 Type4EntityLoadSprite
+  ; r0 - Entity pointer in RAM
+080A2838 Type6EntityLoadSprite
+  ; r0 - Entity pointer in RAM
+0806EC78 Type7EntityLoadSprite
+  ; r0 - Entity pointer in RAM
+080173A4 Type8EntityLoadSprite
+  ; r0 - Entity pointer in RAM
+080A285C EntityLoadSprite
+  ; r0 - Entity pointer in RAM
+  ; r1 - Entity form
+  ; r2 - Pointer to the entity's sprite loading data
+
+0804A6C0 EnemyLoadSprite?
+  ; r0 - Enemy entity pointer in RAM
+  ; r1 - Pointer to the enemy's sprite loading data
+
+0804A554 Type3EntityGetSpriteLoadingData
+  ; r0 - Entity pointer in RAM
+  ; Returns a pointer to the sprite loading data for that enemy and form.
+080A7D58 Type4EntityGetSpriteLoadingData
+  ; r0 - Entity pointer in RAM
+  ; Returns a pointer to the sprite loading data for that ??? entity and form.
+0806EC50 Type7EntityGetSpriteLoadingData
+  ; r0 - Entity pointer in RAM
+  ; Returns a pointer to the sprite loading data for that NPC and form.
+
+0806FDEC LoadExtraSpriteData
+  ; r0 - Entity pointer in RAM
+  ; r1 - Pointer to the extra sprite loading data list entry to load (one example is 0810CB78 for sitting people)
+
+080ADE74 LoadSpriteAssets??Swap?
+  ; r0 - Index in list 02024494...? Also doubles as something else?
+  ; For compressed GFX, it's also an index in GFX VRAM for where to load the GFX (multiply index by 0x200 and add to 06012800)
+
+080ADDD8 SetEntityGFXPointer?
+  ; r0 - Index in list 02024494...?
+  ; r1 - Bitfield.
+    ; & 00000001 - GFX data is compressed.
+    ; & 00FFFFFC - Asset offset relative to 085A2E80 to the GFX data.
+    ; & 7F000000 - Length of the GFX data if it's uncompressed, in terms of 16 8x8 tiles (so multiply this number by 0x200 to get the length in bytes).
+
+080ADF80 LoadFixedGFX
+  ; r0 - Entity pointer in list 030015A0
+  ; r1 - Index in list 08132B30 (0 is invalid)
+
+080AE104 ReserveGFXSlots??
+  ; r0 - Index in list 02024494 of the first slot to reserve
+  ; r1 - Entity subtype?
+  ; r2 - Number of slots to reserve?
+
+080837B0 Load???GFXForArea
+  ; r0 - Entity pointer in list 030015A0
+
+0801D040 LoadAndSetEntityObjectPalette
+  ; r0 - Entity pointer (e.g. 03001160 for the player)
+  ; r1 - Object palette ID. (See LoadObjectPalettes for details.)
+  ; Returns the object palette slot index in VRAM the palette was loaded into.
+0801D19C SetEntityObjectPalette
+  ; r0 - Entity pointer (e.g. 03001160 for the player)
+  ; r1 - Palette index in the list of object palettes loaded in VRAM
+
+0801D244 EntityUnloadObjectPalette
+  ; r0 - Object palette index
+  ; Marks the palette as being used by 1 less entity in list 02001A00.
+  ; If this results in the palette being used by no entities, it marks this slot as free to use.
+
+0801D2C8 LoadObjectPalettes
+  ; r0 - Object palette ID. Affects which palettes to load. Different values have different behavior:
+  ;   00-05: Does not need to load any palettes since this is a common palette that is always loaded.
+  ;   06-14: This value minus 6 is an index in the currently loaded palettes (020176A0). Simply copy one background palette at that index to this object palette.
+  ;   15: Load a palette where all 16 colors are simply a copy of color C in background palette 3 (brown).
+  ;   16+: This value minus 16 is an index in list 08133368 of the palette(s) to load.
+  ; r1 - What object palette slot index the first of these palettes should be loaded into. e.g. Object palette slot 6 is slot 0x16 out of all palettes in VRAM.
+
+08000E96 LoadAssetAsynchronously?
+
+
+
+080AE7E8 MoveEntity??
+  ; r0 - Entity pointer
+  ; r1 - Y movement speed in 1/256ths of a pixel per frame??
+  ; r2 - X movement speed in 1/256ths of a pixel per frame??
+  ; r3 - 0?
+
+;;; Sprites
+
+080042AC InitializeAnimationForceUpdateFrame
+  ; r0 - Entity in list 03001160
+  ; r1 - Animation index
+08004260 InitializeAnimation
+  ; r0 - Entity in list 03001160
+  ; r1 - Animation index
+080042B8 UpdateAnimationSingleFrame
+  ; r0 - Entity in list 03001160
+08004276 UpdateAnimationVariableFrames
+  ; r0 - Entity in list 03001160
+  ; r1 - Number of frames that have passed
+
+0806FF60 SetExtraSpriteFrame
+  ; r0 - Main entity
+  ; r1 - Sub-entry index
+  ; r2 - Frame index
+
+080700C8 GetSpriteSubEntryOffsetDataPointer
+  ; r0 - Sprite index
+  ; r1 - Frame index
+  ; Returns a pointer inside 089FB780
+0806FF88 SetSpriteSubEntryOffsetData1
+  ; r0 - Entity pointer in RAM
+  ; r1 - Subentry index of the main body sprite
+  ; r2 - Subentry index of the secondary sprite to set the offset for
+  ; Uses X offset 1 and Y offset 1 from entries in list 089FB780.
+0806FFD8 SetSpriteSubEntryOffsetData2
+  ; r0 - Entity pointer in RAM
+  ; r1 - Subentry index of the main body sprite
+  ; r2 - Subentry index of the secondary sprite to set the offset for
+  ; Uses X offset 2 and Y offset 2 from entries in list 089FB780.
+
+
+
+03005B0C CheckCollision
+  ; r4 - Entity A
+  ; r5 - Entity B
+
+08018308 DarkNutOnHit??
+
+
+
+0805EEB4 MessageLoad?
+  ; r0 - Pointer to ?
+  ; r1 - Message ID.
+  ; Breakpoint on 0805EF34 and look in r1 to get a pointer to the message string.
+080563EC CreateMessageEntity?
+  ; r0 - Message ID
+
+0806F1AC ShowNPCDialogue?
+  ; r0 - Entity pointer in RAM?
+  ; r1 - An entry in list 08109DC8
+
+080A4CBC CreateDescriptionMessageForFigurine?
+  ; r0 - Figurine ID
+
+
+080806BC FindAndDoExitTransition
+  ; r0 - Player's X pos
+  ; r1 - Player's Y pos
+  ; r2 - ?
+  ; r3 - A bitfield of the transition types to check? e.g. 5 here means accept types 0 and 2, but no others.
+  ; When the player touches the edge of a screen, this is called to check if the player should transition to a different room.
+08080794 CheckExitTransitionTypes0and2
+  ; r0 - Exit pointer
+  ; r1 - Player's X pos
+  ; r2 - Player's Y pos
+  ; r3 - ? Direction of transition? 0 - up, 2 - down?, 1 - ?
+08080808 CheckExitTransitionTypes1and3
+  ; r0 - Exit pointer
+  ; r1 - Player's X pos
+  ; r2 - Player's Y pos
+08080840 DoExitTransition
+  ; r0 - Exit pointer
+
+080562CC CheckRegionOnScreen?
+  ; r0 - X pos?
+  ; r1 - Y pos?
+  ; r2 - Width?
+  ; r3 - Height?
+
+
+080A4DB8 LoadGUIScreen?
+  ; r0 - An index in list 08128A38. This is read from 020344A4,1.
+080A50A0 GetUIScreenForCurrentAreaMapScreen?
+
+0801DDA0 DrawDungeonMap
+  ; r0 - Floor index to draw (0 is the highest floor, 1 is the second highest, etc).
+0801DF28 DrawDungeonMapPixel?
+  ; r0 - 
+  ; r1 - 
+  ; r2 - the 2-bit data from the big bitfield of the map??
+  ; r3 - 
+
+080A5C9C DungeonMapScreenUpdate
+  ; Checks if up or down are pressed and changes the selected floor on the dungeon map screen.
+
+0801DF10 GetMapWidthByMapEntry?
+  ; r0 - Pointer to the current map entry to draw?? (subentry of list 080C9C50)
+08052D58 GetMapWidth?
+  ; r0 - Area index
+
+080A6A80 GetCurrentWorldMapRegion
+  ; r0 - Player's X pos in pixels (from 030010C0,2)
+  ; r1 - Player's Y pos in pixels (from 030010C2,2)
+  ; Returns a pointer inside list 08127F94 to what the correct map region should be (or 0 for none).
+08052620 CheckOnOverworld
+
+080530C8 UpdateHyruleTownState??
+  ; Updates the values at 02002A48,1.
+
+0300648C RenderFrameToOAM
+
+03006580 RenderBySpriteAndFrameIndex?
+  ; r0 - 03001010?
+  ; r1 - Sprite index
+  ; r2 - Frame index
+
+; 03006724 - this line is where it reads the tile gfx index for the entity
+; 03006728 - this line is where it reads the palette index for the entity
+
+0806FAB0 MoveEntityZIndexOnTopOfOtherEntity
+  ; r0 - Entity that shoul appear on the bottom
+  ; r1 - Entity to change the Z-index of to make it appear on top.
+
+
+08056010 SetGameState
+  ; r0 - Game state index
+
+0805041C SetCurrentSaveFile
+  ; r0 - Save file index
+
+08050624 LoadSaveFile
+  ; r0 - Save file index
+
+
+03005F40 UpdateAllEntities
+
+0805E780 DeleteThisEntity
+080A2500 DeleteThisEntity2
+
+
+08028E9C InitializeBusinessScrub?
+  ; r0 - Pointer to the business scrub entity
+08029198 CheckBusinessScrubHasSoldItsItem
+  ; r0 - Pointer to the entry in list 080CC954 for this business scrub.
+  ; Returns true if this scrub has sold Link its item, or false otherwise.
+  ; Note that this function hardcodes some item IDs and flag indexes.
+
+
+
+;;; Entity-specific functions
+
+0805E780 UpdateType0Entity
+08016F28 UpdateType1Entity
+0805E780 UpdateType2Entity
+080011C4 UpdateType3Entity
+08016AE4 UpdateType4Entity
+0805E780 UpdateType5Entity
+080174A4 UpdateType6Entity
+08017530 UpdateType7Entity
+08017338 UpdateType8Entity
+08017508 UpdateType9Entity
+
+
+0801EAB0 Update3-00Entity
+0801EE18 Update3-01Entity
+0801FC08 Update3-02Entity
+0801FF5C Update3-03Entity
+08020638 Update3-04Entity
+08020B80 Update3-05Entity
+080216D4 Update3-06Entity
+08021758 Update3-07Entity
+08021D64 Update3-08Entity
+08021FA8 Update3-09Entity
+0802222C Update3-0AEntity
+08022414 Update3-0BEntity
+08022918 Update3-0CEntity
+08022B88 Update3-0DEntity
+08022FA4 Update3-0EEntity
+08023038 Update3-0FEntity
+08023B94 Update3-10Entity
+08023F28 Update3-11Entity
+08024FE8 Update3-12Entity
+08025CA0 Update3-13Entity
+08027D6C Update3-14Entity
+0802823C Update3-15Entity
+0802890C Update3-16Entity
+080292A0 Update3-17Entity
+08029858 Update3-18Entity
+0802A238 Update3-19Entity
+0802A408 Update3-1AEntity
+0802A804 Update3-1BEntity
+0802B2AC Update3-1CEntity
+0802B4D8 Update3-1DEntity
+0802B5F0 Update3-1EEntity
+0802B9D4 Update3-1FEntity
+0802BB6C Update3-20Entity
+0802C228 Update3-21Entity
+0802C660 Update3-22Entity
+0802CC3C Update3-23Entity
+0802D018 Update3-24Entity
+0802EC6C Update3-25Entity
+0802F118 Update3-26Entity
+0802F4A0 Update3-27Entity
+0802FB30 Update3-28Entity
+0802FDD4 Update3-29Entity
+08030198 Update3-2AEntity
+08030A2C Update3-2BEntity
+08031374 Update3-2CEntity
+08031664 Update3-2DEntity
+08031864 Update3-2EEntity
+08032358 Update3-2FEntity
+080323BC Update3-30Entity
+080327F4 Update3-31Entity
+08032C74 Update3-32Entity
+080333B8 Update3-33Entity
+0803353C Update3-34Entity
+0803379C Update3-35Entity
+08033ED4 Update3-36Entity
+08034C60 Update3-37Entity
+08035164 Update3-38Entity
+080351BC Update3-39Entity
+0803704C Update3-3AEntity
+0803746C Update3-3BEntity
+08037C3C Update3-3CEntity
+08037EC8 Update3-3DEntity
+080381AC Update3-3EEntity
+08038430 Update3-3FEntity
+080388B4 Update3-40Entity
+08038CA4 Update3-41Entity
+080392AC Update3-42Entity
+08039BA0 Update3-43Entity
+0803A154 Update3-44Entity
+0803BB7C Update3-45Entity
+0803C160 Update3-46Entity
+0803C738 Update3-47Entity
+0803CCB8 Update3-48Entity
+0803CE80 Update3-49Entity
+0803D0C8 Update3-4AEntity
+0803E08C Update3-4BEntity
+0803E528 Update3-4CEntity
+0803EAEC Update3-4DEntity
+0803EFDC Update3-4EEntity
+0803F770 Update3-4FEntity
+08040B2C Update3-50Entity
+08041330 Update3-51Entity
+08042554 Update3-52Entity
+08044118 Update3-53Entity
+080445DC Update3-54Entity
+0801EAB0 Update3-55Entity
+08044F50 Update3-56Entity
+08045200 Update3-57Entity
+08045394 Update3-58Entity
+080455AC Update3-59Entity
+080456D8 Update3-5AEntity
+08045B88 Update3-5BEntity
+08046134 Update3-5CEntity
+080467F0 Update3-5DEntity
+080481C0 Update3-5EEntity
+080482C4 Update3-5FEntity
+08048640 Update3-60Entity
+08048988 Update3-61Entity
+08048D98 Update3-62Entity
+08048F8C Update3-63Entity
+0804905C Update3-64Entity
+08049B70 Update3-65Entity
+08049CAC Update3-66Entity
+
+080A7F00 Update4-00Entity
+080A8030 Update4-01Entity
+080A8190 Update4-02Entity
+080A82F8 Update4-03Entity
+080A843C Update4-04Entity
+080A86BC Update4-05Entity
+080A87C8 Update4-06Entity
+080A8A68 Update4-07Entity
+080A8B98 Update4-08Entity
+080A8CAC Update4-09Entity
+080A8DC0 Update4-0AEntity
+080A9158 Update4-0BEntity
+080A91E0 Update4-0CEntity
+080A9300 Update4-0DEntity
+080A9500 Update4-0EEntity
+080A95DC Update4-0FEntity
+080A9A00 Update4-10Entity
+080A9CA8 Update4-11Entity
+080A9DA4 Update4-12Entity
+080A9E54 Update4-13Entity
+080AA400 Update4-14Entity
+080AA68C Update4-15Entity
+080AAAE8 Update4-16Entity
+080AAB8C Update4-17Entity
+080AABF0 Update4-18Entity
+080AB05C Update4-19Entity
+080AB2A8 Update4-1AEntity
+080AB510 Update4-1BEntity
+080AB690 Update4-1CEntity
+080AB8C8 Update4-1DEntity
+080ABA5C Update4-1EEntity
+080ABB8C Update4-1FEntity
+080ABF24 Update4-20Entity
+080ABFB0 Update4-21Entity
+080AC274 Update4-22Entity
+080AC8A8 Update4-23Entity
+080ACA34 Update4-24Entity
+0805E7BC Update4-25Entity
+
+08080E08 Update6-00Entity
+0808161C Update6-01Entity
+08081814 Update6-02Entity
+08081AC8 Update6-03Entity
+08082040 Update6-04Entity
+0808220C Update6-05Entity
+080828E0 Update6-06Entity
+08082E9C Update6-07Entity
+08083320 Update6-08Entity
+0808386C Update6-09Entity
+08083A94 Update6-0AEntity
+08083B88 Update6-0BEntity
+08083DD8 Update6-0CEntity
+08084334 Update6-0DEntity
+08084458 Update6-0EEntity
+080844C8 Update6-0FEntity
+08084824 Update6-10Entity
+08084D34 Update6-11Entity
+08084FC0 Update6-12Entity
+08085194 Update6-13Entity
+080854EC Update6-14Entity
+0808601C Update6-15Entity
+080860C0 Update6-16Entity
+080861AC Update6-17Entity
+08086284 Update6-18Entity
+080866C0 Update6-19Entity
+080869C4 Update6-1AEntity
+08086A90 Update6-1BEntity
+080874A0 Update6-1CEntity
+080874E0 Update6-1DEntity
+08087504 Update6-1EEntity
+08087690 Update6-1FEntity
+0808780C Update6-20Entity
+08087998 Update6-21Entity
+08087BAC Update6-22Entity
+0808868C Update6-23Entity
+08088804 Update6-24Entity
+08088A50 Update6-25Entity
+08089134 Update6-26Entity
+080891DC Update6-27Entity
+0808976C Update6-28Entity
+08089848 Update6-29Entity
+08089B00 Update6-2AEntity
+08089CBC Update6-2BEntity
+08089D04 Update6-2CEntity
+0808A3F4 Update6-2DEntity
+0808A4F4 Update6-2EEntity
+0808A6F4 Update6-2FEntity
+0808A850 Update6-30Entity
+0808A9C4 Update6-31Entity
+0808A9FC Update6-32Entity
+0808B294 Update6-33Entity
+0808B448 Update6-34Entity
+0808B86C Update6-35Entity
+0808BB18 Update6-36Entity
+0808BDE8 Update6-37Entity
+0808BE84 Update6-38Entity
+0808C1E4 Update6-39Entity
+0808C69C Update6-3AEntity
+0808C91C Update6-3BEntity
+0808CAE4 Update6-3CEntity
+0808CEF0 Update6-3DEntity
+0808D0C8 Update6-3EEntity
+0808D5DC Update6-3FEntity
+0808D674 Update6-40Entity
+0808DB54 Update6-41Entity
+0808DD7C Update6-42Entity
+0808DED0 Update6-43Entity
+0808E280 Update6-44Entity
+0808E414 Update6-45Entity
+0808E4A8 Update6-46Entity
+0808E688 Update6-47Entity
+0808E7A0 Update6-48Entity
+0808F0A0 Update6-49Entity
+0808F640 Update6-4AEntity
+0808F77C Update6-4BEntity
+0808F968 Update6-4CEntity
+080905A0 Update6-4DEntity
+08090EA8 Update6-4EEntity
+08090F70 Update6-4FEntity
+08090FB8 Update6-50Entity
+08090FF8 Update6-51Entity
+080910A0 Update6-52Entity
+08091108 Update6-53Entity
+080911EC Update6-54Entity
+080916CC Update6-55Entity
+08091E60 Update6-56Entity
+08091EF4 Update6-57Entity
+08092038 Update6-58Entity
+0809225C Update6-59Entity
+0809271C Update6-5AEntity
+0809288C Update6-5BEntity
+0809298C Update6-5CEntity
+08092B74 Update6-5DEntity
+08092CA0 Update6-5EEntity
+08092ED4 Update6-5FEntity
+080933C0 Update6-60Entity
+08093428 Update6-61Entity
+08093760 Update6-62Entity
+08093D70 Update6-63Entity
+08093E24 Update6-64Entity
+08093FB4 Update6-65Entity
+08094084 Update6-66Entity
+08094130 Update6-67Entity
+0809475C Update6-68Entity
+08094A0C Update6-69Entity
+08094A44 Update6-6AEntity
+0809631C Update6-6BEntity
+08096AD4 Update6-6CEntity
+08096E10 Update6-6DEntity
+08097370 Update6-6EEntity
+080973E4 Update6-6FEntity
+08097420 Update6-70Entity
+08097588 Update6-71Entity
+080979B4 Update6-72Entity
+08097A5C Update6-73Entity
+08097B6C Update6-74Entity
+0808C934 Update6-75Entity
+0808C94C Update6-76Entity
+08097D78 Update6-77Entity
+08097DD4 Update6-78Entity
+08097F84 Update6-79Entity
+08098168 Update6-7AEntity
+08098260 Update6-7BEntity
+080984CC Update6-7CEntity
+08098544 Update6-7DEntity
+080989F8 Update6-7EEntity
+08098A78 Update6-7FEntity
+08098B10 Update6-80Entity
+08098C68 Update6-81Entity
+08098CF4 Update6-82Entity
+08098EE0 Update6-83Entity
+080991A4 Update6-84Entity
+08099734 Update6-85Entity
+08099DB8 Update6-86Entity
+08099EFC Update6-87Entity
+0809A774 Update6-88Entity
+0809AAEC Update6-89Entity
+0809ADB4 Update6-8AEntity
+0809AF5C Update6-8BEntity
+0809B3AC Update6-8CEntity
+0809B6F0 Update6-8DEntity
+0809B840 Update6-8EEntity
+0809BEB4 Update6-8FEntity
+0809C394 Update6-90Entity
+0809C3C8 Update6-91Entity
+0809CC5C Update6-92Entity
+0809CE90 Update6-93Entity
+0809CEC8 Update6-94Entity
+0809CF24 Update6-95Entity
+0809D784 Update6-96Entity
+0809D9A8 Update6-97Entity
+0809E348 Update6-98Entity
+0809E42C Update6-99Entity
+0809E500 Update6-9AEntity
+0809E7A8 Update6-9BEntity
+0809E824 Update6-9CEntity
+0809E9FC Update6-9DEntity
+0809EC4C Update6-9EEntity
+0809ED18 Update6-9FEntity
+0809F12C Update6-A0Entity
+0809F288 Update6-A1Entity
+0809F2F8 Update6-A2Entity
+0809F4C4 Update6-A3Entity
+0809F828 Update6-A4Entity
+0809F8A4 Update6-A5Entity
+0809F908 Update6-A6Entity
+0809F9AC Update6-A7Entity
+0809F9DC Update6-A8Entity
+0809FEE0 Update6-A9Entity
+0809FF68 Update6-AAEntity
+080A00E0 Update6-ABEntity
+080A01C0 Update6-ACEntity
+080A048C Update6-ADEntity
+080A0554 Update6-AEEntity
+080A058C Update6-AFEntity
+080A066C Update6-B0Entity
+080A08AC Update6-B1Entity
+080A09A4 Update6-B2Entity
+080A0A34 Update6-B3Entity
+080A0B90 Update6-B4Entity
+080A0E28 Update6-B5Entity
+080A0E54 Update6-B6Entity
+080A0E98 Update6-B7Entity
+080A0F24 Update6-B8Entity
+080A1204 Update6-B9Entity
+080A16DC Update6-BAEntity
+080A20FC Update6-BBEntity
+080A2164 Update6-BCEntity
+080A225C Update6-BDEntity
+080A23A0 Update6-BEEntity
+080A2444 Update6-BFEntity
+080A2448 Update6-C0Entity
+080A2560 Update6-C1Entity
+
+0805E7BC Update7-00Entity
+0805FD24 Update7-01Entity
+0805FDC0 Update7-01EntityFusionScreen
+0805FDF8 Update7-02Entity
+0805FFA0 Update7-02EntityFusionScreen
+0805FFD8 Update7-03Entity
+080600A8 Update7-03EntityHead
+080603B4 Update7-03EntityFusionScreen
+080603FC Update7-04Entity
+0806097C Update7-04EntityFusionScreen
+080609E8 Update7-05Entity
+08061B8C Update7-06Entity
+08061C60 Update7-06EntityHead
+08062088 Update7-06EntityFusionScreen
+080620C8 Update7-07Entity
+08062834 Update7-07EntityHead
+08062A60 Update7-07EntityFusionScreen
+08063CF8 Update7-08Entity
+08063FAC Update7-08EntityHead
+08062AD8 Update7-09Entity
+08062B98 Update7-0AEntity
+08064508 Update7-0BEntity
+08064524 Update7-0BEntityHead
+08062CF0 Update7-0CEntity
+08062E20 Update7-0DEntity
+08062E60 Update7-0EEntity
+08062F70 Update7-0FEntity
+08062FF0 Update7-0FEntityHead
+080631E8 Update7-10Entity
+080632A8 Update7-11Entity
+080633E0 Update7-11EntityHead
+08063524 Update7-12Entity
+0806370C Update7-12EntityFusionScreen
+08063740 Update7-13Entity
+08063974 Update7-13EntityHead
+080639E8 Update7-13EntityFusionScreen
+08063A60 Update7-14Entity
+08063CC4 Update7-14EntityFusionScreen
+08063CF8 Update7-15Entity
+08063FAC Update7-15EntityHead
+08064508 Update7-16Entity
+08064524 Update7-16EntityHead
+08064790 Update7-17Entity
+08064860 Update7-17EntityFusionScreen
+08064890 Update7-18Entity
+08064960 Update7-18EntityFusionScreen
+08064990 Update7-19Entity
+08064A60 Update7-19EntityFusionScreen
+08064A90 Update7-1AEntity
+08064C6C Update7-1AEntityHead
+08064D18 Update7-1AEntityFusionScreen
+08064D58 Update7-1BEntity
+0806501C Update7-1BEntityFusionScreen
+08065054 Update7-1CEntity
+08065534 Update7-1DEntity
+080657A8 Update7-1DEntityHead
+080657DC Update7-1DEntityFusionScreen
+0806581C Update7-1EEntity
+08065960 Update7-1EEntityFusionScreen
+08065990 Update7-1FEntity
+08065B1C Update7-1FEntityFusionScreen
+08065B4C Update7-20Entity
+08065BA4 Update7-21Entity
+08065F90 Update7-21EntityFusionScreen
+08065FC0 Update7-22Entity
+080660A8 Update7-22EntityHead
+08066298 Update7-22EntityFusionScreen
+080662D8 Update7-23Entity
+080665E4 Update7-24Entity
+08066780 Update7-24EntityFusionScreen
+080667B0 Update7-25Entity
+08066948 Update7-25EntityFusionScreen
+08066978 Update7-26Entity
+08066A5C Update7-27Entity
+08066CB4 Update7-28Entity
+08066FD8 Update7-29Entity
+08067080 Update7-29EntityHead
+08067118 Update7-29EntityFusionScreen
+08067158 Update7-2AEntity
+08067228 Update7-2AEntityHead
+0806732C Update7-2AEntityFusionScreen
+08067380 Update7-2BEntity
+08067750 Update7-2BEntityFusionScreen
+080677B4 Update7-2CEntity
+08067DFC Update7-2CEntityFusionScreen
+08067E2C Update7-2DEntity
+080681E0 Update7-2DEntityHead
+08068270 Update7-2DEntityFusionScreen
+080682B0 Update7-2EEntity
+080686D4 Update7-2FEntity
+0806889C Update7-2FEntityHead
+0806897C Update7-2FEntityFusionScreen
+080689C0 Update7-30Entity
+08068F4C Update7-30EntityFusionScreen
+08068F98 Update7-31Entity
+080692A0 Update7-31EntityFusionScreen
+080692D0 Update7-32Entity
+08069514 Update7-32EntityFusionScreen
+08069544 Update7-33Entity
+08069784 Update7-34Entity
+08069AE8 Update7-34EntityHead
+08069B1C Update7-35Entity
+08069F2C Update7-35EntityHead
+0806A194 Update7-35EntityFusionScreen
+0806A1D8 Update7-36Entity
+0806A2B4 Update7-36EntityHead
+0806A358 Update7-37Entity
+0806ABC8 Update7-38Entity
+0806AE0C Update7-38EntityHead
+0806B184 Update7-38EntityFusionScreen
+0806B1CC Update7-39Entity
+0806B32C Update7-39EntityFusionScreen
+0806B3AC Update7-3AEntity
+0806B35C Update7-3AEntityHead
+0806B624 Update7-3AEntityFusionScreen
+0806B664 Update7-3BEntity
+0806B9D0 Update7-3CEntity
+0806B9F0 Update7-3DEntity
+0806BBE4 Update7-3EEntity
+0806BC64 Update7-3EEntityHead
+0806BCFC Update7-3EEntityFusionScreen
+0806BD54 Update7-3FEntity
+0806BDAC Update7-40Entity
+0806BE54 Update7-40EntityFusionScreen
+0806BF80 Update7-41Entity
+0806C0B0 Update7-42Entity
+0806C13C Update7-43Entity
+0806C1D4 Update7-43EntityFusionScreen
+0806C204 Update7-44Entity
+0806C2C4 Update7-45Entity
+0806C36C Update7-45EntityFusionScreen
+0806C39C Update7-46Entity
+0806C478 Update7-46EntityHead
+0806C510 Update7-46EntityFusionScreen
+0806C550 Update7-47Entity
+0806C5A8 Update7-48Entity
+0806C68C Update7-48EntityHead
+0806C738 Update7-48EntityFusionScreen
+0806C780 Update7-49Entity
+0806C888 Update7-49EntityHead
+0806CA94 Update7-49EntityFusionScreen
+0806CADC Update7-4AEntity
+0806CD70 Update7-4AEntityFusionScreen
+0806CDA8 Update7-4BEntity
+0806CEE8 Update7-4BEntityFusionScreen
+0806CF18 Update7-4CEntity
+0806D86C Update7-4DEntity
+0806D9D0 Update7-4EEntity
+0806DCD4 Update7-4EEntityFusionScreen
+0806DD44 Update7-4FEntity
+0806DD78 Update7-50Entity
+0806DED0 Update7-51Entity
+0806E278 Update7-52Entity
+0806E308 Update7-53Entity
+0806E3E4 Update7-53EntityHead
+0806E458 Update7-53EntityFusionScreen
+0806E4A0 Update7-54Entity
+0806E6E0 Update7-54EntityFusionScreen
+0806E710 Update7-55Entity
+0806E894 Update7-55EntityFusionScreen
+0806E8CC Update7-56Entity
+0806E8F8 Update7-56EntityHead
+0806E91C Update7-57Entity
+0806EAF4 Update7-58Entity
+0806EBAC Update7-58EntityHead
+0805E7BC Update7-59Entity
+0805E7BC Update7-5AEntity
+0805E7BC Update7-5BEntity
+0805E7BC Update7-5CEntity
+0805E7BC Update7-5DEntity
+0805E7BC Update7-5EEntity
+0805E7BC Update7-5FEntity
+0805E7BC Update7-60Entity
+0805E7BC Update7-61Entity
+0805E7BC Update7-62Entity
+0805E7BC Update7-63Entity
+0805E7BC Update7-64Entity
+0805E7BC Update7-65Entity
+0805E7BC Update7-66Entity
+0805E7BC Update7-67Entity
+0805E7BC Update7-68Entity
+0805E7BC Update7-69Entity
+0805E7BC Update7-6AEntity
+0805E7BC Update7-6BEntity
+0805E7BC Update7-6CEntity
+0805E7BC Update7-6DEntity
+0805E7BC Update7-6EEntity
+0805E7BC Update7-6FEntity
+0805E7BC Update7-70Entity
+0805E7BC Update7-71Entity
+0805E7BC Update7-72Entity
+0805E7BC Update7-73Entity
+0805E7BC Update7-74Entity
+0805E7BC Update7-75Entity
+0805E7BC Update7-76Entity
+0805E7BC Update7-77Entity
+0805E7BC Update7-78Entity
+0805E7BC Update7-79Entity
+0805E7BC Update7-7AEntity
+0805E7BC Update7-7BEntity
+0805E7BC Update7-7CEntity
+0805E7BC Update7-7DEntity
+0805E7BC Update7-7EEntity
+0805E7BC Update7-7FEntity
+
+0805E7BC Update8-00Entity
+080A7544 Update8-01Entity
+0801B188 Update8-02Entity
+0801B45C Update8-03Entity
+08018FCC Update8-04Entity
+080A2D74 Update8-05Entity
+08054A40 Update8-06Entity
+08056330 Update8-07Entity
+080ADA30 Update8-08Entity
+080704BC Update8-09Entity
+0805E7BC Update8-0AEntity
+0805E7BC Update8-0BEntity
+0801B898 Update8-0CEntity
+0801BEF8 Update8-0DEntity
+0801BA00 Update8-0EEntity
+08019480 Update8-0FEntity
+080ACBCC Update8-10Entity
+08018C88 Update8-11Entity
+080700E8 Update8-12Entity
+080ACF14 Update8-13Entity
+0805FBD0 Update8-14Entity
+080A306C Update8-15Entity
+08019480 Update8-16Entity
+08056328 Update8-17Entity
+0801BEF8 Update8-18Entity
+
+08057064 Update9-01Entity
+0805751C Update9-02Entity
+080576C0 Update9-03Entity
+08057854 Update9-04Entity
+08057AD0 Update9-05Entity
+08057CB4 Update9-06Entity
+08057D50 Update9-07Entity
+08057ED0 Update9-08Entity
+080581D8 Update9-09Entity
+08058380 Update9-0AEntity
+080585F0 Update9-0BEntity
+0805884C Update9-0CEntity
+08058DD0 Update9-0DEntity
+08058E60 Update9-0EEntity
+08058ECC Update9-0FEntity
+08059570 Update9-10Entity
+080599B8 Update9-11Entity
+080599EC Update9-12Entity
+08059DAC Update9-13Entity
+08059E58 Update9-14Entity
+0805A280 Update9-15Entity
+0805AB4C Update9-16Entity
+0805AD48 Update9-17Entity
+0805ADD8 Update9-18Entity
+0805AF60 Update9-19Entity
+0805B030 Update9-1AEntity
+0805B3B4 Update9-1BEntity
+0805B53C Update9-1CEntity
+0805B5C8 Update9-1DEntity
+0805B668 Update9-1EEntity
+0805B6F4 Update9-1FEntity
+0805B7A0 Update9-20Entity
+0805B820 Update9-21Entity
+0805B8EC Update9-22Entity
+0805BC74 Update9-23Entity
+0805BF18 Update9-24Entity
+0805C61C Update9-25Entity
+0805C6B8 Update9-26Entity
+0805C81C Update9-27Entity
+0805C934 Update9-28Entity
+0805CB90 Update9-29Entity
+0805CFC0 Update9-2AEntity
+0805D014 Update9-2BEntity
+0805D174 Update9-2CEntity
+0805D1FC Update9-2DEntity
+0805D250 Update9-2EEntity
+0805D3C8 Update9-2FEntity
+0805D4AC Update9-30Entity
+0805D630 Update9-31Entity
+0805D7A4 Update9-32Entity
+0805DAE8 Update9-33Entity
+0805DB94 Update9-34Entity
+0805DC84 Update9-35Entity
+0805DDB4 Update9-36Entity
+0805DE38 Update9-37Entity
+0805E0A8 Update9-38Entity
+0805E0FC Update9-39Entity
