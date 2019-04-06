@@ -253,6 +253,7 @@
       If this is a big chest, the position doesn't matter, instead it looks for the tile entity with a matching unknown1 to this entity's unknown4.
   0F Special effect
     Forms:
+      04 Rock being blown up
       11 Dust from rolling
       12 Sword tip sparkle
       32 Enemy struck
@@ -582,7 +583,16 @@
       A Link (being carried by Zeffa)
   9A Giant acorn
   9C tree you can bonk into maybe?
-  9D Bombable switch
+  9D Lightable switch
+    Forms:
+      0 Toggleable
+        params & FFFF0000 - Flag to toggle.
+      1 Temporary
+        params & FFFF0000 - Temporary flag.
+          This is set when you light this switch and unset a moment later.
+        params & 0000FFFF - Permanent flag.
+          Once this is set, this switch remains lit permanently.
+          A flag AND operator entity can be used to set this flag once multiple temporary flags are set.
   9F Fan
     params & 0000FFFF: Flag that must be set for this fan to activate.
     Forms:
@@ -993,6 +1003,8 @@
       & F000: Layer of the object once it's moved.
   23 Torch
     params & 00FF0000 - The torch will light up once this flag is set.
+  24 Bombable wall
+    Created by a bombable wall tile entity, does not need to be placed manually.
   26 Pushable object creator?
     Creates a number of 6-4C pushable objects.
     Form: A room property index.
@@ -1007,3 +1019,7 @@
         04,2: X pos of the entity to create.
         06,2: Y pos of the entity to create.
   28 kinstone fusion reward related?
+  2A Destructible tile entity monitor
+    One of these entities monitors all destructible tile entities in a room to see when the tile they're on is destroyed.
+    Once it is destroyed, this entity sets the local flag specified by that tile entity.
+    This entity does not need to be placed manually, as destructible tile entities will create one automatically.

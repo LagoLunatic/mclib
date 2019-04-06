@@ -197,6 +197,8 @@ class Docs:
     elif entity.type == 7 and entity.subtype == 0x0B:
       # TODO: correct behavior is to grab the current animation's current frame index and add 0x10
       return 0x10
+    elif entity.type == 6 and entity.subtype == 0x9D and entity.form == 1:
+      return 3
     
     if entity.type in ENTITY_TYPE_DOCS:
       type_data = ENTITY_TYPE_DOCS[entity.type]

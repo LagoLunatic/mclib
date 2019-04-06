@@ -3,9 +3,15 @@
   ; r0 - New 16x16 tile index to set
   ; r1 - Position of the tile, and index within the layer's 16x16 tile mapping
   ; r2 - Layer index
-080002B0 GetTile
+
+080002B0 GetTileType
   ; r0 - Position of the tile, and index within the layer's 16x16 tile mapping
   ; r1 - Layer index
+  ; Returns the current tile type for that tile
+0807B314 SetTileType
+  ; r0 - Tile type to set
+  ; r1 - Position of the tile, and index within the layer's 16x16 tile mapping
+  ; r2 - Layer index
 
 080002A0 GetTile???ByEntity
   ; r0 - Entity pointer
@@ -20,11 +26,6 @@
   ; r0 - Layer index
   ; If layer index is 2, return the BG1 layer data pointer, 0200B650.
   ; Otherwise, return the BG2 layer data pointer, 02025EB0.
-
-0807B314 SetTileAndCollision?
-  ; r0 - Tile to set? But what is this exactly? 16x16 tile index in the tileset? or something else? it's an index in list 0202BEB4? collision?
-  ; r1 - Position of the tile, and index within the layer's 16x16 tile mapping
-  ; r2 - Layer index
 
 0801AF8C DeleteLoadedTileEntity
   ; r0 - Bitfield of the tile entity's X and Y pos in 16x16 tiles
@@ -103,6 +104,14 @@
 08081450 CheckShouldPlayItemGetCutscene
   ; r0 - Item entity
   ; Returns true if an item get cutscene should play when the player walks into this item, or false if it should just appear above the player's head briefly like a rupee.
+
+08054754 CreateItemDrop
+  ; r0 - 
+  ; r1 - The item ID to try to drop.
+  ;   00 means drop no item.
+  ;   FC, FD, and FE mean drop a random kinstone piece (see 080FE1DD for which pieces).
+  ;   FF means drop a Beetle enemy instead.
+  ; r2 - 
 
 
 ;;; Scripting
@@ -503,11 +512,18 @@
 
 0804B1AC LoadRoomTileEntities
   ; r0 - Pointer to the room's tile entity list in ROM
-0804B29C LoadRoomTileEntity
+0804B290 LoadTileEntityType1
   ; r0 - Pointer to the tile entity in ROM
-
-0804B300 CreateTileEntityType4
+  ; Simply sets the local flag specified by the type 1 tile entity, in order to mark the room as visited.
+0804B29C LoadTileEntityType2
+  ; r0 - Pointer to the tile entity in ROM
+0804B300 LoadTileEntityType4
+  ; r0 - Pointer to the tile entity in ROM
   ; Creates a 9-24 entity.
+0804B334 LoadTileEntityType9
+  ; r0 - Pointer to the tile entity in ROM
+0804B340 LoadTileEntityTypeA
+  ; r0 - Pointer to the tile entity in ROM
 
 
 080524A8 CreatePlayerEntity

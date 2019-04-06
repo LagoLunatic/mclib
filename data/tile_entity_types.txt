@@ -1,16 +1,56 @@
 
-01 
+01 Room visit marker
+  params_a & FF: Local visit flag.
+  Simply sets the given flag the moment you enter the room in order to mark the room as visited on the map.
 02 Small chest
-  unknown1 - Regional flag for this chest being opened.
+  params_a & FF: Local open flag.
+  params_b & 00FF: Item ID.
+  params_b & FF00: Item param.
+  params_c & 003F: Tile X.
+  params_c & 0FC0: Tile Y.
+  params_d & 00FF: On BG1.
+    The chest will not be openable if the player is not on the same layer as the chest.
 03 Big chest
-  unknown1 - Regional flag for this chest being opened.
-04 ? place where you can jump down a ledge?
+  params_a & FF: Local open flag.
+  params_b & 00FF: Item ID.
+  params_b & FF00: Item param.
+  params_c & FFFF: X pos.
+  params_d & FFFF: Y pos.
+04 Bombable wall
+  params_a & FF: Local bombed flag.
+  params_b & 00FF: Layer index.
+  params_c & FFFF: X pos.
+  params_d & FFFF: Y pos.
 05 Sign
+  params_c & 003F: Tile X.
+  params_c & 0FC0: Tile Y.
+  params_d & FFFF: Message ID.
+  params_b & FF00: Unknown param 1.
 06 
-07 in upper left corner?
+07 Music setter?
+  params_b & FF00: BGM ID.
 08 
-09 
-0A ??? rocks, small trees, and other destroyable obstacles?
-0B 
-0C always in upper left corner?
-0D 
+09 Darkness
+  params_b & F000: Visibility.
+    This is an index in list 08108CA8.
+    This value can be considered the fraction out of 16 for how visible the unlit parts of the room are.
+    If this value is 0, the unlit parts are pure black.
+0A Destructible tile
+  This tile entity is responsible for making the tile stay destroyed permanently.
+  Without this entity the tile can be destroyed, but will respawn when leaving and coming back later.
+  params_a & FF: Layer index.
+  params_b & FFFF: Local destroyed flag.
+  params_c & 003F: Tile X.
+  params_c & 0FC0: Tile Y.
+  params_d & FFFF: Tile type.
+    1D Cracked rock
+    1F Sapling
+    26 Cracked block
+0B Grass drop changer
+  params_a & FF: Drop table.
+    Index in list 080015BC.
+0C ?
+  params_a & FF: Unknown param 1.
+    this is copied to 02033A91,1
+0D ? may be music related?
+  params_b & FF00: Unknown param 1
