@@ -1,4 +1,7 @@
 
+from mclib import docs
+from mclib.param_entity import ParamEntity
+
 class EntityList:
   def __init__(self, entity_list_ptr, name, room, rom):
     self.entity_list_ptr = entity_list_ptr
@@ -22,8 +25,10 @@ class EntityList:
       
       entity_ptr += 0x10
 
-class Entity:
+class Entity(ParamEntity):
   def __init__(self, entity_ptr, room, rom):
+    super().__init__()
+    
     self.entity_ptr = entity_ptr
     self.room = room
     self.rom = rom
@@ -38,19 +43,37 @@ class Entity:
     self.unknown_2 = unknowns & 0x0F
     self.unknown_3 = (unknowns & 0xF0) >> 4
     self.subtype = self.rom.read_u8(self.entity_ptr + 2)
-    self.form = self.rom.read_u8(self.entity_ptr + 3)
     
-    self.unknown_4 = self.rom.read_u8(self.entity_ptr + 4)
-    self.unknown_5 = self.rom.read_u8(self.entity_ptr + 5)
-    self.unknown_6 = self.rom.read_u8(self.entity_ptr + 6)
-    self.unknown_7 = self.rom.read_u8(self.entity_ptr + 7)
+    self.params_a = self.rom.read_u8(self.entity_ptr + 3)
+    self.params_b = self.rom.read_u32(self.entity_ptr + 4)
+    self.params_c = self.rom.read_u32(self.entity_ptr + 8)
+    self.params_d = self.rom.read_u32(self.entity_ptr + 0xC)
     
-    self.x_pos = self.rom.read_u16(self.entity_ptr + 8)
-    self.y_pos = self.rom.read_u16(self.entity_ptr + 0xA)
+    self.add_property("entity_ptr", 32, pretty_name="ROM Location")
+    self.add_property("type", 4)
+    self.add_property("unknown_1", 4)
+    self.add_property("unknown_2", 4)
+    self.add_property("unknown_3", 4)
+    self.add_property("subtype", 8)
     
-    self.params = self.rom.read_u32(self.entity_ptr + 0xC)
+    self.update_params()
+  
+  def update_params(self):
+    self.reset_params()
+    
+    self.add_param("form", "params_a", 0xFF)
+    
+    self.add_param("unknown_4", "params_b", 0x000000FF)
+    self.add_param("unknown_5", "params_b", 0x0000FF00)
+    self.add_param("unknown_6", "params_b", 0x00FF0000)
+    self.add_param("unknown_7", "params_b", 0xFF000000)
+    
+    self.add_param("x_pos", "params_c", 0x0000FFFF)
+    self.add_param("y_pos", "params_c", 0xFFFF0000)
+    
+    self.add_param("params", "params_d", 0xFFFFFFFF)
 
-class DelayedLoadEntityList(EntityList):
+class DelayedLoadEntityList:
   def __init__(self, entity_list_ptr, listed_entities_type, name, room, rom):
     self.entity_list_ptr = entity_list_ptr
     self.listed_entities_type = listed_entities_type
@@ -76,6 +99,8 @@ class DelayedLoadEntityList(EntityList):
 
 class DelayedLoadEntity(Entity):
   def __init__(self, entity_ptr, type, room, rom):
+    ParamEntity.__init__(self)
+    
     self.entity_ptr = entity_ptr
     self.type = type
     self.room = room
@@ -85,18 +110,35 @@ class DelayedLoadEntity(Entity):
   
   def read(self):
     self.subtype = self.rom.read_u8(self.entity_ptr + 0)
-    self.form = self.rom.read_u8(self.entity_ptr + 1)
-    self.unknown_4 = self.rom.read_u8(self.entity_ptr + 2)
-    unk = self.rom.read_u8(self.entity_ptr + 3) # TODO
-    self.x_pos = self.rom.read_u16(self.entity_ptr + 4)
-    self.y_pos = self.rom.read_u16(self.entity_ptr + 6)
-    self.params = self.rom.read_u32(self.entity_ptr + 8)
-    self.unknown_5 = self.rom.read_u16(self.entity_ptr + 0xC)
-    unk2 = self.rom.read_u16(self.entity_ptr + 0xE) # TODO
     
-    # TODO
-    self.unknown_1 = 0
-    self.unknown_2 = 0
-    self.unknown_3 = 0
-    self.unknown_6 = 0
-    self.unknown_7 = 0
+    self.params_a = self.rom.read_u8(self.entity_ptr + 1)
+    self.params_b = self.rom.read_u8(self.entity_ptr + 2)
+    self.layer_index = self.rom.read_u8(self.entity_ptr + 3)
+    self.params_c = self.rom.read_u32(self.entity_ptr + 4)
+    self.params_d = self.rom.read_u32(self.entity_ptr + 8)
+    self.params_e = self.rom.read_u16(self.entity_ptr + 0xC)
+    self.condition_bitfield = self.rom.read_u16(self.entity_ptr + 0xE) # TODO
+    
+    self.add_property("entity_ptr", 32, pretty_name="ROM Location")
+     # TODO make type non-editable, disable the dropdown somehow.
+    self.add_property("type", 4)
+    self.add_property("subtype", 8)
+    self.add_property("layer_index", 8)
+    self.add_property("condition_bitfield", 16, pretty_name="Conditions")
+    
+    self.update_params()
+  
+  def update_params(self):
+    self.reset_params()
+    
+    self.add_param("form", "params_a", 0xFF)
+    
+    self.add_param("unknown_4", "params_b", 0xFF)
+    
+    self.add_param("x_pos", "params_c", 0x0000FFFF)
+    self.add_param("y_pos", "params_c", 0xFFFF0000)
+    
+    self.add_param("params", "params_d", 0xFFFFFFFF)
+    
+    self.add_param("unknown_5", "params_e", 0x00FF)
+    self.add_param("padding_1", "params_e", 0xFF00)

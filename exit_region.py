@@ -1,8 +1,11 @@
 
 from mclib.exit import Exit
+from mclib.param_entity import ParamEntity
 
-class ExitRegion:
+class ExitRegion(ParamEntity):
   def __init__(self, region_ptr, rom):
+    super().__init__()
+    
     self.region_ptr = region_ptr
     self.rom = rom
     
@@ -30,4 +33,14 @@ class ExitRegion:
     self.half_width = self.rom.read_u8(self.region_ptr + 4)
     self.half_height = self.rom.read_u8(self.region_ptr + 5)
     self.exit_pointer_property_index = self.rom.read_u8(self.region_ptr + 6)
-    self.unknown_bitfield = self.rom.read_u8(self.region_ptr + 7) # TODO
+    self.unknown_1 = self.rom.read_u8(self.region_ptr + 7) # TODO figure this out, it's a bitfield
+    
+    self.add_property("region_ptr", 32, pretty_name="ROM Location")
+    self.add_property("center_x", 16)
+    self.add_property("center_y", 16)
+    self.add_property("half_width", 8)
+    self.add_property("half_height", 8)
+    self.add_property("exit_pointer_property_index", 8, pretty_name="Which Exit")
+    self.add_property("unknown_1", 8)
+    
+    # TODO: need to somehow display the exit as a child property

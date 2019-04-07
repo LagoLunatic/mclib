@@ -9,6 +9,10 @@ from mclib.tile_entity import TileEntity
 
 from paths import DATA_PATH
 
+import string
+
+ALLOWED_ATTR_NAME_CHARS = string.ascii_letters + string.digits + "_"
+
 def parse_doc(doc_str):
   doc_dict = OrderedDict()
   doc_dict["name"] = "ROOT"
@@ -146,6 +150,64 @@ class Docs:
             name += " " + subtype_data["properties"]["Forms"]["children"][entity.form]["name"]
     
     return name
+  
+  @staticmethod
+  def get_entity_param_properties(entity):
+    properties = []
+    
+    if isinstance(entity, Entity):
+      type_list = ENTITY_TYPE_DOCS["children"]
+      if entity.type in type_list:
+        type_data = type_list[entity.type]
+        if entity.subtype in type_data["children"]:
+          subtype_data = type_data["children"][entity.subtype]
+          properties += Docs.extract_param_properties_from_doc_list(subtype_data["properties"])
+          if "Forms" in subtype_data["properties"] and entity.form in subtype_data["properties"]["Forms"]["children"]:
+            form_data = subtype_data["properties"]["Forms"]["children"][entity.form]
+            properties += Docs.extract_param_properties_from_doc_list(form_data["properties"])
+    elif isinstance(entity, TileEntity):
+      type_list = TILE_ENTITY_TYPE_DOCS["children"]
+      if entity.type in type_list:
+        type_data = type_list[entity.type]
+        properties += Docs.extract_param_properties_from_doc_list(type_data["properties"])
+    
+    return properties
+  
+  @staticmethod
+  def extract_param_properties_from_doc_list(properties_doc_list):
+    properties = []
+    
+    for prop_str, prop_data in properties_doc_list.items():
+      match = re.search(r"^([a-z_][a-z0-9_]*) *& *([0-9a-f]{1,8})$", prop_str, re.IGNORECASE)
+      if match:
+        bitfield_name = match.group(1).lower()
+        bitmask = int(match.group(2), 16)
+        
+        prop_name = prop_data["name"]
+        if prop_name is None:
+          continue
+        prop_name = prop_name.replace(" ", "_").lower()
+        prop_name = "".join(
+          char for char in prop_name
+          if char in ALLOWED_ATTR_NAME_CHARS
+        )
+        if len(prop_name) == 0:
+          continue
+        if prop_name[0] in string.digits:
+          continue
+        
+        pretty_name = prop_data["name"]
+        pretty_name = pretty_name.replace(".", "")
+        pretty_name_words = pretty_name.split()
+        pretty_name_words = [
+          word[0].upper() + word[1:] # Capitalize first letter of each word
+          for word in pretty_name_words
+        ]
+        pretty_name = " ".join(pretty_name_words)
+        
+        properties.append((prop_name, bitfield_name, bitmask, pretty_name))
+    
+    return properties
   
   @staticmethod
   def get_best_sprite_frame(entity):
