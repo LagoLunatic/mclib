@@ -1,5 +1,6 @@
 
 import struct
+import array
 from io import BytesIO
 
 from mclib.gba_lz77 import GBALZ77
@@ -32,6 +33,21 @@ class DataInterface:
   def read_all_bytes(self):
     self.data.seek(0)
     return self.data.read()
+  
+  def read_all_u8s(self):
+    arr = array.array("B")
+    arr.fromstring(self.read_all_bytes())
+    return arr
+  
+  def read_all_u16s(self):
+    arr = array.array("H")
+    arr.fromstring(self.read_all_bytes())
+    return arr
+  
+  def read_all_u32s(self):
+    arr = array.array("I")
+    arr.fromstring(self.read_all_bytes())
+    return arr
   
   def decompress_read(self, offset):
     self.data.seek(offset)

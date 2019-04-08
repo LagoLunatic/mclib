@@ -56,52 +56,52 @@ class AssetList:
           #print("Layer data BG1")
           if self.layer_datas[1] is not None:
             raise Exception("Duplicate tile mapping for layer BG1")
-          self.layer_datas[1] = decompressed_data
+          self.layer_datas[1] = decompressed_data.read_all_u16s()
         elif ram_address == 0x02025EB4: # BG2 layer data
           #print("Layer data BG2")
           if self.layer_datas[2] is not None:
             raise Exception("Duplicate tile mapping for layer BG2")
-          self.layer_datas[2] = decompressed_data
+          self.layer_datas[2] = decompressed_data.read_all_u16s()
         elif ram_address == 0x02012654: # BG1 tileset
           #print("tileset BG1")
           if self.tileset_datas[1] is not None:
             raise Exception("Duplicate tileset for layer BG1")
-          self.tileset_datas[1] = decompressed_data
+          self.tileset_datas[1] = decompressed_data.read_all_u16s()
         elif ram_address == 0x0202CEB4: # BG2 tileset
           #print("tileset BG2")
           if self.tileset_datas[2] is not None:
             raise Exception("Duplicate tileset for layer BG2")
-          self.tileset_datas[2] = decompressed_data
+          self.tileset_datas[2] = decompressed_data.read_all_u16s()
         elif ram_address == 0x02002F00: # BG1 8x8 tile mapping
           #print("8x8 tile mapping BG1")
           if self.tile_mappings_8x8[1] is not None:
             raise Exception("Duplicate tile mapping for layer BG1")
-          self.tile_mappings_8x8[1] = decompressed_data
+          self.tile_mappings_8x8[1] = decompressed_data.read_all_u16s()
         elif ram_address == 0x02019EE0: # BG2 8x8 tile mapping
           #print("8x8 tile mapping BG2")
           if self.tile_mappings_8x8[2] is not None:
             raise Exception("Duplicate tile mapping for layer BG2")
-          self.tile_mappings_8x8[2] = decompressed_data
+          self.tile_mappings_8x8[2] = decompressed_data.read_all_u16s()
         elif ram_address == 0x0600F000: # BG3 8x8 tile mapping
           #print("8x8 tile mapping BG3")
           if self.tile_mappings_8x8[3] is not None:
             raise Exception("Duplicate tile mapping for layer BG3")
-          self.tile_mappings_8x8[3] = decompressed_data
+          self.tile_mappings_8x8[3] = decompressed_data.read_all_u16s()
         elif ram_address == 0x02010654: # BG1 tileset tile type data
           #print("BG1 tile type tileset")
           if self.tileset_tile_types_datas[1] is not None:
             raise Exception("Duplicate BG1 tile type tileset found")
-          self.tileset_tile_types_datas[1] = decompressed_data
+          self.tileset_tile_types_datas[1] = decompressed_data.read_all_u16s()
         elif ram_address == 0x0202AEB4: # BG2 tileset tile type data
           #print("BG2 tile type tileset")
           if self.tileset_tile_types_datas[2] is not None:
             raise Exception("Duplicate BG2 tile type tileset found")
-          self.tileset_tile_types_datas[2] = decompressed_data
+          self.tileset_tile_types_datas[2] = decompressed_data.read_all_u16s()
         elif ram_address == 0x02027EB4: # BG2 collision layer data
           #print("BG2 collision layer data")
           if self.collision_layer_datas[2] is not None:
             raise Exception("Duplicate BG2 collision layer data found")
-          self.collision_layer_datas[2] = decompressed_data
+          self.collision_layer_datas[2] = decompressed_data.read_all_u8s()
         else:
           print(
             "UNKNOWN ASSET TYPE: %08X -> %08X (len: %04X) (compressed: %s)" % (

@@ -70,16 +70,16 @@ class Renderer:
     if tileset_data is None:
       return None
     
-    tileset_height = (len(tileset_data)+7)//8
+    tileset_height = (len(tileset_data)+3)//4
     tileset_image = Image.new("RGBA", (16*16, tileset_height), (255, 255, 255, 0))
     
     cached_tile_images_by_tile_attrs = {}
-    for tile_index_16x16 in range(len(tileset_data)//8):
+    for tile_index_16x16 in range(len(tileset_data)//4):
       tile_x = tile_index_16x16 % 16
       tile_y = tile_index_16x16 // 16
       
       for tile_8x8_i in range(4):
-        tile_attrs = tileset_data.read_u16(tile_index_16x16*8 + tile_8x8_i*2)
+        tile_attrs = tileset_data[tile_index_16x16*4 + tile_8x8_i]
         
         if tile_attrs in cached_tile_images_by_tile_attrs:
           tile_image = cached_tile_images_by_tile_attrs[tile_attrs]
@@ -142,9 +142,8 @@ class Renderer:
     room_width_in_16x16_tiles = room.width//16
     
     cached_tile_images_by_16x16_index = {}
-    for i in range(len(layer_datas)//2):
-      layer_data_offset = i*2
-      tile_index_16x16 = layer_datas.read_u16(layer_data_offset)
+    for i in range(len(layer_data)):
+      tile_index_16x16 = layer_data[i]
       
       if tile_index_16x16 in cached_tile_images_by_16x16_index:
         tile_image = cached_tile_images_by_16x16_index[tile_index_16x16]
@@ -201,19 +200,13 @@ class Renderer:
     return tile_image
   
   def render_gfx_mapped(self, gfx_data, tile_mapping_8x8_data, palettes, color_mode=16):
-    #with open("gfx.bin", "wb") as f:
-    #  f.write(gfx_data)
-    #with open("map.bin", "wb") as f:
-    #  f.write(tile_mapping_8x8_data)
-    #self.export_palettes(palettes)
-    
     self.MAX_8x8_TILES_PER_ROW = 32
     
-    image_height = (len(tile_mapping_8x8_data)+7)//8
+    image_height = (len(tile_mapping_8x8_data)+3)//4
     image = Image.new("RGBA", (self.MAX_8x8_TILES_PER_ROW*8, image_height), (255, 255, 255, 0))
     
-    for tile_i in range(len(tile_mapping_8x8_data)//2):
-      tile_attrs = tile_mapping_8x8_data.read_u16(tile_i*2)
+    for tile_i in range(len(tile_mapping_8x8_data)):
+      tile_attrs = tile_mapping_8x8_data[tile_i]
       
       tile_image = self.render_tile_by_tile_attrs(tile_attrs, gfx_data, palettes, color_mode=color_mode)
       
@@ -757,7 +750,7 @@ class Renderer:
   
   def render_world_map(self):
     gfx_data = self.rom.read_raw(0x08934FE0, 0x4000)
-    tile_mapping_8x8_data = self.rom.read_raw(0x08938FE0, 0x500)
+    tile_mapping_8x8_data = self.rom.read_raw(0x08938FE0, 0x500).read_all_u16s()
     palettes = self.generate_palettes_from_palette_group_by_index(0xB9)
     
     map_image = self.render_gfx_mapped(gfx_data, tile_mapping_8x8_data, palettes)
