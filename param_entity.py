@@ -50,7 +50,10 @@ class ParamEntity:
     self.add_property(param_name, num_bits, pretty_name=pretty_param_name)
   
   def __getattr__(self, attr_name):
-    if attr_name != "property_params" and attr_name in self.property_params:
+    if attr_name in ["property_params", "properties"]:
+      return super(self.__class__, self).__getattribute__(attr_name)
+    
+    if attr_name in self.property_params:
       params_field_name, bit_mask = self.property_params[attr_name]
       params = self.__getattribute__(params_field_name)
       amount_to_shift, _ = self.get_first_bit_index_and_num_bits(bit_mask)
@@ -59,14 +62,21 @@ class ParamEntity:
       return super(self.__class__, self).__getattribute__(attr_name)
   
   def __setattr__(self, attr_name, value):
-    if attr_name != "property_params" and attr_name in self.property_params:
+    if attr_name in ["property_params", "properties"]:
+      super().__setattr__(attr_name, value)
+      return
+      
+    if attr_name in self.property_params:
       params_field_name, bit_mask = self.property_params[attr_name]
       params = self.__getattribute__(params_field_name)
       amount_to_shift, _ = self.get_first_bit_index_and_num_bits(bit_mask)
       params = (params & (~bit_mask)) | ((value << amount_to_shift) & bit_mask)
       super().__setattr__(params_field_name, params)
+    elif attr_name in self.properties:
+      prop = self.properties[attr_name]
+      value = value & ((1 << prop.num_bits) - 1)
+      super().__setattr__(attr_name, value)
     else:
-      #self.__dict__[attr_name] = value
       super().__setattr__(attr_name, value)
   
   @property
