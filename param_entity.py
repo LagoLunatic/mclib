@@ -75,6 +75,8 @@ class ParamEntity:
       return self.x_pos
     elif hasattr(self, "tile_x"):
       return self.tile_x*0x10
+    elif hasattr(self, "center_x"):
+      return self.center_x
     else:
       return self._dummy_x
   
@@ -84,6 +86,8 @@ class ParamEntity:
       self.x_pos = value
     elif hasattr(self, "tile_x"):
       self.tile_x = value//0x10
+    elif hasattr(self, "center_x"):
+      self.center_x = value
     else:
       self._dummy_x = value
   
@@ -93,6 +97,8 @@ class ParamEntity:
       return self.y_pos
     elif hasattr(self, "tile_y"):
       return self.tile_y*0x10
+    elif hasattr(self, "center_y"):
+      return self.center_y
     else:
       return self._dummy_y
   
@@ -102,6 +108,8 @@ class ParamEntity:
       self.y_pos = value
     elif hasattr(self, "tile_y"):
       self.tile_y = value//0x10
+    elif hasattr(self, "center_y"):
+      self.center_y = value
     else:
       self._dummy_y = value
   
