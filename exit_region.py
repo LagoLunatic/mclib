@@ -44,3 +44,13 @@ class ExitRegion(ParamEntity):
     self.add_property("unknown_1", 8)
     
     # TODO: need to somehow display the exit as a child property
+  
+  def save(self):
+    self.rom.write_u16(self.region_ptr + 0, self.center_x)
+    self.rom.write_u16(self.region_ptr + 2, self.center_y)
+    self.rom.write_u8(self.region_ptr + 4, self.half_width)
+    self.rom.write_u8(self.region_ptr + 5, self.half_height)
+    self.rom.write_u8(self.region_ptr + 6, self.exit_pointer_property_index)
+    self.rom.write_u8(self.region_ptr + 7, self.unknown_1)
+    
+    self.exit.save()

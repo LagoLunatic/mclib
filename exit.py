@@ -40,3 +40,18 @@ class Exit(ParamEntity):
     self.add_property("unknown_4", 8)
     self.add_property("unknown_5", 16)
     self.add_property("padding_1", 16)
+  
+  def save(self):
+    self.rom.write_u16(self.exit_ptr + 0, self.transition_type)
+    self.rom.write_u16(self.exit_ptr + 2, self.x_pos)
+    self.rom.write_u16(self.exit_ptr + 4, self.y_pos)
+    self.rom.write_u16(self.exit_ptr + 6, self.dest_x)
+    self.rom.write_u16(self.exit_ptr + 8, self.dest_y)
+    self.rom.write_u8(self.exit_ptr + 0xA, self.screen_edge)
+    self.rom.write_u8(self.exit_ptr + 0xB, self.dest_area)
+    self.rom.write_u8(self.exit_ptr + 0xC, self.dest_room)
+    self.rom.write_u8(self.exit_ptr + 0xD, self.unknown_2)
+    self.rom.write_u8(self.exit_ptr + 0xE, self.unknown_3)
+    self.rom.write_u8(self.exit_ptr + 0xF, self.unknown_4)
+    self.rom.write_u16(self.exit_ptr + 0x10, self.unknown_5)
+    self.rom.write_u16(self.exit_ptr + 0x12, self.padding_1)

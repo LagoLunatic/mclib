@@ -58,6 +58,18 @@ class Entity(ParamEntity):
     
     self.update_params()
   
+  def save(self):
+    type_and_unknowns = (self.type & 0x0F) | ((self.unknown_1 << 4) & 0xF0)
+    self.rom.write_u8(self.entity_ptr + 0, type_and_unknowns)
+    unknowns = (self.unknown_2 & 0x0F) | ((self.unknown_3 << 4) & 0xF0)
+    self.rom.write_u8(self.entity_ptr + 1, unknowns)
+    self.rom.write_u8(self.entity_ptr + 2, self.subtype)
+    
+    self.rom.write_u8(self.entity_ptr + 3, self.params_a)
+    self.rom.write_u32(self.entity_ptr + 4, self.params_b)
+    self.rom.write_u32(self.entity_ptr + 8, self.params_c)
+    self.rom.write_u32(self.entity_ptr + 0xC, self.params_d)
+  
   def update_params(self):
     self.reset_params()
     
@@ -127,6 +139,16 @@ class DelayedLoadEntity(Entity):
     self.add_property("condition_bitfield", 16, pretty_name="Conditions")
     
     self.update_params()
+  
+  def save(self):
+    self.rom.write_u8(self.entity_ptr + 0, self.subtype)
+    self.rom.write_u8(self.entity_ptr + 1, self.params_a)
+    self.rom.write_u8(self.entity_ptr + 2, self.params_b)
+    self.rom.write_u8(self.entity_ptr + 3, self.layer_index)
+    self.rom.write_u32(self.entity_ptr + 4, self.params_c)
+    self.rom.write_u32(self.entity_ptr + 8, self.params_d)
+    self.rom.write_u16(self.entity_ptr + 0xC, self.params_e)
+    self.rom.write_u16(self.entity_ptr + 0xE, self.condition_bitfield)
   
   def update_params(self):
     self.reset_params()
