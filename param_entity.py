@@ -71,47 +71,72 @@ class ParamEntity:
   
   @property
   def x(self):
-    if hasattr(self, "x_pos"):
-      return self.x_pos
-    elif hasattr(self, "tile_x"):
+    if "x_pos" in self.properties:
+      prop = self.properties["x_pos"]
+      return ParamEntity.sign_extend(self.x_pos, prop.num_bits)
+    elif "tile_x" in self.properties:
       return self.tile_x*0x10
-    elif hasattr(self, "center_x"):
-      return self.center_x
+    elif "center_x" in self.properties:
+      prop = self.properties["center_x"]
+      return ParamEntity.sign_extend(self.center_x, prop.num_bits)
     else:
       return self._dummy_x
   
   @x.setter
   def x(self, value):
-    if hasattr(self, "x_pos"):
+    if "x_pos" in self.properties:
+      prop = self.properties["x_pos"]
+      value = value & ((1 << prop.num_bits) - 1)
       self.x_pos = value
-    elif hasattr(self, "tile_x"):
+    elif "tile_x" in self.properties:
+      if value < 0:
+        value = 0
+      if value > 0x3FF:
+        value = 0x3FF
       self.tile_x = value//0x10
-    elif hasattr(self, "center_x"):
+    elif "center_x" in self.properties:
+      prop = self.properties["center_x"]
+      value = value & ((1 << prop.num_bits) - 1)
       self.center_x = value
     else:
       self._dummy_x = value
   
   @property
   def y(self):
-    if hasattr(self, "y_pos"):
-      return self.y_pos
-    elif hasattr(self, "tile_y"):
+    if "y_pos" in self.properties:
+      prop = self.properties["y_pos"]
+      return ParamEntity.sign_extend(self.y_pos, prop.num_bits)
+    elif "tile_y" in self.properties:
       return self.tile_y*0x10
-    elif hasattr(self, "center_y"):
-      return self.center_y
+    elif "center_y" in self.properties:
+      prop = self.properties["center_y"]
+      return ParamEntity.sign_extend(self.center_y, prop.num_bits)
     else:
       return self._dummy_y
   
   @y.setter
   def y(self, value):
-    if hasattr(self, "y_pos"):
+    if "y_pos" in self.properties:
+      prop = self.properties["y_pos"]
+      value = value & ((1 << prop.num_bits) - 1)
       self.y_pos = value
-    elif hasattr(self, "tile_y"):
+    elif "tile_y" in self.properties:
+      if value < 0:
+        value = 0
+      if value > 0x3FF:
+        value = 0x3FF
       self.tile_y = value//0x10
-    elif hasattr(self, "center_y"):
+    elif "center_y" in self.properties:
+      prop = self.properties["center_y"]
+      value = value & ((1 << prop.num_bits) - 1)
       self.center_y = value
     else:
       self._dummy_y = value
+  
+  @staticmethod
+  def sign_extend(value, num_bits):
+    sign_bit = 1 << (num_bits - 1)
+    return (value & (sign_bit - 1)) - (value & sign_bit)
   
   @staticmethod
   def get_first_bit_index_and_num_bits(bit_mask):
