@@ -42,7 +42,7 @@
   params_b & FFFF: Local destroyed flag.
   params_c & 003F: Tile X.
   params_c & 0FC0: Tile Y.
-  params_d & FFFF: Tile type.
+  params_d & FFFF: Destroyed tile type.
     1D Cracked rock
     1F Sapling
     26 Cracked block

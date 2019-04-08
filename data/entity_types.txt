@@ -195,7 +195,18 @@
   00 Item on the ground
     Form: The item ID.
     unknown4: The item parameter (number of shells or which kinstone).
-    unknown5: ?? index in list 0811E7E8
+    unknown5: ?? index in list 0811E7E8, and in list 0811E814. behavior type?
+      0 Unused?
+      1 Unused?
+      2 Unused?
+      3 Unused?
+      4 Normal
+      5 Unused?
+      6 Unused?
+      7 Appears when the tile under it changes
+      8 Underwater
+      9 Unused?
+      A Unused?
   02 Item for sale
     Form: The item ID.
   03 Button

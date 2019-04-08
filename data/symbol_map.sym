@@ -13,12 +13,14 @@
   ; r1 - Position of the tile, and index within the layer's 16x16 tile mapping
   ; r2 - Layer index
 
-080002A0 GetTile???ByEntity
+080002A0 GetTileTypeByEntity
   ; r0 - Entity pointer
-080002A4 GetTile???ByPos
+  ; Returns the current tile type for the tile under that entity
+080002A4 GetTileTypeByPos
   ; r0 - X pos in pixels
   ; r1 - Y pos in pixels
   ; r2 - Layer index (index in list 08000228)
+  ; Returns the current tile type for the tile under that position
 080002E4 GetTile??????
   ; r0 - 
 
