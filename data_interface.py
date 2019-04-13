@@ -13,6 +13,9 @@ class DataInterface:
     data_length = self.data.seek(0, 2)
     return data_length
   
+  def max_offset(self):
+    return len(self)
+  
   def copy(self):
     self.data.seek(0)
     copy_data = self.data.read()
@@ -24,15 +27,19 @@ class DataInterface:
     unpacked_data = struct.unpack(format_string, requested_data)
     return unpacked_data
   
+  def read_bytes(self, offset, length):
+    self.data.seek(offset)
+    return self.data.read(length)
+  
+  def read_all_bytes(self):
+    self.data.seek(0)
+    return self.data.read()
+  
   def read_raw(self, offset, length):
     self.data.seek(offset)
     requested_data = self.data.read(length)
     requested_data_interface = DataInterface(requested_data)
     return requested_data_interface
-  
-  def read_all_bytes(self):
-    self.data.seek(0)
-    return self.data.read()
   
   def read_all_u8s(self):
     arr = array.array("B")
@@ -53,9 +60,16 @@ class DataInterface:
     self.data.seek(offset)
     # Read everything that remains in the data since we don't yet know how much is compressed
     compressed_data = self.data.read()
-    decompressed_data = GBALZ77.decompress(compressed_data)
+    decompressed_data, compr_length = GBALZ77.decompress(compressed_data)
+    print("READ %08X %08X" % (offset, compr_length))
     decompressed_data_interface = DataInterface(decompressed_data)
     return decompressed_data_interface
+  
+  def compress_write(self, offset, decompressed_data):
+    # TODO: need to throw error if new compressed data is larger than orig. or try to get free space.
+    compressed_data = GBALZ77.compress(decompressed_data)
+    print("WRITE %08X %08X" % (offset, len(compressed_data)))
+    self.write_bytes(offset, compressed_data)
   
   def write(self, offset, new_values, format_string):
     new_bytes = struct.pack(format_string, *new_values)
@@ -109,6 +123,22 @@ class DataInterface:
   
   def read_s32(self, offset):
     return self.read(offset, 4, "i")[0]
+  
+  def read_str(self, offset):
+    temp_offset = offset
+    str_length = 0
+    while temp_offset <= self.max_offset():
+      byte = self.read_u8(temp_offset)
+      if byte == 0:
+        break
+      else:
+        str_length += 1
+      temp_offset += 1
+    
+    str = self.read_bytes(offset, str_length).decode("ascii")
+    
+    return str
+
 
 class InvalidAddressError(Exception):
   pass
@@ -124,11 +154,21 @@ class RomInterface(DataInterface):
       return False
   
   
+  def max_offset(self):
+    return len(self) + 0x08000000
+  
   def read(self, address, length, format_string):
     if not self.is_pointer(address):
       raise InvalidAddressError("%08X is not a valid ROM address." % address)
     offset = address-0x08000000
     return super().read(offset, length, format_string)
+  
+  def read_bytes(self, address, length):
+    if not self.is_pointer(address):
+      raise InvalidAddressError("%08X is not a valid ROM address." % address)
+    offset = address-0x08000000
+    self.data.seek(offset)
+    return self.data.read(length)
   
   def read_raw(self, address, length):
     if not self.is_pointer(address):
