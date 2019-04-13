@@ -68,9 +68,10 @@
       1 Corrupted
   16 Business Scrub
     Forms:
-      3 Grip ring scrub
-      5 Empty bottle scrub
-      6 The one at the bottom of Mount Crenal that tells you about the empty bottle one
+      0 Sells arrows
+      3 Sells Grip Ring
+      5 Sells Empty Bottle
+      6 Tells you about Empty Bottle scrub
       This is an index in list 080CC954.
     params & FFFF0000 - Flag for having reflected a Deku Nut back at it.
   17 Rupee Like
@@ -99,6 +100,9 @@
   28 Fire Wizzrobe
   29 Ice Wizzrobe
   2A Armos
+    Forms:
+      0 Normal
+      1 Dashes forward to block the way
   2B Eyegore Statue
   2C Rope
   2D Small Pesto
@@ -433,7 +437,7 @@
       Add 4 to this to get the animation index?
     unknown5 - Unique ID of this minecart.
       Index in list 080FCAF8.
-  57 in middle of hyrule field? maybe pitfall?
+  57 Hidden ladder down
   58 Curtains in Gentari's room
   59 Platform on lava
   5A ?
@@ -519,7 +523,10 @@
   6E Mineral water source
   6F Minish-sized archway
     Form: The sprite frame index to use.
-  71 grave
+  71 Pushable grave
+    Forms:
+      0 Large
+      1 Small
   73 Lily pad (small)
   74 might set a flag when enemies die?
     params & FFFF0000 - flag
@@ -593,7 +600,8 @@
       9 Zeffa (drops off Link)
       A Link (being carried by Zeffa)
   9A Giant acorn
-  9C tree you can bonk into maybe?
+  9C Tree hiding a Minish Portal
+    Need to bonk into the tree with Pegasus boots to reveal the portal.
   9D Lightable switch
     Forms:
       0 Toggleable
@@ -753,7 +761,10 @@
       1 ?
       2 ?
       3 ?
-  2B castor wilds statue
+  2B Castor Wilds Statue/Slab
+    Forms:
+      0 Statue
+      1 Slab
   2C Cat
     Forms:
       1 Brown cat 1
@@ -965,10 +976,14 @@
       The property is a pointer to the list of entities to load.
     "Y pos" - Number of frames to wait after the flag is set before spawning the entities.
     unknown4 - ? If nonzero, do ??? at 08058E94 as soon as the flag is set.
-  0F ? Might be responsible for Ezlo hints?
-    unknown4 - Room flag?
-    params & 0000FFFF - Flag required for this hint event to start.
-    params & FFFF0000 - Flag for having seen this hint event.
+  0F (multiple things)
+    Forms:
+      ? Ezlo hint?
+        unknown4 - Room flag?
+        params & 0000FFFF - Flag required for this hint event to start.
+        params & FFFF0000 - Flag for having seen this hint event.
+      9 Tile despawner
+        params & FFFF0000 - Flag to check and despawn the tile when it's set.
   11 Flag AND operator
     params & FFFF0000 - Flags to check.
     params & 0000FFFF - Flag to set once all the flags to check are set.

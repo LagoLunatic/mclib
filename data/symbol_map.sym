@@ -819,6 +819,19 @@
 08050624 LoadSaveFile
   ; r0 - Save file index
 
+0807D0A0 ValidateChecksumCorrect?
+  ; r0 - Pointer on the stack to the existing checksum? and a 4 char string after the checksum
+  ; r1 - Pointer to data
+  ; r2 - Data length
+0807D1A4 CalculateChecksum
+  ; r0 - Pointer to data
+  ; r1 - Data length
+  ; Returns a 16-bit checksum.
+  ; This is how to calculate the checksum:
+  ;   checksum = 0
+  ;   for each halfword in data:
+  ;     checksum += (halfword ^ data_length_remaining)
+
 
 03005F40 UpdateAllEntities
 

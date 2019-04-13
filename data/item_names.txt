@@ -14,7 +14,7 @@
 0D Small Shield
 0E Mirror Shield
 0F Flame Lantern
-10 Flame Lantern (Fire) (Owning this makes the pause screen crash the game)
+10 Bugged Flame Lantern?
 11 Gust Jar
 12 Cane of Pacci
 13 Mole Mitts
@@ -26,11 +26,11 @@
 19 
 1A 
 1B 
-1C Empty Bottle (1?)
-1D Empty Bottle (2?)
-1E Empty Bottle (3?)
-1F Empty Bottle (4?)
-20 Empty Bottle (5?)
+1C Empty Bottle 1
+1D Empty Bottle 2
+1E Empty Bottle 3
+1F Empty Bottle 4
+20 Empty Bottle 5?
 21 Butter
 22 Lon Lon Milk
 23 ?? (sprite looks like a bottled something? half full of milk?)
