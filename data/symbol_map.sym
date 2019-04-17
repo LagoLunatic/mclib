@@ -61,8 +61,8 @@
 0800293E CheckPlayerInRegion
   ; r0 - Center X pos
   ; r1 - Center Y pos
-  ; r2 - Width (on either side of the center)
-  ; r3 - Height (above or below the center)
+  ; r2 - Half width (on either side of the center)
+  ; r3 - Half height (above or below the center)
 
 
 ;;; Items
@@ -154,9 +154,9 @@
 0807E004 ScriptCommand01StartInit
 0807E014 ScriptCommand02EndInit
 0807E024 ScriptCommand03Jump
-0807E050 ScriptCommand04IfCondition
-0807E064 ScriptCommand05IfNotCondition
-0807E078 ScriptCommand06???Condition
+0807E050 ScriptCommand04JumpIfCondition
+0807E064 ScriptCommand05JumpIfNotCondition
+0807E078 ScriptCommand06JumpIf???
 0807E0A0 ScriptCommand07
 0807E0B8 ScriptCommand08
 0807E0CC ScriptCommand09
@@ -164,43 +164,43 @@
 0807E10C ScriptCommand0BExecFunction
 0807E124 ScriptCommand0CExecFunctionWithArg
 0807E148 ScriptCommand0DLoadRoomEntityList
-0807E158 ScriptCommand0E
-0807E188 ScriptCommand0F
-0807E1D8 ScriptCommand10
-0807E4AC ScriptCommand11
-0807E200 ScriptCommand12
-0807E220 ScriptCommand13
-0807E240 ScriptCommand14CheckBitInEventBitfield
-0807E260 ScriptCommand15
+0807E158 ScriptCommand0ECheck???Bit
+0807E188 ScriptCommand0FCheckItemOwned
+0807E1D8 ScriptCommand10CheckItemFormerlyOwned
+0807E4AC ScriptCommand11Check???
+0807E200 ScriptCommand12CheckLocalFlag
+0807E220 ScriptCommand13CheckLocalFlagByOffset
+0807E240 ScriptCommand14CheckGlobalFlag
+0807E260 ScriptCommand15CheckRoomFlag
 0807E280 ScriptCommand16CheckPlayerInRegion
 0807E2A8 ScriptCommand17
 0807E2E4 ScriptCommand18
-0807E30C ScriptCommand19
-0807E390 ScriptCommand1A
-0807E3BC ScriptCommand1B
-0807E3E8 ScriptCommand1C
-0807E40C ScriptCommand1D
+0807E30C ScriptCommand19FaceTowardsPlayerAndCheck???
+0807E390 ScriptCommand1ACheckNumRupeesOwned
+0807E3BC ScriptCommand1BCheckNumMysteriousShellsOwned
+0807E3E8 ScriptCommand1CCheck???
+0807E40C ScriptCommand1DCheckKinstoneFused
 0807E42C ScriptCommand1E
 0807E48C ScriptCommand1F
 0807E4CC ScriptCommand20
 0807E4EC ScriptCommand21
 0807E514 ScriptCommand22
 0807E538 ScriptCommand23
-0807E564 ScriptCommand24Check???PlayerState
-0807E584 ScriptCommand25
-0807E5A0 ScriptCommand26
+0807E564 ScriptCommand24CheckPlayerMinishSized
+0807E584 ScriptCommand25Check???
+0807E5A0 ScriptCommand26CheckPlayerState
 0807E5CC ScriptCommand27
 0807E5F8 ScriptCommand28
 0807E610 ScriptCommand29
 0807E628 ScriptCommand2ASetLocalFlag
 0807E634 ScriptCommand2BSetLocalFlagByOffset
-0807E644 ScriptCommand2C
+0807E644 ScriptCommand2CClearLocalFlag
 0807E650 ScriptCommand2DSetGlobalFlag
-0807E65C ScriptCommand2E
+0807E65C ScriptCommand2EClearGlobalFlag
 0807E668 ScriptCommand2FSetRoomFlag
-0807E674 ScriptCommand30
+0807E674 ScriptCommand30ClearRoomFlag
 0807E680 ScriptCommand31
-0807E690 ScriptCommand32
+0807E690 ScriptCommand32Check02033280BitAndDo???
 0807E6AC ScriptCommand33
 0807E6DC ScriptCommand34
 0807E700 ScriptCommand35
@@ -227,8 +227,8 @@
 0807E8E4 ScriptCommand4A
 0807E8E4 ScriptCommand4B
 0807E8E4 ScriptCommand4C
-0807E908 ScriptCommand4D
-0807E914 ScriptCommand4E
+0807E908 ScriptCommand4DSetThisEntityState
+0807E914 ScriptCommand4ESetExtraArgument
 0807E924 ScriptCommand4F
 0807E930 ScriptCommand50
 0807E944 ScriptCommand51
@@ -240,9 +240,9 @@
 0807EA4C ScriptCommand57
 0807EA88 ScriptCommand58
 0807EA94 ScriptCommand59
-0807EAB4 ScriptCommand5A
+0807EAB4 ScriptCommand5AShowMessage
 0807EAC0 ScriptCommand5B
-0807EAD0 ScriptCommand5C
+0807EAD0 ScriptCommand5CShowMessageAnd???
 0807EAF0 ScriptCommand5D
 0807EB18 ScriptCommand5E
 0807EB28 ScriptCommand5F
@@ -250,29 +250,29 @@
 0807EB44 ScriptCommand61SetAnimOffset
 0807EB4C ScriptCommand62
 0807EB74 ScriptCommand63FaceTowardsPlayer
-0807EB8C ScriptCommand64
+0807EB8C ScriptCommand64MakePlayerFaceThis
 0807EBA8 ScriptCommand65
 0807EBB0 ScriptCommand66
 0807EBC0 ScriptCommand67
 0807EBC8 ScriptCommand68
-0807EBD8 ScriptCommand69
+0807EBD8 ScriptCommand69SetThisEntityPosition
 0807EBF4 ScriptCommand6A
 0807EC08 ScriptCommand6B
-0807EC18 ScriptCommand6C
+0807EC18 ScriptCommand6CNop
 0807EC1C ScriptCommand6D
 0807EC64 ScriptCommand6E
 0807EC94 ScriptCommand6F
 0807ECC4 ScriptCommand70
 0807ECF4 ScriptCommand71
 0807ED24 ScriptCommand72
-0807EDD4 ScriptCommand73
+0807EDD4 ScriptCommand73WaitFor???
 0807EE04 ScriptCommand74
-0807EE30 ScriptCommand75
-0807EEB4 ScriptCommand76
+0807EE30 ScriptCommand75Check???
+0807EEB4 ScriptCommand76WaitFor???
 0807EEF4 ScriptCommand77
 0807EF3C ScriptCommand78
-0807EF80 ScriptCommand79
-0807EF90 ScriptCommand7A
+0807EF80 ScriptCommand79SetCurrCutsceneBit?
+0807EF90 ScriptCommand7ASetCurrCutsceneBit2?
 0807EFA0 ScriptCommand7B
 0807EFAC ScriptCommand7C
 0807EFD4 ScriptCommand7D
@@ -285,17 +285,17 @@
 0807F060 ScriptCommand84CheckItemOwned
 0807F078 ScriptCommand85SetOwnedItemInfo
 0807F088 ScriptCommand86GiveItem???
-0807F098 ScriptCommand87
-0807F0A4 ScriptCommand88
+0807F098 ScriptCommand87CenterScreenOnThis
+0807F0A4 ScriptCommand88CenterScreenOnPlayer
 0807F0B4 ScriptCommand89
 0807F0C8 ScriptCommand8A
 ; All of the above script commands take the following arguments:
-  ; r0 - Pointer to the entity that started this cutscene? (in list 03001160)
+  ; r0 - Pointer to the entity that started this cutscene (in list 03001160)
   ; r1 - Cutscene entity pointer (e.g. 02036570)
 
 
 
-0807F6F8 UnsetPlayerState?
+0807F6F8 UnsetPlayerStateBit?
   ; r0 - Pointer to a cutscene entity (e.g. 02036570)
   ; This function reads the word at [r0+4], and clears any of those bits from the bitfield of player states (03003FB0).
 
@@ -306,12 +306,12 @@
   ; r3 - Pointer to the list of visual zones in ROM to check
   ; Returns true if there is a visual zone on screen at the moment.
 
-080045C4 GetNPCFacingDirection?
-  ; r0 - NPC entity
-  ; r1 - Entity to face towards (e.g. 03001160 for the player)
+080045C4 GetFacingDirection?
+  ; r0 - Entity
+  ; r1 - Entity to face towards
   ; Returns an index in list 08114F58
-0806F5B0 GetNPCFacingDirectionAnimOffset?
-  ; r0 - Return value from GetNPCFacingDirection?
+0806F5B0 GetFacingDirectionAnimOffset?
+  ; r0 - Return value from GetFacingDirection
   ; Returns the animation index offset for this facing direction, read from 08114F58
 
 
@@ -732,6 +732,10 @@
   ; Breakpoint on 0805EF34 and look in r1 to get a pointer to the message string.
 080563EC CreateMessageEntity?
   ; r0 - Message ID
+
+0805EF8C MessageCommandGetNextByte?
+  ; r0 - ? pointer in RAM
+  ; Reads the next byte in the message string, increments the pointer in the message string currently being read by 1, returns the read byte
 
 0806F1AC ShowNPCDialogue?
   ; r0 - Entity pointer in RAM?

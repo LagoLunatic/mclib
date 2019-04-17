@@ -860,7 +860,7 @@
       5 ?
       A ?
   4D Cap Ezlo
-  4E ?? no graphics
+  4E Cap Ezlo...?
   4F Clothes rack
   50 Beedle's Picolyte Bottles
   52 Small Town Minish
