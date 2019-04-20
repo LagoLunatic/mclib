@@ -17,6 +17,7 @@ class Area:
     area_metadata_pointer = 0x08127D30 + self.area_index*4
     bitfield = self.rom.read_u8(area_metadata_pointer + 0)
     self.area_id = self.rom.read_u8(area_metadata_pointer + 1)
+    self.local_flag_offset_index = self.rom.read_u8(area_metadata_pointer + 2)
     self.is_dungeon = (bitfield & 0x08) == 0x08
     self.is_overworld = bitfield == 0x81
     if self.is_dungeon:
