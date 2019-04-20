@@ -8,6 +8,7 @@ from mclib.exit import Exit
 from mclib.assets import AssetList
 from mclib.exit_region import ExitRegion
 from mclib.visual_zone import VisualZone, VisualZoneData
+from mclib.cutscene import Cutscene
 
 class Room:
   def __init__(self, room_index, area, rom):
@@ -109,6 +110,7 @@ class Room:
     
     # Whenever we add an entity list, we have to check all the entities in it to see if they load any more entity lists.
     for entity in entity_list.entities:
+      # Check if it's a manager entity that spawns more entities.
       if entity.type == 9 and entity.subtype == 0xB and entity.form == 0:
         prop_index = entity.unknown_4
         prop_ptr = self.read_prop_ptr(prop_index)
@@ -134,6 +136,14 @@ class Room:
           else:
             listed_entities_type = 6
           self.read_one_delayed_load_entity_list(prop_ptr, listed_entities_type, "Delayed load entities")
+      
+      # Also check if it's an entity that starts a cutscene which spawns more entities.
+      if entity.has_cutscene:
+        cutscene = Cutscene(entity.params, self.rom)
+        for command in cutscene.commands:
+          if command.type == 0x0D: # LoadRoomEntityList
+            entity_list_ptr = (command.arguments[1] << 16) | command.arguments[0]
+            self.read_one_entity_list(entity_list_ptr, "Cutscene entities")
   
   def read_one_delayed_load_entity_list(self, entity_list_ptr, listed_entities_type, name):
     if any(el.entity_list_ptr == entity_list_ptr for el in self.entity_lists):

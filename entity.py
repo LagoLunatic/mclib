@@ -84,6 +84,10 @@ class Entity(ParamEntity):
     self.add_param("y_pos", "params_c", 0xFFFF0000)
     
     self.add_param("params", "params_d", 0xFFFFFFFF)
+  
+  @property
+  def has_cutscene(self):
+    return (self.unknown_3 == 4)
 
 class DelayedLoadEntityList:
   def __init__(self, entity_list_ptr, listed_entities_type, name, room, rom):
@@ -164,3 +168,7 @@ class DelayedLoadEntity(Entity):
     
     self.add_param("unknown_5", "params_e", 0x00FF)
     self.add_param("padding_1", "params_e", 0xFF00)
+  
+  @property
+  def has_cutscene(self):
+    return (self.params != 0)
