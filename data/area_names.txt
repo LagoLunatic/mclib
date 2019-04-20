@@ -55,13 +55,13 @@
 36 ???
 37 ???
 38 Ezlo's Workshop
-39 
-3A 
-3B 
-3C 
-3D 
-3E 
-3F 
+39 [Invalid]
+3A [Invalid]
+3B [Invalid]
+3C [Invalid]
+3D [Invalid]
+3E [Invalid]
+3F [Invalid]
 40 Unused Mini-Dungeon
 41 Hyrule Town Well Cave
 42 Hyrule Castle Garden Caves
@@ -73,66 +73,66 @@
 48 Deepwood Shrine
 49 Deepwood Shrine Boss Room
 4A Deepwood Shrine Entrance
-4B 
-4C 
+4B [Invalid]
+4C [Invalid]
 4D Prototype Deepwood Shrine
-4E 
-4F 
+4E [Invalid]
+4F [Invalid]
 50 Cave of Flames
 51 Cave of Flames Boss Room
-52 
-53 
-54 
-55 
-56 
+52 [Invalid]
+53 [Invalid]
+54 [Invalid]
+55 [Invalid]
+56 [Invalid]
 57 Prototype Cave of Flames
 58 Fortress of Winds
 59 Top of Fortress of Winds
 5A Inside Mazaal
-5B 
-5C 
-5D 
-5E 
+5B [Invalid]
+5C [Invalid]
+5D [Invalid]
+5E [Invalid]
 5F Prototype Fortress of Winds
 60 Temple of Droplets
-61 
+61 ???
 62 Royal Hyrule Library Sewer
-63 
-64 
-65 
-66 
+63 [Invalid]
+64 [Invalid]
+65 [Invalid]
+66 [Invalid]
 67 Prototype Temple of Droplets
 68 Royal Crypt
-69 
-6A 
-6B 
-6C 
-6D 
-6E 
+69 [Invalid]
+6A [Invalid]
+6B [Invalid]
+6C [Invalid]
+6D [Invalid]
+6E [Invalid]
 6F Prototype Royal Crypt
 70 Palace of Winds
 71 Palace of Winds Boss Room
-72 
-73 
-74 
-75 
-76 
+72 [Invalid]
+73 [Invalid]
+74 [Invalid]
+75 [Invalid]
+76 [Invalid]
 77 Prototype Palace of Winds
 78 Elemental Sanctuary
-79 
-7A 
-7B 
-7C 
-7D 
-7E 
+79 [Invalid]
+7A [Invalid]
+7B [Invalid]
+7C [Invalid]
+7D [Invalid]
+7E [Invalid]
 7F Prototype Elemental Sanctuary
 80 Hyrule Castle
 81 (room leading up to where you forge the four sword)
-82 
-83 
-84 
-85 
-86 
+82 [Invalid]
+83 [Invalid]
+84 [Invalid]
+85 [Invalid]
+86 [Invalid]
 87 Prototype Hyrule Castle
 88 Dark Hyrule Castle
 89 Dark Hyrule Castle (Outside)
@@ -140,5 +140,5 @@
 8B Unused Vaati's Wrath Arena?
 8C Vaati's Wrath Arena
 8D Dark Hyrule Castle Bridge
-8E 
+8E [Invalid]
 8F Prototype Dark Hyrule Castle

@@ -213,6 +213,7 @@
       A Unused?
   02 Item for sale
     Form: The item ID.
+    unknown4: The item parameter.
   03 Button
     params & FFFF0000 - Flag to set when pressed
     Form: usually 0. for the buttons that burn the vines to the rotating barrel in deepwood, this is 1 instead. and the flag to set is just 00.
@@ -251,7 +252,7 @@
         3 - Invalid?
       & 10 - ?
       & 80 - ??
-  0B Item cutscene? created automatically
+  0B Item get cutscene? (created automatically)
     Form: The item ID.
     unknown4: The item param for shells and kinstones.
     unknown5: Affects what the cutscene does?
@@ -496,6 +497,8 @@
       12 Gold Kinstone Piece
       17 Tablet in Elemental Sanctuary?
       1C One of the Four Elements
+      29 Biggoron related?
+      2A Biggoron related?
   6B Crenal bean sprout
     Forms:
       0 Hole to put the green sprout in
@@ -928,6 +931,7 @@
   0A [Nothing]
   0B [Nothing]
   0E Bottle
+    unknown4: Item ID of the bottle's contents.
 
 09 Manager
   03 Minish Portal

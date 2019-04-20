@@ -30,10 +30,10 @@
 1D Empty Bottle 2
 1E Empty Bottle 3
 1F Empty Bottle 4
-20 Empty Bottle 5?
+20 No Bottle Contents
 21 Butter
 22 Lon Lon Milk
-23 ?? (sprite looks like a bottled something? half full of milk?)
+23 Lon Lon Milk (1/2)
 24 Red Potion
 25 Blue Potion
 26 Water
@@ -85,9 +85,9 @@
 54 Green Rupee
 55 Blue Rupee
 56 Red Rupee
-57 Big Green Rupee (50 Rupees)
-58 Big Blue Rupee (100 Rupees)
-59 Big Red Rupee (200 Rupees)
+57 Big Green Rupee
+58 Big Blue Rupee
+59 Big Red Rupee
 5A 
 5B Jabber Nut
 5C Kinstone Piece
@@ -95,7 +95,7 @@
 5E 5 Arrows
 5F Heart
 60 Fairy
-61 Mysterious Shells (how does this differ from 3F?)
+61 30 Mysterious Shells (Bought)
 62 Heart Container
 63 Heart Piece
 64 Big Wallet

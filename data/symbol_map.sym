@@ -22,7 +22,8 @@
   ; r2 - Layer index (index in list 08000228)
   ; Returns the current tile type for the tile under that position
 080002E4 GetTile??????
-  ; r0 - 
+  ; r0 - Tile type
+  ; Returns ??? from either list 080B37A0 or 080B3910
 
 0808094C GetLayerDataByIndex
   ; r0 - Layer index
@@ -114,6 +115,17 @@
   ;   FC, FD, and FE mean drop a random kinstone piece (see 080FE1DD for which pieces).
   ;   FF means drop a Beetle enemy instead.
   ; r2 - 
+
+08054464 SetBottleContents
+  ; r0 - Item ID of the bottle contents to set
+  ; r1 - Index of the bottle (0-3)
+
+08053FD0 GetShopConfirmBuyMessageIDForItem
+  ; r0 - Item ID
+  ; Returns the message ID for the shopkeeper to say when you bring that item up to them.
+08053FE0 GetShopPriceForItem
+  ; r0 - Item ID
+  ; Returns the number of rupees the item costs.
 
 
 ;;; Scripting
@@ -240,14 +252,14 @@
 0807EA4C ScriptCommand57
 0807EA88 ScriptCommand58
 0807EA94 ScriptCommand59
-0807EAB4 ScriptCommand5AShowMessage
-0807EAC0 ScriptCommand5B
-0807EAD0 ScriptCommand5CShowMessageAnd???
-0807EAF0 ScriptCommand5D
-0807EB18 ScriptCommand5E
-0807EB28 ScriptCommand5F
+0807EAB4 ScriptCommand5AShowMessageNoOverlapCameraFollowEntity
+0807EAC0 ScriptCommand5BShowMessageNoOverlapEntity
+0807EAD0 ScriptCommand5CShowMessageNoOverlapCameraFollowEntityAnd???
+0807EAF0 ScriptCommand5DShowMessageNoOverlapCameraFollowEntityAnd???2
+0807EB18 ScriptCommand5EShowMessageNoOverlapEntityFromExtraArgument
+0807EB28 ScriptCommand5FShowMessageAlternate???
 0807EB38 ScriptCommand60
-0807EB44 ScriptCommand61SetAnimOffset
+0807EB44 ScriptCommand61FacingDirection
 0807EB4C ScriptCommand62
 0807EB74 ScriptCommand63FaceTowardsPlayer
 0807EB8C ScriptCommand64MakePlayerFaceThis
@@ -730,16 +742,27 @@
   ; r0 - Pointer to ?
   ; r1 - Message ID.
   ; Breakpoint on 0805EF34 and look in r1 to get a pointer to the message string.
-080563EC CreateMessageEntity?
+
+080563EC ShowMessage
   ; r0 - Message ID
+08056378 ShowMessageNoOverlapCameraFollowEntity
+  ; r0 - Message ID
+  ; Calls ShowMessageNoOverlapEntity with the entity being whatever entity the camera is currently set to follow.
+08056398 ShowMessageNoOverlapEntity
+  ; r0 - Message ID
+  ; r1 - Entity to avoid the text box overlapping
+
+08078AA8 ShowMessageAlternate???
+  ; r0 - Message ID
+  ; r1 - ? 0?
 
 0805EF8C MessageCommandGetNextByte?
   ; r0 - ? pointer in RAM
   ; Reads the next byte in the message string, increments the pointer in the message string currently being read by 1, returns the read byte
 
-0806F1AC ShowNPCDialogue?
-  ; r0 - Entity pointer in RAM?
-  ; r1 - An entry in list 08109DC8
+0806F1AC ShowNPCDialogue
+  ; r0 - Entity pointer in RAM of the NPC
+  ; r1 - Pointer to an NPC dialogue entry in ROM
 
 080A4CBC CreateDescriptionMessageForFigurine?
   ; r0 - Figurine ID
