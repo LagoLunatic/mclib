@@ -123,21 +123,6 @@ class DataInterface:
   
   def read_s32(self, offset):
     return self.read(offset, 4, "i")[0]
-  
-  def read_str(self, offset):
-    temp_offset = offset
-    str_length = 0
-    while temp_offset <= self.max_offset():
-      byte = self.read_u8(temp_offset)
-      if byte == 0:
-        break
-      else:
-        str_length += 1
-      temp_offset += 1
-    
-    str = self.read_bytes(offset, str_length).decode("ascii")
-    
-    return str
 
 
 class InvalidAddressError(Exception):
