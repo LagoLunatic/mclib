@@ -112,7 +112,7 @@ class Room:
     for entity in entity_list.entities:
       # Check if it's a manager entity that spawns more entities.
       if entity.type == 9 and entity.subtype == 0xB and entity.form == 0:
-        prop_index = entity.unknown_4
+        prop_index = entity.room_property_index
         prop_ptr = self.read_prop_ptr(prop_index)
         self.read_one_entity_list(prop_ptr, "One-off enemies")
       elif entity.type == 9 and entity.subtype == 0xE:
@@ -131,7 +131,7 @@ class Room:
           # TODO: area 0x15 has some delayed load entity lists full of garbage entities
           continue
         if prop_ptr != 0:
-          if entity.unknown_5 == 0:
+          if entity.which_type == 0:
             listed_entities_type = 7
           else:
             listed_entities_type = 6
@@ -139,7 +139,7 @@ class Room:
       
       # Also check if it's an entity that starts a cutscene which spawns more entities.
       if entity.has_cutscene:
-        cutscene = Cutscene(entity.params, self.rom)
+        cutscene = Cutscene(entity.cutscene_pointer, self.rom)
         for command in cutscene.commands:
           if command.type == 0x0D: # LoadRoomEntityList
             entity_list_ptr = (command.arguments[1] << 16) | command.arguments[0]

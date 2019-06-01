@@ -117,8 +117,8 @@ class Game:
         for entity_list in room.entity_lists:
           for entity in entity_list.entities:
             if entity.unknown_3 == 4 or entity.type == 7:
-              if entity.params != 0:
-                all_cutscene_ptrs_for_room.append(entity.params)
+              if entity.cutscene_pointer != 0:
+                all_cutscene_ptrs_for_room.append(entity.cutscene_pointer)
             if entity.type == 7 and entity.subtype == 3: # Minish
               cutscene_ptr = self.rom.read_u32(0x08109D18 + entity.unknown_4*4)
               all_cutscene_ptrs_for_room.append(cutscene_ptr)

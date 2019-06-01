@@ -73,7 +73,7 @@
       5 Sells Empty Bottle
       6 Tells you about Empty Bottle scrub
       This is an index in list 080CC954.
-    params & FFFF0000 - Flag for having reflected a Deku Nut back at it.
+    params_d & FFFF0000: Flag for having reflected a Deku Nut back at it.
   17 Rupee Like
     Forms:
       0 Green Rupee
@@ -117,10 +117,10 @@
       0 Normal
       1 Corrupted
     Params might affect the region the enemy is allowed to roam freely within?
-      Params & 0000FFFF - Left X of the rectangle the enemy is allowed within.
-      Params & FFFF0000 - Top Y of the rectangle the enemy is allowed within.
-      unknown6 - Width in 8x8 tiles of the rectangle the enemy is allowed within.
-      unknown7 - Height in 8x8 tiles of the rectangle the enemy is allowed within.
+    params_d & 0000FFFF: Area X.
+    params_d & FFFF0000: Area Y.
+    params_b & 00FF0000: Area width.
+    params_b & FF000000: Area height.
   31 Crow
   32 Mulldozer
     Forms:
@@ -187,7 +187,7 @@
     or spiky dust that covers something up
     params & FFFF0000 is something, maybe a flag
   15 Spider web
-    params & FFFF0000 - Flag for this web being destroyed.
+    params_d & FFFF0000: Flag for this web being destroyed.
   1D Winder
   1E roller trap?
   22 part of Gyorg Pair fight?
@@ -198,8 +198,8 @@
 06 Object
   00 Item on the ground
     Form: The item ID.
-    unknown4: The item parameter (number of shells or which kinstone).
-    unknown5: ?? index in list 0811E7E8, and in list 0811E814. behavior type?
+    params_b & 000000FF: The item parameter (number of shells or which kinstone).
+    params_b & 0000FF00: ?? index in list 0811E7E8, and in list 0811E814. behavior type?
       0 Unused?
       1 Unused?
       2 Unused?
@@ -213,19 +213,19 @@
       A Unused?
   02 Item for sale
     Form: The item ID.
-    unknown4: The item parameter.
+    params_b & 000000FF: The item parameter.
   03 Button
-    params & FFFF0000 - Flag to set when pressed
+    params_d & FFFF0000: Flag to set when pressed
     Form: usually 0. for the buttons that burn the vines to the rotating barrel in deepwood, this is 1 instead. and the flag to set is just 00.
   05 Pot
     Form: The item ID.
       00 Random
-    unknown4:
+    params_b & 000000FF:
       0 Normal
       1 This pot stays permanently destroyed
       2 The item inside this pot does not respawn
-    unknown5 - The parameter of the item (number of shells or which kinstone).
-    params & FFFF0000 - Flag.
+    params_b & 0000FF00: The parameter of the item (number of shells or which kinstone).
+    params_d & FFFF0000: Flag.
       For type 1 this flag means the pot is destroyed.
       For type 2 it means the item inside is taken.
   07 Block being pushed
@@ -236,7 +236,7 @@
       3 4x4
     Don't place this manually. The game engine creates it automatically when you push a block tile.
   08 Locked door
-    params & FFFF0000 - Flag for this door being unlocked.
+    params_d & FFFF0000: Flag for this door being unlocked.
     Form: Bitfield.
       & 03 - Frame index.
         0 - Down facing
@@ -254,16 +254,16 @@
       & 80 - ??
   0B Item get cutscene? (created automatically)
     Form: The item ID.
-    unknown4: The item param for shells and kinstones.
-    unknown5: Affects what the cutscene does?
+    params_b & 000000FF: The item param for shells and kinstones.
+    params_b & 0000FF00: Affects what the cutscene does?
   0C Chest spawner
     Forms:
       0 Small chest 1?
       1 Small chest 2?
       2 Big chest (appears)
       4 Big chest
-    params & FFFF0000 - Flag for the chest appearing.
-    unknown4 - Regional flag for this chest being opened.
+    params_d & FFFF0000: Flag for the chest appearing.
+    params_b & 000000FF: Regional flag for this chest being opened.
     The item ID is stored in the matching tile entity chest.
       If this is a small chest, it looks for the tile entity on the same tile as this entity.
       If this is a big chest, the position doesn't matter, instead it looks for the tile entity with a matching unknown1 to this entity's unknown4.
@@ -274,10 +274,10 @@
       12 Sword tip sparkle
       32 Enemy struck
   13 Rotatable railtrack
-    unknown4 - Affects the default direction the track is in.
+    params_b & 000000FF: Affects the default direction the track is in.
       0 - Default vertical.
       2 - Default horizontal.
-    params & FFFF0000 - Flag to check.
+    params_d & FFFF0000: Flag to check.
   14 Lily pad (large)
   16 Floating platform
     Forms:
@@ -312,7 +312,7 @@
   2D smoke from smith's chimney?
   2E Pushable rock
   2F Hittable lever
-    params & FFFF0000 - Flag to set/unset when flipped.
+    params_d & FFFF0000: Flag to set/unset when flipped.
   32 Pullable mushroom
   33 Tall bar blocking the way
   34 Warp point
@@ -320,16 +320,16 @@
       0 Blue
       1 Red
       2 Green
-    unknown4 - Dest area index.
-    unknown5 - Dest room index.
-    params & 0000003F - Dest X pos. (In 16x16 tiles.)
-    params & 00000FC0 - Dest Y pos. (In 16x16 tiles.)
-    params & FFFF0000 - Spawn flag.
+    params_b & 000000FF: Dest area index.
+    params_b & 0000FF00: Dest room index.
+    params_d & 0000003F: Dest X pos. (In 16x16 tiles.)
+    params_d & 00000FC0: Dest Y pos. (In 16x16 tiles.)
+    params_d & FFFF0000: Spawn flag.
   36 something inside the big barrel room? (48-20)
   38 Big jar Minish portal
     Only acts as a Minish portal when upside down.
     Can be flipped with Cane of Pacci.
-    unknown4: If this is nonzero, the pot starts out upside down. Otherwise it starts rightside up.
+    params_b & 000000FF: If this is nonzero, the pot starts out upside down. Otherwise it starts rightside up.
     Form: Local event flag for this jar being flipped compared to its starting state.
   39 Boss door
     Form: Bitfield.
@@ -342,7 +342,7 @@
       & FC - Type.
         0 - Has big key hole
         1 - No big key hole
-    params & FFFF0000 - Flag for opening it?
+    params_d & FFFF0000: Flag for opening it?
   3B Mushrooms when shrinking?
   3C Link falling down when shrinking?
   3E Decoration?
@@ -358,7 +358,7 @@
   41 Ladder up
   46 Giant book ladder
   47 Heart container
-    params & 0000FFFF - Picked up flag
+    params_d & 0000FFFF: Picked up flag
   4A Background cloud
   4C Pushable object
     Forms:
@@ -366,8 +366,8 @@
       1 Crate
       2 Wardrobe
       3 Shelf
-    unknown4: 
-    unknown5: X offset (signed) this object must be pushed before it will set its flag for having been permanently pushed.
+    params_b & 000000FF: 
+    params_b & 0000FF00: X offset (signed) this object must be pushed before it will set its flag for having been permanently pushed.
   4D Furniture
     Forms:
       00 Bookshelf
@@ -409,34 +409,34 @@
       41 Ezlo's bookshelf
       42 Ezlo's staves & leaf
       43 Ezlo's books & buttons
-    unknown4: The sprite frame index to use, but only for certain forms?
+    params_b & 000000FF: The sprite frame index to use, but only for certain forms?
     Note that there's a list of form data for each piece of furniture, 08121EF8.
       The form is the index in that list.
       Then some forms have further sublists for each unknown4.
       Each entry's data includes stuff like the visual X and Y offset to use.
   4E Minish sized entrance
-    unknown4: Direction.
+    params_b & 000000FF: Direction.
       0 - Down facing
       1 - Left facing
       2 - Up facing
       3 - Right facing
-    unknown5: A room property index.
+    params_b & 0000FF00: Room property index.
       The property is a pointer to the exit data.
   4F Archway
-    unknown4: The sprite frame index to use.
+    params_b & 000000FF: The sprite frame index to use.
   50 Giant foreground rock
     Forms:
       0 Pointing right
       1 Pointing left
   54 Pullable lever
-    params & FFFF0000 - Flag to set.
+    params_d & FFFF0000: Flag to set.
   55 Minecart
     form - ?
-    unknown4 - Orientation.
+    params_b & 000000FF: Orientation.
       0 - Up/down
       1 - Left/right
       Add 4 to this to get the animation index?
-    unknown5 - Unique ID of this minecart.
+    params_b & 0000FF00: Unique ID of this minecart.
       Index in list 080FCAF8.
   57 Hidden ladder down
   58 Curtains in Gentari's room
@@ -454,13 +454,13 @@
       3 ???
       4 Green with window
       5 Blue with window
-    unknown4 - Direction. Th sprite frame index to use. (Only if form is 0-1.)
+    params_b & 000000FF: Direction. Th sprite frame index to use. (Only if form is 0-1.)
       0 Down facing
       1 Left facing
       2 Up facing
       3 Right facing
-    unknown5 - ?
-    params & FFFF0000 - Variable type flag to check. The door disappears once it's set.
+    params_b & 0000FF00: ?
+    params_d & FFFF0000: Variable type flag to check. The door disappears once it's set.
       Can be 0 to check no flag.
   5E Whirlwind
   5F Object blocking hidden stairs
@@ -485,7 +485,6 @@
       3 ?
   65 Ladder hole in bookshelf
   69 Cutscene?
-    params - pointer to a cutscene script
   6A Special item?
     Forms:
       01 Mage's Cap
@@ -513,8 +512,8 @@
       3 Lever (left)
       4 Bugged red orb?
       5 Bugged red orb?
-    params & 0000FFFF - flag
-    params & FFFF0000 - flag
+    params_d & 0000FFFF: flag
+    params_d & FFFF0000: flag
     Small chest:
       form = 1
       unknown4-7 = 20482088
@@ -532,7 +531,7 @@
       1 Small
   73 Lily pad (small)
   74 might set a flag when enemies die?
-    params & FFFF0000 - flag
+    params_d & FFFF0000: flag
   77 Bell in Hyrule Town
   78 Giant foreground decorations
     Forms:
@@ -542,7 +541,7 @@
       3 Water sausage
   7A Steam coming up off the top of the cave of flames
   7B Pushable lever
-    params & FFFF0000: Flag to set?
+    params_d & FFFF0000: Flag to set?
   7C Huge shoes
     Forms:
       0 Two red shoes
@@ -559,12 +558,12 @@
       3 Red
       4 Blue
       5 Yellow
-    unknown4:
+    params_b & 000000FF:
       0 Bloomed
       1 Unbloomed
   82 Big vortex
   83 Big pushable lever
-    params & FFFF0000: Flag to set?
+    params_d & FFFF0000: Flag to set?
   84 Small ice block
     Forms:
       0 Normal
@@ -608,22 +607,22 @@
   9D Lightable switch
     Forms:
       0 Toggleable
-        params & FFFF0000 - Flag to toggle.
+        params_d & FFFF0000: Flag to toggle.
       1 Temporary
-        params & FFFF0000 - Temporary flag.
+        params_d & FFFF0000: Temporary flag.
           This is set when you light this switch and unset a moment later.
-        params & 0000FFFF - Permanent flag.
+        params_d & 0000FFFF: Permanent flag.
           Once this is set, this switch remains lit permanently.
           A flag AND operator entity can be used to set this flag once multiple temporary flags are set.
   9F Fan
-    params & 0000FFFF: Flag that must be set for this fan to activate.
+    params_d & 0000FFFF: Flag that must be set for this fan to activate.
     Forms:
       0 Facing down
       1 Facing left
       2 Facing up
       3 Facing right
   A1 Archway in Palace of Winds
-    unknown4: The sprite frame index to use.
+    params_b & 000000FF: The sprite frame index to use.
   A3 cloud?
   A4 Minish's light
     Forms:
@@ -637,15 +636,15 @@
     Form: The item ID.
   AE Floating block
   B0 Big metal door
-    params & 0000FFFF - Flag to check for being unlocked?
-    params & FFFF0000 - Flag to check for being unlocked?
+    params_d & 0000FFFF: Flag to check for being unlocked?
+    params_d & FFFF0000: Flag to check for being unlocked?
   B1 Jail bars
   B7 Well
   B8 ? in Wind Tribe home
   BA Handles the Gyorg Pair fight?
     Also hardcodes BG3 to have a character base block of 1 instead of the usual 0.
   BB Wind Crest Stone Marker
-    unknown4: Which Wind Crest it should unlock when crumbled.
+    params_b & 000000FF: Which Wind Crest it should unlock when crumbled.
       0 Mount Crenal
       1 Veil Falls
       2 Cloud Tops
@@ -657,19 +656,17 @@
   BC Lit area in a dark room
   BE Pinwheel
   C0 Item carried by an enemy
-    unknown5: The item ID.
-    unknown4: The enemy subtype to latch onto?
-    params & FFFF0000: Flag for getting this item.
-    Form: Unused? Just gets overwritten by unknown5.
+    params_b & 0000FF00: The item ID.
+    params_b & 000000FF: The enemy subtype to latch onto?
+    params_d & FFFF0000: Flag for getting this item.
+    Form: Unused? Just gets overwritten by the item ID.
     The enemy for it to latch onto must have its X and Y pos be close to this item's X and Y pos.
     Specifically, both X and Y must be at most 16 pixels less than this item, and at most 15 pixels greater than this item.
     If it doesn't find any matching enemy, the item will just be on the ground.
 
 07 NPC
-  params - Pointer to the first cutscene script command.
-    Can be 0.
   unknown1 - seen 0 and 1 here
-  unknown5 - default direction to face?
+  params_b & 0000FF00: default direction to face?
     00 Up
     01 Right
     02 Down
@@ -678,7 +675,7 @@
   01 Gentari
   02 Festari
   03 Forest Minish
-    unknown4 - index in list 08109D18 of the script to run.
+    params_b & 000000FF: index in list 08109D18 of the script to run.
   04 Postman
   05 Unused Zelda follower?
   06 Townsperson
@@ -736,7 +733,7 @@
       3 ?
       4 ?
       5 (unused?)
-    unknown5 & 01:
+    params_b & 00000100: Direction.
       0 Facing left
       1 Facing right
   14 Pina
@@ -798,7 +795,7 @@
       6 Splitblade
       7 Greatblade
   31 Cow
-    unknown4: Starting facing direction.
+    params_b & 000000FF: Starting facing direction.
       0 Up
       1 Right
       2 Down
@@ -940,7 +937,7 @@
   0A [Nothing]
   0B [Nothing]
   0E Bottle
-    unknown4: Item ID of the bottle's contents.
+    params_b & 000000FF: Item ID of the bottle's contents.
 
 09 Manager
   03 Minish Portal
@@ -950,103 +947,101 @@
       3 Metal
       6 Temple of Droplets entrance
   06 Minish exit region handler.
-    Form: A room property index.
+    Form: Room property index.
       The property is a pointer to a list of Minish exit regions.
   07 Minish Village tileset swapper
   0B One-off enemy spawner
-    For form 0:
-      params & 0000FFFF - Prerequisite flag that must be set before these enemies are spawned.
-        The enemies will be spawned the moment this flag is set without reloading the room.
-        If this flag is 0000, then the enemies spawn the moment you enter the room instead.
-      params & FFFF0000 - Flag for having killed all these enemies.
-        This is set once you kill the last of the enemies.
-        This being set means this spawner will no longer create enemies in the future.
-      unknown4: A room property index.
-        The property is a pointer to the list of entities to load.
-      unknown5 - substate? (stored to 0E,1 of the entity in RAM)
-    For form 1:
-      Spawned automatically by form 0 when it creates all the enemies.
-      This form is responsible for checking all the enemy entities to see if they've been destroyed.
-      Each of these form 1 entities can only handle keeping track of a maximum of 8 enemies.
-      However, form 0 is smart enough to create multiple form 1 entities linking them together if more then 8 enemies are needed.
+    Forms:
+      0 Initializer
+        params_d & 0000FFFF: Prerequisite flag that must be set before these enemies are spawned.
+          The enemies will be spawned the moment this flag is set without reloading the room.
+          If this flag is 0000, then the enemies spawn the moment you enter the room instead.
+        params_d & FFFF0000: Flag for having killed all these enemies.
+          This is set once you kill the last of the enemies.
+          This being set means this spawner will no longer create enemies in the future.
+        params_b & 000000FF: Room property index.
+          The property is a pointer to the list of entities to load.
+        params_b & 0000FF00: substate? (stored to 0E,1 of the entity in RAM)
+      1 Checker
+        Spawned automatically by form 0 when it creates all the enemies.
+        This form is responsible for checking all the enemy entities to see if they've been destroyed.
+        Each of these form 1 entities can only handle keeping track of a maximum of 8 enemies.
+        However, form 0 is smart enough to create multiple form 1 entities linking them together if more then 8 enemies are needed.
   0D Tile change monitor
-    "Y pos" - Layer of the tile to monitor.
+    params_c & FFFF0000: Tile layer.
       1 - BG2
       2 - BG1
-    "X pos" - Position bitfield of the tile to monitor.
-      0x003F - X pos in 16x16 tiles.
-      0x0FC0 - Y pos in 16x16 tiles.
-    params & FFFF0000 - Flag to set 15 frames after the monitored tile changes to some other tile.
-    Form: A room property index.
+    params_c & 0000003F: Tile X.
+    params_c & 00000FC0: Tile Y.
+    params_d & FFFF0000: Flag to set 15 frames after the monitored tile changes to some other tile.
+    Form: Room property index.
       The property is a pointer to the list of entities to load 15 frames after the monitored tile changes.
       If this index is 0 it does not load any entities.
   0E One-off entity spawner
-    params & FFFF0000 - Flag to check.
+    params_d & FFFF0000: Flag to check.
       If not set, the entities in this list are not loaded.
       Once set, they will be loaded immediately, without the player needing to exit and re-enter the room.
       But when the player exit and re-enters the room with the flag still set, the entities will no longer be loaded.
-    Form: A room property index.
+    Form: Room property index.
       The property is a pointer to the list of entities to load.
     "Y pos" - Number of frames to wait after the flag is set before spawning the entities.
-    unknown4 - ? If nonzero, do ??? at 08058E94 as soon as the flag is set.
+    params_b & 000000FF: ? If nonzero, do ??? at 08058E94 as soon as the flag is set.
   0F (multiple things)
     Forms:
       ? Ezlo hint?
-        unknown4 - Room flag?
-        params & 0000FFFF - Flag required for this hint event to start.
-        params & FFFF0000 - Flag for having seen this hint event.
+        params_b & 000000FF: Room flag?
+        params_d & 0000FFFF: Flag required for this hint event to start.
+        params_d & FFFF0000: Flag for having seen this hint event.
       9 Tile despawner
-        params & FFFF0000 - Flag to check and despawn the tile when it's set.
+        params_d & FFFF0000: Flag to check and despawn the tile when it's set.
   11 Flag AND operator
-    params & FFFF0000 - Flags to check.
-    params & 0000FFFF - Flag to set once all the flags to check are set.
+    params_d & FFFF0000: Flags to check.
+    params_d & 0000FFFF: Flag to set once all the flags to check are set.
   12 Hyrule Town tileset swapper
   13 loads in decorations on top of Hyrule Town shops? (6-1C entities)
   16 Delayed entity loader?
-    Form: A room property index.
+    Form: Room property index.
       The property is a pointer to a list of delayed load entities.
-    unknown4 - Index offset in list 02031EC0? (add the value at 02033A98,1 to this)
-    unknown5 - Affects the type of entities in this list.
+    params_b & 000000FF: Index offset in list 02031EC0? (add the value at 02033A98,1 to this)
+    params_b & 0000FF00: Which type.
       0 - Type 7.
       Other: Type 6.
   17 item that falls from the sky?
     unknown2 - item ID?
-    params & 00FF0000 - item ID?
+    params_d & 00FF0000: item ID?
   18 kinstone fusion reward related?
   1A Hole you can fall into
     Form: Index in list 08108764.
   1D Sets BG3's character base block to 1
   1E Trigger region
     Note that X and Y pos are of the upper left of the region.
-    (unknown5 << 8) | unknown4: Width.
-    (unknown7 << 8) | unknown6: Height.
-    params & FFFF0000: Flag to set when the player is in the region, or to clear when they are not.
+    params_b & 0000FFFF: Width.
+    params_b & FFFF0000: Height.
+    params_d & FFFF0000: Flag to set when the player is in the region, or to clear when they are not.
       if set, delete this entity.
     Form: If zero, this is a one-off trigger region.
       If nonzero, the player can leave it to unset the flag and re-enter it to set the flag again.
   1F changes a tile in the room depending on a flag?
-    params & FFFF0000 - Flag.
+    params_d & FFFF0000: Flag.
     form - 
     unknown4? - 
   20 Object that can be permanently moved
-    unknown5: Subtype of the type 6 entity to create.
+    params_b & 0000FF00: Subtype of the type 6 entity to create.
     Form: Form of the entity to create.
-    unknown4: unknown4 of the entity to create.
-    params & FFFF0000: Flag for this entity being moved.
+    params_b & 000000FF: unknown4 of the entity to create.
+    params_d & FFFF0000: Flag for this entity being moved.
       This is also stored to the created entity's params & FFFF0000.
-    (unknown7 << 8 | unknown6): Bitfield.
-      & 0FFF: X pos of the object once it's moved.
-      & F000: Layer of the object when it isn't moved.
-    params & 0000FFFF: Bitfield:
-      & 0FFF: Y pos of the object once it's moved.
-      & F000: Layer of the object once it's moved.
+    params_b & F0000000: Layer of the object when it isn't moved.
+    params_d & 0000F000: Layer of the object once it's moved.
+    params_b & 0FFF0000: X pos of the object once it's moved.
+    params_d & 00000FFF: Y pos of the object once it's moved.
   23 Torch
-    params & 00FF0000 - The torch will light up once this flag is set.
+    params_d & 00FF0000: The torch will light up once this flag is set.
   24 Bombable wall
     Created by a bombable wall tile entity, does not need to be placed manually.
   26 Pushable object creator?
     Creates a number of 6-4C pushable objects.
-    Form: A room property index.
+    Form: Room property index.
       Pointer to a list of data describing the entities to create.
       Format:
         Entry length 8.

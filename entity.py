@@ -75,15 +75,23 @@ class Entity(ParamEntity):
     
     self.add_param("form", "params_a", 0xFF)
     
-    self.add_param("unknown_4", "params_b", 0x000000FF)
-    self.add_param("unknown_5", "params_b", 0x0000FF00)
-    self.add_param("unknown_6", "params_b", 0x00FF0000)
-    self.add_param("unknown_7", "params_b", 0xFF000000)
+    if self.type != 9:
+      self.add_param("x_pos", "params_c", 0x0000FFFF)
+      self.add_param("y_pos", "params_c", 0xFFFF0000)
     
-    self.add_param("x_pos", "params_c", 0x0000FFFF)
-    self.add_param("y_pos", "params_c", 0xFFFF0000)
+    param_props_list = docs.Docs.get_entity_param_properties(self)
+    for prop_name, bitfield_name, bitmask, pretty_name in param_props_list:
+      self.add_param(prop_name, bitfield_name, bitmask, pretty_param_name=pretty_name)
     
-    self.add_param("params", "params_d", 0xFFFFFFFF)
+    if self.has_cutscene:
+      self.add_param("cutscene_pointer", "params_d", 0xFFFFFFFF)
+    
+    self.add_missing_params_for_bitfields([
+      ("params_a", 8),
+      ("params_b", 32),
+      ("params_c", 32),
+      ("params_d", 32),
+    ])
   
   @property
   def has_cutscene(self):
@@ -159,16 +167,26 @@ class DelayedLoadEntity(Entity):
     
     self.add_param("form", "params_a", 0xFF)
     
-    self.add_param("unknown_4", "params_b", 0xFF)
-    
     self.add_param("x_pos", "params_c", 0x0000FFFF)
     self.add_param("y_pos", "params_c", 0xFFFF0000)
     
-    self.add_param("params", "params_d", 0xFFFFFFFF)
+    self.add_param("cutscene_pointer", "params_d", 0xFFFFFFFF)
     
-    self.add_param("unknown_5", "params_e", 0x00FF)
-    self.add_param("padding_1", "params_e", 0xFF00)
+    param_props_list = docs.Docs.get_entity_param_properties(self)
+    for prop_name, bitfield_name, bitmask, pretty_name in param_props_list:
+      if bitfield_name == "params_b" and bitmask & ~0x000000FF == 0:
+        self.add_param(prop_name, "params_b", bitmask, pretty_param_name=pretty_name)
+      elif bitfield_name == "params_b" and bitmask & ~0x0000FF00 == 0:
+        self.add_param(prop_name, "params_e", bitmask >> 8, pretty_param_name=pretty_name)
+    
+    self.add_missing_params_for_bitfields([
+      ("params_a", 8),
+      ("params_b", 8),
+      ("params_c", 32),
+      ("params_d", 32),
+      ("params_e", 16),
+    ])
   
   @property
   def has_cutscene(self):
-    return (self.params != 0)
+    return (self.cutscene_pointer != 0)

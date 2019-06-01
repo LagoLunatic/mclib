@@ -35,5 +35,6 @@ class TileEntity(ParamEntity):
   def update_params(self):
     self.reset_params()
     
-    for prop_name, bitfield_name, bitmask, pretty_param_name in docs.Docs.get_entity_param_properties(self):
-      self.add_param(prop_name, bitfield_name, bitmask, pretty_param_name=pretty_param_name)
+    param_props_list = docs.Docs.get_entity_param_properties(self)
+    for prop_name, bitfield_name, bitmask, pretty_name in param_props_list:
+      self.add_param(prop_name, bitfield_name, bitmask, pretty_param_name=pretty_name)

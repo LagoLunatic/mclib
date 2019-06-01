@@ -43,11 +43,49 @@ class ParamEntity:
     self.properties[attribute_name] = property
   
   def add_param(self, param_name, params_bitfield_name, bit_mask, pretty_param_name=None):
+    for other_param_name, (other_bitfield_name, other_bit_mask) in self.property_params.items():
+      if params_bitfield_name == other_bitfield_name and bit_mask & other_bit_mask != 0:
+        print("Warning: Param %s overlaps existing param %s" % (param_name, other_param_name))
+    
     self.property_params[param_name] = (params_bitfield_name, bit_mask)
     
     _, num_bits = self.get_first_bit_index_and_num_bits(bit_mask)
     
     self.add_property(param_name, num_bits, pretty_name=pretty_param_name)
+  
+  def add_missing_params_for_bitfields(self, params_bitfields_to_check):
+    # Adds parameters that are non-zero yet are not mentioned in the docs.
+    unk_param_index = 1
+    for params_bitfield_name, num_bits in params_bitfields_to_check:
+      unfound_bits = ((1 << num_bits) - 1)
+      
+      for param_name, (other_params_bitfield_name, bit_mask) in self.property_params.items():
+        if params_bitfield_name == other_params_bitfield_name:
+          unfound_bits &= ~bit_mask
+      if getattr(self, params_bitfield_name) & unfound_bits != 0:
+        num_hex_digits = (num_bits+3)//4
+        format_string = "%0" + str(num_hex_digits) + "X"
+        
+        print("Found unknown parameter:")
+        print(
+          "  Room: %02X-%02X, type %02X" % (
+            self.room.area.area_index,
+            self.room.room_index,
+            self.type
+          ))
+        print(
+          "  %s %s %s" % (
+            params_bitfield_name,
+            format_string % unfound_bits,
+            format_string % getattr(self, params_bitfield_name)
+          ))
+        
+        unknown_param_masks = self.split_bit_mask_into_multiple_contiguous_masks(unfound_bits)
+        print("%08X %d %s" % (unfound_bits, len(unknown_param_masks), ["%08X" % unknown_param_mask for unknown_param_mask in unknown_param_masks]))
+        for unknown_param_mask in unknown_param_masks:
+          if getattr(self, params_bitfield_name) & unknown_param_mask != 0:
+            self.add_param("unknown_param_%d" % unk_param_index, params_bitfield_name, unknown_param_mask)
+            unk_param_index += 1
   
   def __getattr__(self, attr_name):
     if attr_name in ["property_params", "properties"]:
@@ -169,3 +207,27 @@ class ParamEntity:
       last_bit_index = 31
     num_bits = last_bit_index - first_bit_index + 1
     return (first_bit_index, num_bits)
+  
+  @staticmethod
+  def split_bit_mask_into_multiple_contiguous_masks(bit_mask):
+    contiguous_bit_masks = []
+    
+    first_bit_index = None
+    num_bits = 0
+    for bit_index in range(32):
+      bit_is_set = (bit_mask & (1 << bit_index) != 0)
+      if bit_is_set:
+        num_bits += 1
+        if first_bit_index is None:
+          first_bit_index = bit_index
+      elif first_bit_index is not None:
+        contiguous_bit_mask = ((1 << num_bits) - 1) << first_bit_index
+        contiguous_bit_masks.append(contiguous_bit_mask)
+        first_bit_index = None
+        num_bits = 0
+    
+    if first_bit_index is not None:
+      contiguous_bit_mask = ((1 << num_bits) - 1) << first_bit_index
+      contiguous_bit_masks.append(contiguous_bit_mask)
+    
+    return contiguous_bit_masks

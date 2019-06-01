@@ -159,6 +159,7 @@ class Docs:
       type_list = ENTITY_TYPE_DOCS["children"]
       if entity.type in type_list:
         type_data = type_list[entity.type]
+        properties += Docs.extract_param_properties_from_doc_list(type_data["properties"])
         if entity.subtype in type_data["children"]:
           subtype_data = type_data["children"][entity.subtype]
           properties += Docs.extract_param_properties_from_doc_list(subtype_data["properties"])
