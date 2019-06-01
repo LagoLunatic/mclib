@@ -26,6 +26,7 @@ yaml.Dumper.add_representer(
 )
 
 from paths import ASM_PATH
+from paths import DATA_PATH
 
 class Game:
   def __init__(self, input_rom_path):
@@ -48,6 +49,40 @@ class Game:
     for dungeon_index in range(7):
       dungeon = Dungeon(dungeon_index, self.rom)
       self.dungeons.append(dungeon)
+  
+  def print_all_entity_cutscene_scripts(self):
+    vanilla_symbols_path = os.path.join(DATA_PATH, "symbol_map.sym")
+    
+    with open(vanilla_symbols_path, "r") as f:
+      matches = re.findall(r"^[0-9a-f]{8} ScriptCommand([0-9a-f]{2})(\S*)$", f.read(), re.IGNORECASE | re.MULTILINE)
+    script_command_names = {}
+    for command_index, command_name in matches:
+      command_index = int(command_index, 16)
+      script_command_names[command_index] = command_name
+    
+    for area in self.areas:
+      for room in area.rooms:
+        if room is None:
+          continue
+        for entity_list in room.entity_lists:
+          for entity in entity_list.entities:
+            if entity.has_cutscene:
+              filename = "%02X-%02X %02X-%02X-%02X %08X" % (
+                area.area_index, room.room_index,
+                entity.type, entity.subtype, entity.form,
+                entity.cutscene_pointer
+              )
+              with open("./logs/all entity cutscenes/%s.txt" % filename, "w") as f:
+                cutscene = Cutscene(entity.cutscene_pointer, self.rom)
+                for command in cutscene.commands:
+                  line = "%08X: " % command.command_ptr
+                  command_name = script_command_names[command.type]
+                  line += "ScriptCommand%02X%s(" % (command.type, command_name)
+                  line += (", ".join(["%04X" % arg for arg in command.arguments]))
+                  line += ")\n"
+                  f.write(line)
+                  
+                  #f.write("%08X: command type %02X, args: " % (command.command_ptr, command.type) + (", ".join(["%04X" % arg for arg in command.arguments])) + "\n")
   
   def apply_patch(self, patch_name, rom=None):
     if rom is None:
