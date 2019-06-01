@@ -644,7 +644,16 @@
   B8 ? in Wind Tribe home
   BA Handles the Gyorg Pair fight?
     Also hardcodes BG3 to have a character base block of 1 instead of the usual 0.
-  BB Wind Crest
+  BB Wind Crest Stone Marker
+    unknown4: Which Wind Crest it should unlock when crumbled.
+      0 Mount Crenal
+      1 Veil Falls
+      2 Cloud Tops
+      3 Hyrule Town
+      4 Lake Hylia
+      5 Castor Wilds
+      6 South Hyrule Field
+      7 Minish Woods
   BC Lit area in a dark room
   BE Pinwheel
   C0 Item carried by an enemy

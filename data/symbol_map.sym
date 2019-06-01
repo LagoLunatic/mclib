@@ -819,6 +819,9 @@
   ; Returns a pointer inside list 08127F94 to what the correct map region should be (or 0 for none).
 08052620 CheckOnOverworld
 
+08051E04 SetCurrentWorldMapRegionAsVisited
+  ; Sets the bit in bitfield 02002A80 for the current world map region being visited (if on a world map area)
+
 080530C8 UpdateHyruleTownState??
   ; Updates the values at 02002A48,1.
 
