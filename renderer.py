@@ -365,11 +365,11 @@ class Renderer:
     if loading_data.has_no_sprite:
       return (None, None, None)
     
-    print(
-      "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
-        entity.type, entity.subtype, entity.form,
-        loading_data.object_palette_id, loading_data.sprite_index
-      ))
+    #print(
+    #  "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
+    #    entity.type, entity.subtype, entity.form,
+    #    loading_data.object_palette_id, loading_data.sprite_index
+    #  ))
     
     palettes, entity_palette_index = self.generate_object_palettes(loading_data.object_palette_id)
     
@@ -384,7 +384,7 @@ class Renderer:
     if best_anim_index is not None:
       keyframe = sprite.get_animation(best_anim_index).keyframes[0]
       frame_index = keyframe.frame_index
-      print("Has animations, using anim %02X, which has frame %02X for its first keyframe" % (best_anim_index, frame_index))
+      #print("Has animations, using anim %02X, which has frame %02X for its first keyframe" % (best_anim_index, frame_index))
     
     if frame_index == 0xFF:
       frame_index = Docs.get_best_sprite_frame(entity)
