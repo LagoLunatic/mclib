@@ -27,7 +27,7 @@ class Cutscene:
         self.commands.append(command)
         all_checked_command_ptrs.append(command_ptr)
         
-        #print("%08X: command type %02X, args: " % (command_ptr, command.type) + (", ".join(["%04X" % arg for arg in command.arguments])))
+        #print("%08X: command type %02X, args: " % (command.command_ptr, command.type) + (", ".join(["%04X" % arg for arg in command.arguments])))
         
         if command.type in [3, 4, 5, 6]:
           offset = command.arguments[0]
