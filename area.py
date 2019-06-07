@@ -92,7 +92,7 @@ class Area:
       return self.cached_palette_groups[gfx_index]
     else:
       gfx_asset_list = self.get_gfx_asset_list(gfx_index)
-      palette_group = PaletteGroup(gfx_asset_list.palette_metadata_index, self.rom)
+      palette_group = PaletteGroup(gfx_asset_list.palette_group_index, self.rom)
       
       self.cached_palette_groups[gfx_index] = palette_group
       return palette_group

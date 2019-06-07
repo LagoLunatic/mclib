@@ -7,7 +7,7 @@ class AssetList:
     self.rom = rom
     
     self.gfx_data = DataInterface(b'')
-    self.palette_metadata_index = None
+    self.palette_group_index = None
     self.layer_datas = [None, None, None, None]
     self.tileset_datas = [None, None, None, None]
     self.tile_mappings_8x8 = [None, None, None, None]
@@ -24,11 +24,11 @@ class AssetList:
       
       if properties[1] == 0:
         # Palette
-        if self.palette_metadata_index is not None:
+        if self.palette_group_index is not None:
           raise Exception("Found more than 1 palette metadata!")
         
-        self.palette_metadata_index = properties[0] & 0x0000FFFF
-        #print("Palette: %02X" % self.palette_metadata_index)
+        self.palette_group_index = properties[0] & 0x0000FFFF
+        #print("Palette: %02X" % self.palette_group_index)
       else:
         rom_address = (0x08324AE4 + (properties[0] & 0x7FFFFFFF))
         ram_address = properties[1]

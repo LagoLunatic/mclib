@@ -132,8 +132,8 @@ class Renderer:
     # TODO: figure out what these are
     if len(room.layers_asset_list.gfx_data) != 0:
       print("room.layers_asset_list.gfx_data: ", room.layers_asset_list.gfx_data)
-    if room.layers_asset_list.palette_metadata_index is not None:
-      print("room.layers_asset_list.palette_metadata_index: ", room.layers_asset_list.palette_metadata_index)
+    if room.layers_asset_list.palette_group_index is not None:
+      print("room.layers_asset_list.palette_group_index: ", room.layers_asset_list.palette_group_index)
     
     layer_data = room.layers_asset_list.layer_datas[layer_index]
     if layer_data is None:
@@ -165,7 +165,6 @@ class Renderer:
     
     gfx_asset_list = area.get_gfx_asset_list(room.gfx_index)
     gfx_data = gfx_asset_list.gfx_data
-    palette_metadata_index = gfx_asset_list.palette_metadata_index
     
     if layer_index in [1, 3]:
       gfx_data = gfx_data.read_raw(0x4000, len(gfx_data)-0x4000)
