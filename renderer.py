@@ -135,15 +135,15 @@ class Renderer:
     if room.layers_asset_list.palette_group_index is not None:
       print("room.layers_asset_list.palette_group_index: ", room.layers_asset_list.palette_group_index)
     
-    layer_data = room.layers_asset_list.layer_datas[layer_index]
-    if layer_data is None:
+    layer = room.layers_asset_list.layers[layer_index]
+    if layer is None:
       raise Exception("Layer BG%d has no layer data" % layer_index)
     
     room_width_in_16x16_tiles = room.width//16
     
     cached_tile_images_by_16x16_index = {}
-    for i in range(len(layer_data)):
-      tile_index_16x16 = layer_data[i]
+    for i in range(len(layer.data)):
+      tile_index_16x16 = layer.data[i]
       
       if tile_index_16x16 in cached_tile_images_by_16x16_index:
         tile_image = cached_tile_images_by_16x16_index[tile_index_16x16]

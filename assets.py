@@ -6,9 +6,11 @@ class AssetList:
     self.asset_list_ptr = asset_list_ptr
     self.rom = rom
     
+    self.entries = []
+    
     self.gfx_data = DataInterface(b'')
     self.palette_group_index = None
-    self.layer_datas = [None, None, None, None]
+    self.layers = [None, None, None, None]
     self.tileset_datas = [None, None, None, None]
     self.tile_mappings_8x8 = [None, None, None, None]
     self.tileset_tile_types_datas = [None, None, None, None]
@@ -20,95 +22,137 @@ class AssetList:
     entry_ptr = self.asset_list_ptr
     while True:
       #print("ON: %08X" % entry_ptr)
-      properties = self.rom.read(entry_ptr, 0xC, "III")
+      entry = AssetEntry(entry_ptr, self.rom)
+      self.entries.append(entry)
       
-      if properties[1] == 0:
-        # Palette
+      if entry.type == "palette_group":
         if self.palette_group_index is not None:
-          raise Exception("Found more than 1 palette metadata!")
+          raise Exception("Found more than 1 palette group!")
         
-        self.palette_group_index = properties[0] & 0x0000FFFF
-        #print("Palette: %02X" % self.palette_group_index)
+        # TODO: how to handle accessing the entry later?
+        self.palette_group_index = entry.properties[0] & 0x0000FFFF
       else:
-        rom_address = (0x08324AE4 + (properties[0] & 0x7FFFFFFF))
-        ram_address = properties[1]
+        rom_address = entry.rom_address
+        ram_address = entry.ram_address
+        data_length = entry.data_length
+        compressed = entry.compressed
+        #print("%08X -> %08X (len %04X) (compressed: %s)" % (rom_address, ram_address, data_length, compressed))
         
-        if (properties[2] & 0x80000000) == 0:
-          # Uncompressed
-          data_length = properties[2]
-          decompressed_data = self.rom.read_raw(rom_address, data_length)
-          compressed = False
-        else:
-          # Compressed
-          decompressed_data = self.rom.decompress_read(rom_address)
-          compressed = True
-        
-        #print(compressed)
-        #print("%08X" % rom_address)
-        
-        #print("%08X -> %08X (len %04X) (compressed: %s)" % (rom_address, ram_address, len(decompressed_data), compressed))
-        
-        if 0x06000000 <= ram_address <= 0x0600DFFF: # Tile GFX data
-          #print("Tile GFX data")
+        # TODO: how to handle accessing the entry later?
+        # I guess make these variables point to the entry, not the data of the entry
+        if entry.type == "gfx":
           offset = ram_address - 0x06000000
-          self.gfx_data.write_raw(offset, decompressed_data)
-        elif ram_address == 0x0200B654: # BG1 layer data
-          #print("Layer data BG1")
-          if self.layer_datas[1] is not None:
-            raise Exception("Duplicate tile mapping for layer BG1")
-          self.layer_datas[1] = decompressed_data.read_all_u16s()
-        elif ram_address == 0x02025EB4: # BG2 layer data
-          #print("Layer data BG2")
-          if self.layer_datas[2] is not None:
-            raise Exception("Duplicate tile mapping for layer BG2")
-          self.layer_datas[2] = decompressed_data.read_all_u16s()
-        elif ram_address == 0x02012654: # BG1 tileset
-          #print("tileset BG1")
-          if self.tileset_datas[1] is not None:
-            raise Exception("Duplicate tileset for layer BG1")
-          self.tileset_datas[1] = decompressed_data.read_all_u16s()
-        elif ram_address == 0x0202CEB4: # BG2 tileset
-          #print("tileset BG2")
-          if self.tileset_datas[2] is not None:
-            raise Exception("Duplicate tileset for layer BG2")
-          self.tileset_datas[2] = decompressed_data.read_all_u16s()
-        elif ram_address == 0x02002F00: # BG1 8x8 tile mapping
-          #print("8x8 tile mapping BG1")
-          if self.tile_mappings_8x8[1] is not None:
-            raise Exception("Duplicate tile mapping for layer BG1")
-          self.tile_mappings_8x8[1] = decompressed_data.read_all_u16s()
-        elif ram_address == 0x02019EE0: # BG2 8x8 tile mapping
-          #print("8x8 tile mapping BG2")
-          if self.tile_mappings_8x8[2] is not None:
-            raise Exception("Duplicate tile mapping for layer BG2")
-          self.tile_mappings_8x8[2] = decompressed_data.read_all_u16s()
-        elif ram_address == 0x0600F000: # BG3 8x8 tile mapping
-          #print("8x8 tile mapping BG3")
-          if self.tile_mappings_8x8[3] is not None:
-            raise Exception("Duplicate tile mapping for layer BG3")
-          self.tile_mappings_8x8[3] = decompressed_data.read_all_u16s()
-        elif ram_address == 0x02010654: # BG1 tileset tile type data
-          #print("BG1 tile type tileset")
-          if self.tileset_tile_types_datas[1] is not None:
-            raise Exception("Duplicate BG1 tile type tileset found")
-          self.tileset_tile_types_datas[1] = decompressed_data.read_all_u16s()
-        elif ram_address == 0x0202AEB4: # BG2 tileset tile type data
-          #print("BG2 tile type tileset")
-          if self.tileset_tile_types_datas[2] is not None:
-            raise Exception("Duplicate BG2 tile type tileset found")
-          self.tileset_tile_types_datas[2] = decompressed_data.read_all_u16s()
-        elif ram_address == 0x02027EB4: # BG2 collision layer data
-          #print("BG2 collision layer data")
-          if self.collision_layer_datas[2] is not None:
-            raise Exception("Duplicate BG2 collision layer data found")
-          self.collision_layer_datas[2] = decompressed_data.read_all_u8s()
-        else:
-          print(
-            "UNKNOWN ASSET TYPE: %08X -> %08X (len: %04X) (compressed: %s)" % (
-              rom_address, ram_address, properties[2], compressed
-            ))
+          self.gfx_data.write_raw(offset, entry.raw_data)
+        elif entry.type == "layer":
+          if self.layers[entry.layer_index] is not None:
+            raise Exception("Duplicate layer data for layer BG%d" % entry.layer_index)
+          self.layers[entry.layer_index] = entry
+        elif entry.type == "tileset":
+          if self.tileset_datas[entry.layer_index] is not None:
+            raise Exception("Duplicate tileset data for layer BG%d" % entry.layer_index)
+          self.tileset_datas[entry.layer_index] = entry.data
+        elif entry.type == "mapping":
+          if self.tile_mappings_8x8[entry.layer_index] is not None:
+            raise Exception("Duplicate 8x8 tile mapping data for layer BG%d" % entry.layer_index)
+          self.tile_mappings_8x8[entry.layer_index] = entry.data
+        elif entry.type == "tile_types":
+          if self.tileset_tile_types_datas[entry.layer_index] is not None:
+            raise Exception("Duplicate tile types data for layer BG%d" % entry.layer_index)
+          self.tileset_tile_types_datas[entry.layer_index] = entry.data
+        elif entry.type == "collision":
+          if self.collision_layer_datas[entry.layer_index] is not None:
+            raise Exception("Duplicate collision layer data for layer BG%d" % entry.layer_index)
+          self.collision_layer_datas[entry.layer_index] = entry.data
       
-      if (properties[0] & 0x80000000) == 0:
+      if (entry.properties[0] & 0x80000000) == 0:
         break
       
       entry_ptr += 0xC
+
+class AssetEntry:
+  def __init__(self, entry_ptr, rom):
+    self.entry_ptr = entry_ptr
+    self.rom = rom
+    
+    self.has_unsaved_changes = False
+    
+    self.read()
+  
+  def read(self):
+    self.properties = self.rom.read(self.entry_ptr, 0xC, "III")
+    
+    if self.properties[1] == 0:
+      self.type = "palette_group"
+      self.layer_index = None
+    else:
+      self.rom_address = (0x08324AE4 + (self.properties[0] & 0x7FFFFFFF))
+      self.ram_address = self.properties[1]
+      
+      if (self.properties[2] & 0x80000000) == 0:
+        self.compressed = False
+        self.data_length = self.properties[2]
+        self.raw_data = self.rom.read_raw(self.rom_address, self.data_length)
+      else:
+        self.compressed = True
+        self.raw_data = self.rom.decompress_read(self.rom_address)
+        self.data_length = len(self.raw_data)
+      
+      if 0x06000000 <= self.ram_address <= 0x0600DFFF: # Tile GFX data
+        self.type = "gfx"
+        self.layer_index = None
+      elif self.ram_address == 0x0200B654: # BG1 layer data
+        self.type = "layer"
+        self.layer_index = 1
+        self.data = self.raw_data.read_all_u16s()
+      elif self.ram_address == 0x02025EB4: # BG2 layer data
+        self.type = "layer"
+        self.layer_index = 2
+        self.data = self.raw_data.read_all_u16s()
+      elif self.ram_address == 0x02012654: # BG1 tileset
+        self.type = "tileset"
+        self.layer_index = 1
+        self.data = self.raw_data.read_all_u16s()
+      elif self.ram_address == 0x0202CEB4: # BG2 tileset
+        self.type = "tileset"
+        self.layer_index = 2
+        self.data = self.raw_data.read_all_u16s()
+      elif self.ram_address == 0x02002F00: # BG1 8x8 tile mapping
+        self.type = "mapping"
+        self.layer_index = 1
+        self.data = self.raw_data.read_all_u16s()
+      elif self.ram_address == 0x02019EE0: # BG2 8x8 tile mapping
+        self.type = "mapping"
+        self.layer_index = 2
+        self.data = self.raw_data.read_all_u16s()
+      elif self.ram_address == 0x0600F000: # BG3 8x8 tile mapping
+        self.type = "mapping"
+        self.layer_index = 3
+        self.data = self.raw_data.read_all_u16s()
+      elif self.ram_address == 0x02010654: # BG1 tileset tile type data
+        self.type = "tile_types"
+        self.layer_index = 1
+        self.data = self.raw_data.read_all_u16s()
+      elif self.ram_address == 0x0202AEB4: # BG2 tileset tile type data
+        self.type = "tile_types"
+        self.layer_index = 2
+        self.data = self.raw_data.read_all_u16s()
+      elif self.ram_address == 0x02027EB4: # BG2 collision layer data
+        self.type = "collision"
+        self.layer_index = 2
+        self.data = self.raw_data.read_all_u8s()
+      else:
+        self.type = "unknown"
+        self.layer_index = None
+        print(
+          "UNKNOWN ASSET TYPE: %08X -> %08X (len: %04X) (compressed: %s)" % (
+            self.rom_address, self.ram_address, self.data_length, self.compressed
+          ))
+  
+  def save_any_unsaved_changes(self):
+    if self.has_unsaved_changes:
+      self.save()
+      self.has_unsaved_changes = False
+  
+  def save(self):
+    if self.type == "layer":
+      self.rom.compress_write(self.rom_address, self.data.tostring())
