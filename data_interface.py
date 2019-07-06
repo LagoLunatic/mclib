@@ -8,6 +8,9 @@ from mclib.gba_lz77 import GBALZ77
 class DataInterface:
   def __init__(self, data):
     self.data = BytesIO(data)
+    
+    # TODO orig compressed lengths should be saved with the project
+    self.orig_compressed_lengths_by_offset = {}
   
   def __len__(self):
     data_length = self.data.seek(0, 2)
@@ -62,13 +65,21 @@ class DataInterface:
     compressed_data = self.data.read()
     decompressed_data, compr_length = GBALZ77.decompress(compressed_data)
     print("READ %08X %08X" % (offset, compr_length))
+    self.orig_compressed_lengths_by_offset[offset] = compr_length
     decompressed_data_interface = DataInterface(decompressed_data)
     return decompressed_data_interface
   
-  def compress_write(self, offset, decompressed_data):
-    # TODO: need to throw error if new compressed data is larger than orig. or try to get free space.
-    compressed_data = GBALZ77.compress(decompressed_data)
+  def compress_write(self, offset, uncompressed_data):
+    compressed_data = GBALZ77.compress(uncompressed_data)
     print("WRITE %08X %08X" % (offset, len(compressed_data)))
+    orig_compr_len = self.orig_compressed_lengths_by_offset[offset]
+    if len(compressed_data) > orig_compr_len:
+      # TODO: try to get free space instead of just throwing an error when the new data is larger
+      raise Exception(
+        "Failed to write compressed data to %08X as the new data is larger than the original.\n" % offset +
+        "Orig compressed size: %X\n" % orig_compr_len +
+        "New compressed size: %X" % len(compressed_data)
+      )
     self.write_bytes(offset, compressed_data)
   
   def write(self, offset, new_values, format_string):
@@ -129,9 +140,6 @@ class InvalidAddressError(Exception):
   pass
 
 class RomInterface(DataInterface):
-  def __init__(self, data):
-    self.data = BytesIO(data)
-  
   def is_pointer(self, address):
     if address >= 0x08000000 and address <= 0x08FFFFFF:
       return True
@@ -166,6 +174,12 @@ class RomInterface(DataInterface):
       raise InvalidAddressError("%08X is not a valid ROM address." % address)
     offset = address-0x08000000
     return super().decompress_read(offset)
+  
+  def compress_write(self, address, uncompressed_data):
+    if not self.is_pointer(address):
+      raise InvalidAddressError("%08X is not a valid ROM address." % address)
+    offset = address-0x08000000
+    return super().compress_write(offset, uncompressed_data)
   
   def write(self, address, new_values, format_string):
     if not self.is_pointer(address):
