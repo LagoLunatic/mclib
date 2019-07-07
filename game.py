@@ -3,7 +3,6 @@ import os
 import re
 from collections import OrderedDict
 
-from mclib.data_interface import RomInterface
 from mclib.area import Area
 from mclib.map import Dungeon
 from mclib.cutscene import Cutscene
@@ -29,11 +28,8 @@ from paths import ASM_PATH
 from paths import DATA_PATH
 
 class Game:
-  def __init__(self, input_rom_path):
-    self.input_rom_path = input_rom_path
-    
-    with open(self.input_rom_path, "rb") as file:
-      self.rom = RomInterface(file.read())
+  def __init__(self, rom_interface):
+    self.rom = rom_interface
     
     self.read()
     
