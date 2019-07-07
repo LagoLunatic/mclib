@@ -1,4 +1,18 @@
 
+class MessageGroup:
+  def __init__(self, group_index, rom):
+    self.group_index = group_index
+    self.rom = rom
+    
+    self.read()
+  
+  def read(self):
+    # We can determine the number of messages in this message group by reading the offset of the first message string in this group relative to the start of the group, and dividing by 4.
+    # The reason this works is that the start of each group is a list of each message's offset (each is 4 bytes), and the first message's string comes right after the last offset.
+    group_offset = self.rom.read_u32(0x089B1D90 + self.group_index*4)
+    first_message_offset = self.rom.read_u32(0x089B1D90 + group_offset)
+    self.num_messages = first_message_offset//4
+
 class Message:
   def __init__(self, message_id, rom):
     self.message_id = message_id
