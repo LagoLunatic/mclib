@@ -353,7 +353,7 @@ class Renderer:
       frame_image = self.render_sprite_frame_swap_type_gfx(sprite, frame, palettes)
       frame_image.save("../sprite_renders/%03d_0x%03X/frame%03d_0x%02X.png" % (sprite.sprite_index, sprite.sprite_index, frame_index, frame_index))
   
-  def render_entity_pretty_sprite(self, entity):
+  def render_entity_pretty_frame(self, entity):
     if entity.type == 6 and entity.subtype == 0xC and entity.form in [0, 1]:
       # Small chest spawner
       chest_tile_image = self.get_16x16_tile_by_index(self.curr_room_tileset_images[2], 0x10)
@@ -365,14 +365,6 @@ class Renderer:
     
     if loading_data.has_no_sprite:
       return (None, None, None)
-    
-    #print(
-    #  "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
-    #    entity.type, entity.subtype, entity.form,
-    #    loading_data.object_palette_id, loading_data.sprite_index
-    #  ))
-    
-    palettes, entity_palette_index = self.generate_object_palettes(loading_data.object_palette_id)
     
     sprite = Sprite(loading_data.sprite_index, self.rom)
     
@@ -392,6 +384,38 @@ class Renderer:
       if frame_index is None:
         return (None, None, None)
     
+    offsets = Docs.get_best_sprite_offset(entity)
+    
+    extra_frame_indexes = Docs.get_best_extra_sprite_frames_for_entity(entity)
+    
+    h_flip = False
+    v_flip = False
+    if keyframe:
+      if keyframe.h_flip:
+        h_flip = True
+      if keyframe.v_flip:
+        v_flip = True
+    
+    return self.render_entity_frame(loading_data, frame_index, offsets, extra_frame_indexes, h_flip, v_flip)
+  
+  def render_entity_frame(self, loading_data, frame_index, offsets, extra_frame_indexes, h_flip=False, v_flip=False):
+    if loading_data.has_no_sprite:
+      return (None, None, None)
+    
+    entity_type = loading_data.entity_type
+    entity_subtype = loading_data.entity_subtype
+    entity_form = loading_data.entity_form
+    
+    #print(
+    #  "Entity %02X-%02X (form %02X): pal %02X, sprite %03X" % (
+    #    entity_type, entity_subtype, entity_form,
+    #    loading_data.object_palette_id, loading_data.sprite_index
+    #  ))
+    
+    palettes, entity_palette_index = self.generate_object_palettes(loading_data.object_palette_id)
+    
+    sprite = Sprite(loading_data.sprite_index, self.rom)
+    
     gfx_data = self.get_sprite_gfx_data_for_frame(loading_data, sprite, frame_index)
     if gfx_data is None:
       return (None, None, None)
@@ -400,14 +424,12 @@ class Renderer:
     
     frame_image, min_x, min_y = self.render_sprite_frame_by_assets(frame_obj_list, gfx_data, palettes, entity_palette_index)
     
-    if keyframe:
-      if keyframe.h_flip:
-        frame_image = frame_image.transpose(Image.FLIP_LEFT_RIGHT)
-      if keyframe.v_flip:
-        frame_image = frame_image.transpose(Image.FLIP_TOP_BOTTOM)
+    if h_flip:
+      frame_image = frame_image.transpose(Image.FLIP_LEFT_RIGHT)
+    if v_flip:
+      frame_image = frame_image.transpose(Image.FLIP_TOP_BOTTOM)
     
     
-    extra_frame_indexes = Docs.get_best_extra_sprite_frames_for_entity(entity)
     if extra_frame_indexes:
       body_sprite = sprite
       body_frame_index = frame_index
@@ -455,7 +477,7 @@ class Renderer:
       frame_image, min_x, min_y = self.combine_multiple_images_with_offsets(images_and_offsets)
     
     
-    x_off, y_off = Docs.get_best_sprite_offset(entity)
+    x_off, y_off = offsets
     x_off += min_x
     y_off += min_y
     
