@@ -359,7 +359,9 @@ class Renderer:
       chest_tile_image = self.get_16x16_tile_by_index(self.curr_room_tileset_images[2], 0x10)
       return (chest_tile_image, -8, -8)
     
-    loading_data = SpriteLoadingData(entity, self.rom)
+    area_index = entity.room.area.area_index
+    
+    loading_data = SpriteLoadingData(entity.type, entity.subtype, entity.form, self.rom, area_index)
     
     if loading_data.has_no_sprite:
       return (None, None, None)

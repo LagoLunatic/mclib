@@ -1,10 +1,10 @@
 
 class SpriteLoadingData:
-  def __init__(self, entity, rom):
-    self.entity_type = entity.type
-    self.entity_subtype = entity.subtype
-    self.entity_form = entity.form
-    self.area = entity.room.area
+  def __init__(self, entity_type, entity_subtype, entity_form, rom, area_index=0):
+    self.entity_type = entity_type
+    self.entity_subtype = entity_subtype
+    self.entity_form = entity_form
+    self.area_index = area_index
     self.rom = rom
     
     self.read()
@@ -95,23 +95,23 @@ class SpriteLoadingData:
     
     if self.entity_type == 6 and self.entity_subtype in [8, 0x6C]:
       # Door
-      if self.area.area_index == 0x25:
+      if self.area_index == 0x25:
         self.fixed_gfx_index = 0x1E7
-      elif self.area.area_index == 0x35:
+      elif self.area_index == 0x35:
         self.fixed_gfx_index = 0x1C3
-      elif self.area.area_index >= 0x40:
-        self.fixed_gfx_index = self.rom.read_u16(0x0811F690 + (self.area.area_index-0x40)*2)
+      elif self.area_index >= 0x40:
+        self.fixed_gfx_index = self.rom.read_u16(0x0811F690 + (self.area_index-0x40)*2)
       else:
         self.fixed_gfx_index = 0xA
       
-      if self.area.area_index == 0x68:
+      if self.area_index == 0x68:
         self.object_palette_id = 0
-      elif self.area.area_index == 0x88:
+      elif self.area_index == 0x88:
         self.object_palette_id = 1
     elif self.entity_type == 6 and self.entity_subtype == 0x27:
       # Pushable statue
-      if self.area.area_index >= 0x40:
-        self.fixed_gfx_index = self.rom.read_u16(0x08120CCC + (self.area.area_index-0x40)*2)
+      if self.area_index >= 0x40:
+        self.fixed_gfx_index = self.rom.read_u16(0x08120CCC + (self.area_index-0x40)*2)
       else:
         self.fixed_gfx_index = 0xE9
   
