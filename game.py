@@ -34,6 +34,8 @@ class Game:
     self.read()
     
     self.read_custom_symbols()
+    
+    #self.print_all_entity_cutscene_scripts()
   
   def read(self):
     self.areas = []

@@ -66,22 +66,22 @@ class ParamEntity:
         num_hex_digits = (num_bits+3)//4
         format_string = "%0" + str(num_hex_digits) + "X"
         
-        print("Found unknown parameter:")
-        print(
-          "  Room: %02X-%02X, type %02X" % (
-            self.room.area.area_index,
-            self.room.room_index,
-            self.type
-          ))
-        print(
-          "  %s %s %s" % (
-            params_bitfield_name,
-            format_string % unfound_bits,
-            format_string % getattr(self, params_bitfield_name)
-          ))
+        #print("Found unknown parameter:")
+        #print(
+        #  "  Room: %02X-%02X, type %02X" % (
+        #    self.room.area.area_index,
+        #    self.room.room_index,
+        #    self.type
+        #  ))
+        #print(
+        #  "  %s %s %s" % (
+        #    params_bitfield_name,
+        #    format_string % unfound_bits,
+        #    format_string % getattr(self, params_bitfield_name)
+        #  ))
         
         unknown_param_masks = self.split_bit_mask_into_multiple_contiguous_masks(unfound_bits)
-        print("%08X %d %s" % (unfound_bits, len(unknown_param_masks), ["%08X" % unknown_param_mask for unknown_param_mask in unknown_param_masks]))
+        #print("%08X %d %s" % (unfound_bits, len(unknown_param_masks), ["%08X" % unknown_param_mask for unknown_param_mask in unknown_param_masks]))
         for unknown_param_mask in unknown_param_masks:
           if getattr(self, params_bitfield_name) & unknown_param_mask != 0:
             self.add_param("unknown_param_%d" % unk_param_index, params_bitfield_name, unknown_param_mask)
