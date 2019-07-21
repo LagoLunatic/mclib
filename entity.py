@@ -20,22 +20,40 @@ class EntityList:
       if possible_end_marker == 0xFF:
         break
       
-      entity = Entity(entity_ptr, self.room, self.rom)
+      entity = Entity()
+      entity.read(entity_ptr, self.room, self.rom)
       self.entities.append(entity)
       
       entity_ptr += 0x10
 
 class Entity(ParamEntity):
-  def __init__(self, entity_ptr, room, rom):
+  def __init__(self):
     super().__init__()
     
+    self.type = 3
+    self.unknown_1 = 0
+    self.unknown_2 = 0xF
+    self.unknown_3 = 0
+    self.subtype = 0
+    self.params_a = 0
+    self.params_b = 0
+    self.params_c = 0
+    self.params_d = 0
+    
+    self.add_property("entity_ptr", 32, pretty_name="ROM Location")
+    self.add_property("type", 4)
+    self.add_property("unknown_1", 4)
+    self.add_property("unknown_2", 4)
+    self.add_property("unknown_3", 4)
+    self.add_property("subtype", 8)
+    
+    self.update_params()
+  
+  def read(self, entity_ptr, room, rom):
     self.entity_ptr = entity_ptr
     self.room = room
     self.rom = rom
     
-    self.read()
-  
-  def read(self):
     type_and_unknowns = self.rom.read_u8(self.entity_ptr + 0)
     self.type = type_and_unknowns & 0x0F
     self.unknown_1 = (type_and_unknowns & 0xF0) >> 4
@@ -48,13 +66,6 @@ class Entity(ParamEntity):
     self.params_b = self.rom.read_u32(self.entity_ptr + 4)
     self.params_c = self.rom.read_u32(self.entity_ptr + 8)
     self.params_d = self.rom.read_u32(self.entity_ptr + 0xC)
-    
-    self.add_property("entity_ptr", 32, pretty_name="ROM Location")
-    self.add_property("type", 4)
-    self.add_property("unknown_1", 4)
-    self.add_property("unknown_2", 4)
-    self.add_property("unknown_3", 4)
-    self.add_property("subtype", 8)
     
     self.update_params()
   
