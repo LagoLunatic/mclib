@@ -500,6 +500,10 @@ class Docs:
       return 2
     elif entity.type == 7 and entity.subtype == 0x2B and entity.form == 1:
       return 4
+    elif entity.type == 7 and entity.subtype == 0x1E:
+      return 2
+    elif entity.type == 7 and entity.subtype == 0x28:
+      return 2
     
     return 0
   

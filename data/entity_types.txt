@@ -2,6 +2,7 @@
 00 [Nothing]
 
 01 Player
+  00 Player
 
 02 [Nothing]
 
@@ -48,6 +49,7 @@
   0B Spiny Chuchu
   0C Cucco Chick
   0D Moldorm
+  0E ???
   0F Moldworm
   10 Sluggula
     Forms:
@@ -60,7 +62,9 @@
       2 Green (does not appear)
   12 Puffstool
   13 Big Green Chuchu
-    Form: ?
+    Form:
+      0 Base?
+      1 Head?
   14 Like Like
   15 Spear Moblin
     Forms:
@@ -80,6 +84,7 @@
       1 Blue Rupee
       2 Red Rupee
   18 Madderpillar
+  19 big drop of water??
   1A Wall Master?
   1B Bomb Peahat
   1C Spark
@@ -137,6 +142,7 @@
     It creates a 6-7D entity to be the object on its back.
   36 part of Mazaal
   37 part of Mazaal
+  38 part of Mazaal
   39 Big Octorok
   3A Flying Pot
   3B Gibdo
@@ -151,6 +157,7 @@
     Forms:
       0 ?
       1 ?
+  44 part of something?
   45 Takkuri
   46 Bow Moblin
     Forms:
@@ -158,7 +165,9 @@
       1 Corrupted
   47 Lakitu
   48 electrified cloud?
+  49 ??? nothing?
   4A Vaati Reborn
+  4B part of something?
   4C Ball & Chain Soldier 1?
   4D Ball & Chain Soldier 2?
   4E Ghini
@@ -171,13 +180,27 @@
   52 part of Vaati's Wrath fight?
   53 Dust on Beedle's shop
   54 part of Vaati's Wrath fight?
+  55 Octorok duplicate?
+  56 Slime? unused?
+  57 Mini slime? unused?
+  58 Fireball guy? unused?
+  59 Mini fireball guy? unused?
+  5A ???
   5B Prologue Business Scrub
   5C Gyorg Female
   5D Gyorg Male
+  5E curtain?
+  5F ??? nothing?
+  60 Gyorg Child
   61 Gyorg Female's eye?
     Form: Which of the 8 eyes it is. 0-7.
+  62 ???
   63 Gyorg Female's mouth?
-  65 tree? in minish woods
+  64 related to Gyorg Male?
+  65 Item in Tree
+    Comes out when you run into the tree with Pegasus boots.
+    Can be a fairy, a Kinstone Piece, or nothing.
+    Form: ??? Affects the chance of what it is.
 
 04 Obstacle/projectile/weapon?
   03 Moblin's spear?
@@ -211,6 +234,7 @@
       8 Underwater
       9 Unused?
       A Unused?
+  01 Enemy death effect
   02 Item for sale
     Form: The item ID.
     params_b & 000000FF: The item parameter.
@@ -355,6 +379,7 @@
   3F Giant leaf
   40 Fairy flying around
     Form: The item ID.
+      Other item IDs besides 60 (Fairy) do change the appearance to the appropriate item, but picking it up doesn't seem to give you the item.
   41 Ladder up
   46 Giant book ladder
   47 Heart container
@@ -601,6 +626,16 @@
       8 Zeffa (picks up Link)
       9 Zeffa (drops off Link)
       A Link (being carried by Zeffa)
+  96 Item that falls down
+    Form:
+      0 Graveyard key?
+      1 Graveyard key?
+      2 Graveyard key?
+      3 Graveyard key?
+      4 Graveyard key?
+      5 Graveyard key?
+      6 Graveyard key?
+      7 Kinstone Piece from a tree
   9A Giant acorn
   9C Tree hiding a Minish Portal
     Need to bonk into the tree with Pegasus boots to reveal the portal.
@@ -1057,3 +1092,6 @@
     One of these entities monitors all destructible tile entities in a room to see when the tile they're on is destroyed.
     Once it is destroyed, this entity sets the local flag specified by that tile entity.
     This entity does not need to be placed manually, as destructible tile entities will create one automatically.
+  2E ??? flag setter?
+    params_d & FFFF0000: Flag to check.
+    params_d & 0000FFFF: Flag to set.
