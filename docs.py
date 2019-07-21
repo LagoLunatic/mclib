@@ -100,6 +100,29 @@ TILE_ENTITY_TYPE_DOCS = parse_doc(tile_entity_doc_str)
 
 class Docs:
   @staticmethod
+  def get_all_subtypes_for_type(entity_class, type):
+    if entity_class == "entity":
+      type_list = ENTITY_TYPE_DOCS["children"]
+      if type in type_list:
+        type_data = type_list[type]
+        return list(type_data["children"].keys())
+    
+    return []
+  
+  @staticmethod
+  def get_all_forms_for_subtype(entity_class, type, subtype):
+    if entity_class == "entity":
+      type_list = ENTITY_TYPE_DOCS["children"]
+      if type in type_list:
+        type_data = type_list[type]
+        if subtype in type_data["children"]:
+          subtype_data = type_data["children"][subtype]
+          if "Forms" in subtype_data["properties"]:
+            return list(subtype_data["properties"]["Forms"]["children"].keys())
+    
+    return []
+  
+  @staticmethod
   def prettify_prop_value(prop, value, entity):
     num_hex_digits = (prop.num_bits+3)//4
     format_string = "%0" + str(num_hex_digits) + "X"
@@ -136,20 +159,33 @@ class Docs:
     return pretty_value
   
   @staticmethod
-  def get_name_for_entity(entity):
+  def get_name_for_entity(entity_class, type, subtype, form):
     name = ""
     
-    if isinstance(entity, Entity):
+    if entity_class == "entity":
       type_list = ENTITY_TYPE_DOCS["children"]
-      if entity.type in type_list:
-        type_data = type_list[entity.type]
-        if entity.subtype in type_data["children"]:
-          subtype_data = type_data["children"][entity.subtype]
+      if type in type_list:
+        type_data = type_list[type]
+        if subtype in type_data["children"]:
+          subtype_data = type_data["children"][subtype]
           name += subtype_data["name"]
-          if "Forms" in subtype_data["properties"] and entity.form in subtype_data["properties"]["Forms"]["children"]:
-            name += " " + subtype_data["properties"]["Forms"]["children"][entity.form]["name"]
+          if "Forms" in subtype_data["properties"] and form in subtype_data["properties"]["Forms"]["children"]:
+            name += ", " + subtype_data["properties"]["Forms"]["children"][form]["name"]
     
     return name
+  
+  @staticmethod
+  def get_name_for_entity_form(entity_class, type, subtype, form):
+    if entity_class == "entity":
+      type_list = ENTITY_TYPE_DOCS["children"]
+      if type in type_list:
+        type_data = type_list[type]
+        if subtype in type_data["children"]:
+          subtype_data = type_data["children"][subtype]
+          if "Forms" in subtype_data["properties"] and form in subtype_data["properties"]["Forms"]["children"]:
+            return subtype_data["properties"]["Forms"]["children"][form]["name"]
+    
+    return ""
   
   @staticmethod
   def get_entity_param_properties(entity):
