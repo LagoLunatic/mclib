@@ -74,7 +74,7 @@ class GBALZ77:
     ])
     
     decomp = array.array("B")
-    decomp.fromstring(decomp_bytes)
+    decomp.frombytes(decomp_bytes)
     
     outbuffer = [0]
     buffered_blocks = 0
@@ -114,7 +114,7 @@ class GBALZ77:
       # Still have some leftovers in the buffer, so write them.
       comp.fromlist(outbuffer)
     
-    return comp.tostring()
+    return comp.tobytes()
   
   @staticmethod
   def get_occurrence_length_and_disp(new_data, new_length, old_data, old_length):
@@ -160,7 +160,7 @@ class GBALZ77:
     ])
     
     decomp = array.array("B")
-    decomp.fromstring(decomp_bytes)
+    decomp.frombytes(decomp_bytes)
     
     outbuffer = [0]
     buffered_blocks = 0
@@ -195,7 +195,7 @@ class GBALZ77:
       # Still have some leftovers in the buffer, so write them.
       comp.fromlist(outbuffer)
     
-    return comp.tostring()
+    return comp.tobytes()
   
   @staticmethod
   def get_optimal_compression_lengths(decomp):

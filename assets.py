@@ -155,4 +155,4 @@ class AssetEntry:
   
   def save(self):
     if self.type == "layer":
-      self.rom.compress_write(self.rom_address, self.data.tostring())
+      self.rom.compress_write(self.rom_address, self.data.tobytes())

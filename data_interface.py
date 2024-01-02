@@ -46,23 +46,23 @@ class DataInterface:
   
   def read_all_u8s(self):
     arr = array.array("B")
-    arr.fromstring(self.read_all_bytes())
+    arr.frombytes(self.read_all_bytes())
     return arr
   
   def read_all_u16s(self):
     arr = array.array("H")
-    arr.fromstring(self.read_all_bytes())
+    arr.frombytes(self.read_all_bytes())
     return arr
   
   def read_all_u32s(self):
     arr = array.array("I")
-    arr.fromstring(self.read_all_bytes())
+    arr.frombytes(self.read_all_bytes())
     return arr
   
   def decompress_read(self, offset):
     self.data.seek(offset)
     # Read everything that remains in the data since we don't yet know how much is compressed
-    compressed_data = self.data.read()
+    compressed_data = self.read_bytes(offset, len(self))
     decompressed_data, compr_length = GBALZ77.decompress(compressed_data)
     print("READ %08X %08X" % (offset, compr_length))
     self.orig_compressed_lengths_by_offset[offset] = compr_length
@@ -141,7 +141,7 @@ class InvalidAddressError(Exception):
 
 class RomInterface(DataInterface):
   def is_pointer(self, address):
-    if address >= 0x08000000 and address <= 0x08FFFFFF:
+    if address & 0xFF000000 == 0x08000000:
       return True
     else:
       return False
@@ -153,48 +153,42 @@ class RomInterface(DataInterface):
   def read(self, address, length, format_string):
     if not self.is_pointer(address):
       raise InvalidAddressError("%08X is not a valid ROM address." % address)
-    offset = address-0x08000000
+    offset = address & 0x00FFFFFF
     return super().read(offset, length, format_string)
   
   def read_bytes(self, address, length):
     if not self.is_pointer(address):
       raise InvalidAddressError("%08X is not a valid ROM address." % address)
-    offset = address-0x08000000
+    offset = address & 0x00FFFFFF
     self.data.seek(offset)
     return self.data.read(length)
   
   def read_raw(self, address, length):
     if not self.is_pointer(address):
       raise InvalidAddressError("%08X is not a valid ROM address." % address)
-    offset = address-0x08000000
+    offset = address & 0x00FFFFFF
     return super().read_raw(offset, length)
   
   def decompress_read(self, address):
-    if not self.is_pointer(address):
-      raise InvalidAddressError("%08X is not a valid ROM address." % address)
-    offset = address-0x08000000
-    return super().decompress_read(offset)
+    return super().decompress_read(address)
   
   def compress_write(self, address, uncompressed_data):
-    if not self.is_pointer(address):
-      raise InvalidAddressError("%08X is not a valid ROM address." % address)
-    offset = address-0x08000000
-    return super().compress_write(offset, uncompressed_data)
+    return super().compress_write(address, uncompressed_data)
   
   def write(self, address, new_values, format_string):
     if not self.is_pointer(address):
       raise InvalidAddressError("%08X is not a valid ROM address." % address)
-    offset = address-0x08000000
+    offset = address & 0x00FFFFFF
     super().write(offset, new_values, format_string)
   
   def write_bytes(self, address, new_bytes):
     if not self.is_pointer(address):
       raise InvalidAddressError("%08X is not a valid ROM address." % address)
-    offset = address-0x08000000
+    offset = address & 0x00FFFFFF
     super().write_bytes(offset, new_bytes)
   
   def write_raw(self, address, new_data):
     if not self.is_pointer(address):
       raise InvalidAddressError("%08X is not a valid ROM address." % address)
-    offset = address-0x08000000
+    offset = address & 0x00FFFFFF
     super().write_raw(offset, new_data)
